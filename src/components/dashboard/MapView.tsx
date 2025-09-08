@@ -1,10 +1,6 @@
-import React, { useEffect, useRef, useState } from 'react';
-import mapboxgl from 'mapbox-gl';
-import 'mapbox-gl/dist/mapbox-gl.css';
+import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
-import { Button } from "@/components/ui/button";
-import { MapPin, Settings } from "lucide-react";
+import { MapPin } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 
 // Mock data for public facilities
@@ -27,97 +23,6 @@ const facilityColors = {
 };
 
 const MapView = () => {
-  const mapContainer = useRef<HTMLDivElement>(null);
-  const map = useRef<mapboxgl.Map | null>(null);
-  const [mapboxToken, setMapboxToken] = useState('');
-  const [isMapReady, setIsMapReady] = useState(false);
-  const [selectedFacility, setSelectedFacility] = useState<any>(null);
-
-  const initializeMap = () => {
-    if (!mapContainer.current || !mapboxToken) return;
-
-    try {
-      mapboxgl.accessToken = mapboxToken;
-      
-      map.current = new mapboxgl.Map({
-        container: mapContainer.current,
-        style: 'mapbox://styles/mapbox/dark-v11',
-        center: [-46.6333, -23.5505], // São Paulo coordinates
-        zoom: 12,
-        pitch: 45,
-      });
-
-      map.current.addControl(
-        new mapboxgl.NavigationControl({
-          visualizePitch: true,
-        }),
-        'top-right'
-      );
-
-      map.current.on('style.load', () => {
-        // Add facilities to map
-        publicFacilities.forEach(facility => {
-          // Create custom marker element
-          const markerElement = document.createElement('div');
-          markerElement.className = 'facility-marker';
-          markerElement.style.cssText = `
-            width: 30px;
-            height: 30px;
-            border-radius: 50%;
-            background: ${facilityColors[facility.type as keyof typeof facilityColors]};
-            border: 3px solid white;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: white;
-            font-size: 12px;
-            font-weight: bold;
-          `;
-          markerElement.textContent = facility.type[0].toUpperCase();
-
-          // Create popup
-          const popup = new mapboxgl.Popup({ 
-            offset: 25,
-            className: 'facility-popup'
-          }).setHTML(`
-            <div class="p-3">
-              <h4 class="font-semibold text-foreground">${facility.name}</h4>
-              <p class="text-sm text-muted-foreground capitalize">${facility.type}</p>
-              <p class="text-sm font-medium text-primary">${facility.cost}</p>
-            </div>
-          `);
-
-          // Add marker to map
-          new mapboxgl.Marker(markerElement)
-            .setLngLat([facility.lng, facility.lat])
-            .setPopup(popup)
-            .addTo(map.current!);
-
-          // Add click handler
-          markerElement.addEventListener('click', () => {
-            setSelectedFacility(facility);
-          });
-        });
-
-        setIsMapReady(true);
-      });
-
-      map.current.on('error', (e) => {
-        console.error('Mapbox error:', e);
-      });
-
-    } catch (error) {
-      console.error('Error initializing map:', error);
-    }
-  };
-
-  useEffect(() => {
-    return () => {
-      map.current?.remove();
-    };
-  }, []);
 
   return (
     <Card className="glass neon-border group hover:shadow-neon transition-all duration-500 animate-fade-in-up relative overflow-hidden">
@@ -128,85 +33,65 @@ const MapView = () => {
           <MapPin className="h-5 w-5 text-primary" />
           Mapa de Equipamentos Públicos
         </CardTitle>
-        
-        {!isMapReady && (
-          <div className="space-y-4">
-            <div className="flex gap-2">
-              <Input
-                type="text"
-                placeholder="Cole seu Mapbox Public Token aqui..."
-                value={mapboxToken}
-                onChange={(e) => setMapboxToken(e.target.value)}
-                className="bg-card/50 border-border/50 backdrop-blur-sm"
-              />
-              <Button 
-                onClick={initializeMap}
-                disabled={!mapboxToken}
-                className="bg-gradient-primary hover:bg-gradient-primary/90"
-              >
-                <Settings className="h-4 w-4 mr-2" />
-                Carregar
-              </Button>
-            </div>
-            <p className="text-xs text-muted-foreground">
-              Para usar o mapa, obtenha seu token público em{' '}
-              <a 
-                href="https://mapbox.com" 
-                target="_blank" 
-                rel="noopener noreferrer"
-                className="text-primary hover:underline"
-              >
-                mapbox.com
-              </a>
-              . Recomendamos conectar ao Supabase para gerenciar tokens de forma segura.
-            </p>
-          </div>
-        )}
       </CardHeader>
       
-      <CardContent className="relative z-10 p-0">
-        <div className="relative h-96">
-          <div ref={mapContainer} className="absolute inset-0 rounded-b-lg overflow-hidden" />
+      <CardContent className="relative z-10 p-6">
+        {/* Mock Map */}
+        <div className="relative h-80 bg-gradient-to-br from-primary/5 to-secondary/5 rounded-lg border border-border/20 overflow-hidden">
+          {/* Grid background */}
+          <div className="absolute inset-0 opacity-30">
+            <svg className="w-full h-full" xmlns="http://www.w3.org/2000/svg">
+              <defs>
+                <pattern id="grid" width="20" height="20" patternUnits="userSpaceOnUse">
+                  <path d="M 20 0 L 0 0 0 20" fill="none" stroke="hsl(var(--border))" strokeWidth="0.5"/>
+                </pattern>
+              </defs>
+              <rect width="100%" height="100%" fill="url(#grid)"/>
+            </svg>
+          </div>
           
-          {!isMapReady && mapboxToken && (
-            <div className="absolute inset-0 flex items-center justify-center bg-card/80 backdrop-blur-sm rounded-b-lg">
-              <div className="text-center space-y-2">
-                <div className="animate-spin h-8 w-8 border-2 border-primary border-t-transparent rounded-full mx-auto"></div>
-                <p className="text-sm text-muted-foreground">Carregando mapa...</p>
-              </div>
+          {/* Mock facility markers */}
+          {publicFacilities.map((facility, index) => (
+            <div
+              key={facility.id}
+              className="absolute w-6 h-6 rounded-full border-2 border-background flex items-center justify-center text-xs font-bold text-white cursor-pointer hover:scale-110 transition-transform shadow-lg"
+              style={{
+                backgroundColor: facilityColors[facility.type as keyof typeof facilityColors],
+                left: `${20 + (index % 3) * 25}%`,
+                top: `${20 + Math.floor(index / 3) * 30}%`,
+              }}
+              title={`${facility.name} - ${facility.cost}`}
+            >
+              {facility.type[0].toUpperCase()}
             </div>
-          )}
+          ))}
+          
+          {/* Center indicator */}
+          <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-2 h-2 bg-primary rounded-full animate-pulse" />
         </div>
 
         {/* Facility Legend */}
-        {isMapReady && (
-          <div className="p-4 border-t border-border/50">
-            <div className="flex flex-wrap gap-2">
-              {Object.entries(facilityColors).map(([type, color]) => (
-                <Badge 
-                  key={type} 
-                  variant="outline" 
-                  className="text-xs capitalize"
-                  style={{ borderColor: color, color }}
-                >
-                  <div 
-                    className="w-2 h-2 rounded-full mr-1" 
-                    style={{ backgroundColor: color }}
-                  />
-                  {type}
-                </Badge>
-              ))}
-            </div>
-            
-            {selectedFacility && (
-              <div className="mt-3 p-3 rounded-lg bg-muted/20 border border-border/50">
-                <h4 className="font-semibold text-sm">{selectedFacility.name}</h4>
-                <p className="text-xs text-muted-foreground capitalize">{selectedFacility.type}</p>
-                <p className="text-xs font-medium text-primary">{selectedFacility.cost}</p>
-              </div>
-            )}
+        <div className="mt-4 space-y-3">
+          <div className="flex flex-wrap gap-2">
+            {Object.entries(facilityColors).map(([type, color]) => (
+              <Badge 
+                key={type} 
+                variant="outline" 
+                className="text-xs capitalize border-border/50"
+              >
+                <div 
+                  className="w-2 h-2 rounded-full mr-1" 
+                  style={{ backgroundColor: color }}
+                />
+                {type}
+              </Badge>
+            ))}
           </div>
-        )}
+          
+          <div className="text-xs text-muted-foreground">
+            Mock de visualização dos equipamentos públicos e seus respectivos custos
+          </div>
+        </div>
       </CardContent>
     </Card>
   );
