@@ -6,6 +6,7 @@ import { CostElementsTable } from "@/components/dashboard/CostElementsTable";
 import { CostCompositionTreemap } from "@/components/dashboard/CostCompositionTreemap";
 import { DetailedCostTable } from "@/components/dashboard/DetailedCostTable";
 import { FilterSidebar } from "@/components/dashboard/FilterSidebar";
+import MapView from "@/components/dashboard/MapView";
 import { DollarSign, TrendingUp, Target, Calendar, Zap, Activity } from "lucide-react";
 
 const Index = () => {
@@ -57,7 +58,7 @@ const Index = () => {
 
             <TabsContent value="overview" className="space-y-8">
               {/* Main Layout with Filter and Content */}
-              <div className="grid grid-cols-1 xl:grid-cols-4 gap-8">
+              <div className="grid grid-cols-1 xl:grid-cols-5 gap-8">
                 {/* Filter Sidebar - Integrated */}
                 <div className="xl:col-span-1">
                   <div className="sticky top-8">
@@ -66,9 +67,9 @@ const Index = () => {
                 </div>
 
                 {/* Main Content Area */}
-                <div className="xl:col-span-3 space-y-8">
-                  {/* Metrics Row */}
-                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                <div className="xl:col-span-4 space-y-8">
+                  {/* Metrics Row - Better Alignment */}
+                  <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 lg:gap-6">
                     <MetricCard
                       title="Custo Total"
                       value="R$ 62,5M"
@@ -99,23 +100,32 @@ const Index = () => {
                     />
                   </div>
 
-                  {/* Charts Row */}
-                  <div className="grid grid-cols-1 lg:grid-cols-6 gap-6">
-                    <CostChart />
-                    <PowerDistributionChart />
+                  {/* Charts and Map Row */}
+                  <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-6">
+                    <div className="lg:col-span-2 xl:col-span-2">
+                      <CostChart />
+                    </div>
+                    <div className="lg:col-span-1">
+                      <PowerDistributionChart />
+                    </div>
                   </div>
 
-                  {/* Tables Row */}
-                  <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                    <CostElementsTable />
+                  {/* Map and Tables Row */}
+                  <div className="grid grid-cols-1 xl:grid-cols-2 gap-6">
+                    <MapView />
                     <CostCompositionTreemap />
+                  </div>
+
+                  {/* Cost Elements Table */}
+                  <div className="grid grid-cols-1 gap-6">
+                    <CostElementsTable />
                   </div>
                 </div>
               </div>
             </TabsContent>
 
             <TabsContent value="analysis" className="space-y-8">
-              <div className="grid grid-cols-1 xl:grid-cols-4 gap-8">
+              <div className="grid grid-cols-1 xl:grid-cols-5 gap-8">
                 {/* Filter Sidebar */}
                 <div className="xl:col-span-1">
                   <div className="sticky top-8">
@@ -124,14 +134,14 @@ const Index = () => {
                 </div>
 
                 {/* Analysis Content */}
-                <div className="xl:col-span-3">
+                <div className="xl:col-span-4">
                   <DetailedCostTable />
                 </div>
               </div>
             </TabsContent>
 
             <TabsContent value="reports" className="space-y-8">
-              <div className="grid grid-cols-1 xl:grid-cols-4 gap-8">
+              <div className="grid grid-cols-1 xl:grid-cols-5 gap-8">
                 {/* Filter Sidebar */}
                 <div className="xl:col-span-1">
                   <div className="sticky top-8">
@@ -140,7 +150,7 @@ const Index = () => {
                 </div>
 
                 {/* Reports Content */}
-                <div className="xl:col-span-3">
+                <div className="xl:col-span-4">
                   <div className="glass p-12 rounded-2xl border border-primary/20 text-center animate-fade-in-up">
                     <div className="max-w-md mx-auto space-y-6">
                       <div className="p-4 rounded-full bg-gradient-primary w-20 h-20 flex items-center justify-center mx-auto animate-pulse-glow">
