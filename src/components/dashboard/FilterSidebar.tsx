@@ -7,7 +7,7 @@ import { Separator } from "@/components/ui/separator";
 
 export function FilterSidebar() {
   return (
-    <div className="w-80 p-4 space-y-4 h-screen overflow-y-auto">
+    <div className="space-y-4">
       <Card className="glass neon-border">
         <CardHeader className="pb-4">
           <CardTitle className="text-lg font-bold glow-text flex items-center gap-2">

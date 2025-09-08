@@ -18,52 +18,55 @@ const Index = () => {
         <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-60 h-60 bg-accent/5 rounded-full blur-3xl animate-pulse-glow" style={{ animationDelay: '2s' }} />
       </div>
 
-      <div className="flex relative z-10">
-        {/* Filter Sidebar */}
-        <div className="fixed left-0 top-0 h-full bg-background/95 backdrop-blur-sm border-r border-border/50 z-20">
-          <FilterSidebar />
-        </div>
+      <div className="relative z-10 p-6 md:p-8 lg:p-10">
+        <div className="max-w-8xl mx-auto space-y-8">
+          {/* Hero Header */}
+          <header className="text-center space-y-6 animate-fade-in-up">
+            <div className="relative">
+              <h1 className="text-5xl md:text-6xl lg:text-7xl font-black bg-gradient-primary bg-clip-text text-transparent animate-gradient bg-gradient-to-r from-primary via-secondary to-accent">
+                NEXUS COST
+              </h1>
+              <div className="absolute -inset-4 bg-gradient-primary opacity-20 blur-2xl -z-10" />
+            </div>
+            <p className="text-xl md:text-2xl text-muted-foreground max-w-3xl mx-auto leading-relaxed">
+              Sistema inteligente de análise e monitoramento de custos governamentais com visualização em tempo real
+            </p>
+            <div className="flex justify-center">
+              <div className="flex items-center gap-2 px-6 py-3 bg-gradient-primary text-primary-foreground rounded-full font-semibold shadow-neon animate-pulse-glow">
+                <Zap className="h-4 w-4" />
+                Status: Online
+              </div>
+            </div>
+          </header>
 
-        {/* Main Content */}
-        <div className="flex-1 ml-80">
-          <div className="p-6 md:p-8 lg:p-10">
-            <div className="max-w-7xl mx-auto space-y-8">
-              {/* Hero Header */}
-              <header className="text-center space-y-6 animate-fade-in-up">
-                <div className="relative">
-                  <h1 className="text-5xl md:text-6xl lg:text-7xl font-black bg-gradient-primary bg-clip-text text-transparent animate-gradient bg-gradient-to-r from-primary via-secondary to-accent">
-                    NEXUS COST
-                  </h1>
-                  <div className="absolute -inset-4 bg-gradient-primary opacity-20 blur-2xl -z-10" />
-                </div>
-                <p className="text-xl md:text-2xl text-muted-foreground max-w-3xl mx-auto leading-relaxed">
-                  Sistema inteligente de análise e monitoramento de custos governamentais com visualização em tempo real
-                </p>
-                <div className="flex justify-center">
-                  <div className="flex items-center gap-2 px-6 py-3 bg-gradient-primary text-primary-foreground rounded-full font-semibold shadow-neon animate-pulse-glow">
-                    <Zap className="h-4 w-4" />
-                    Status: Online
+          {/* Navigation Tabs */}
+          <Tabs defaultValue="overview" className="space-y-8">
+            <div className="flex justify-center">
+              <TabsList className="glass p-1 grid grid-cols-3 w-full max-w-md h-12">
+                <TabsTrigger value="overview" className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground transition-all duration-300">
+                  Visão Geral
+                </TabsTrigger>
+                <TabsTrigger value="analysis" className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground transition-all duration-300">
+                  Análise
+                </TabsTrigger>
+                <TabsTrigger value="reports" className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground transition-all duration-300">
+                  Relatórios
+                </TabsTrigger>
+              </TabsList>
+            </div>
+
+            <TabsContent value="overview" className="space-y-8">
+              {/* Main Layout with Filter and Content */}
+              <div className="grid grid-cols-1 xl:grid-cols-4 gap-8">
+                {/* Filter Sidebar - Integrated */}
+                <div className="xl:col-span-1">
+                  <div className="sticky top-8">
+                    <FilterSidebar />
                   </div>
                 </div>
-              </header>
 
-              {/* Navigation Tabs */}
-              <Tabs defaultValue="overview" className="space-y-8">
-                <div className="flex justify-center">
-                  <TabsList className="glass p-1 grid grid-cols-3 w-full max-w-md h-12">
-                    <TabsTrigger value="overview" className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground transition-all duration-300">
-                      Visão Geral
-                    </TabsTrigger>
-                    <TabsTrigger value="analysis" className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground transition-all duration-300">
-                      Análise
-                    </TabsTrigger>
-                    <TabsTrigger value="reports" className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground transition-all duration-300">
-                      Relatórios
-                    </TabsTrigger>
-                  </TabsList>
-                </div>
-
-                <TabsContent value="overview" className="space-y-8">
+                {/* Main Content Area */}
+                <div className="xl:col-span-3 space-y-8">
                   {/* Metrics Row */}
                   <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
                     <MetricCard
@@ -107,13 +110,37 @@ const Index = () => {
                     <CostElementsTable />
                     <CostCompositionTreemap />
                   </div>
-                </TabsContent>
+                </div>
+              </div>
+            </TabsContent>
 
-                <TabsContent value="analysis" className="space-y-8">
+            <TabsContent value="analysis" className="space-y-8">
+              <div className="grid grid-cols-1 xl:grid-cols-4 gap-8">
+                {/* Filter Sidebar */}
+                <div className="xl:col-span-1">
+                  <div className="sticky top-8">
+                    <FilterSidebar />
+                  </div>
+                </div>
+
+                {/* Analysis Content */}
+                <div className="xl:col-span-3">
                   <DetailedCostTable />
-                </TabsContent>
+                </div>
+              </div>
+            </TabsContent>
 
-                <TabsContent value="reports" className="space-y-8">
+            <TabsContent value="reports" className="space-y-8">
+              <div className="grid grid-cols-1 xl:grid-cols-4 gap-8">
+                {/* Filter Sidebar */}
+                <div className="xl:col-span-1">
+                  <div className="sticky top-8">
+                    <FilterSidebar />
+                  </div>
+                </div>
+
+                {/* Reports Content */}
+                <div className="xl:col-span-3">
                   <div className="glass p-12 rounded-2xl border border-primary/20 text-center animate-fade-in-up">
                     <div className="max-w-md mx-auto space-y-6">
                       <div className="p-4 rounded-full bg-gradient-primary w-20 h-20 flex items-center justify-center mx-auto animate-pulse-glow">
@@ -132,10 +159,10 @@ const Index = () => {
                       </div>
                     </div>
                   </div>
-                </TabsContent>
-              </Tabs>
-            </div>
-          </div>
+                </div>
+              </div>
+            </TabsContent>
+          </Tabs>
         </div>
       </div>
     </div>
