@@ -8,6 +8,7 @@ import { DetailedCostTable } from "@/components/dashboard/DetailedCostTable";
 import { FilterSidebar } from "@/components/dashboard/FilterSidebar";
 import MapView from "@/components/dashboard/MapView";
 import { DollarSign, TrendingUp, Target, Calendar, Zap, Activity } from "lucide-react";
+import { ThemeToggle } from "@/components/ui/theme-toggle";
 
 const Index = () => {
   return (
@@ -32,11 +33,12 @@ const Index = () => {
             <p className="text-xl md:text-2xl text-muted-foreground max-w-3xl mx-auto leading-relaxed">
               Sistema inteligente de análise e monitoramento de custos governamentais com visualização em tempo real
             </p>
-            <div className="flex justify-center">
+            <div className="flex justify-center items-center gap-4">
               <div className="flex items-center gap-2 px-6 py-3 bg-gradient-primary text-primary-foreground rounded-full font-semibold shadow-neon animate-pulse-glow">
                 <Zap className="h-4 w-4" />
                 Status: Online
               </div>
+              <ThemeToggle />
             </div>
           </header>
 
