@@ -19,6 +19,11 @@ export default {
         ring: "hsl(var(--ring))",
         background: "hsl(var(--background))",
         foreground: "hsl(var(--foreground))",
+        "chart-primary": "hsl(var(--chart-primary))",
+        "chart-secondary": "hsl(var(--chart-secondary))", 
+        "chart-tertiary": "hsl(var(--chart-tertiary))",
+        "chart-quaternary": "hsl(var(--chart-quaternary))",
+        "chart-quinary": "hsl(var(--chart-quinary))",
         primary: {
           DEFAULT: "hsl(var(--primary))",
           foreground: "hsl(var(--primary-foreground))",
