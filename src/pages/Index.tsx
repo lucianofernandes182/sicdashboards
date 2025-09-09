@@ -102,9 +102,9 @@ const Index = () => {
                     />
                   </div>
 
-                  {/* Charts and Map Row */}
-                  <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-6">
-                    <div className="lg:col-span-2 xl:col-span-2">
+                  {/* Charts Row */}
+                  <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                    <div className="lg:col-span-2">
                       <CostChart />
                     </div>
                     <div className="lg:col-span-1">
@@ -112,14 +112,18 @@ const Index = () => {
                     </div>
                   </div>
 
-                  {/* Map and Tables Row */}
-                  <div className="grid grid-cols-1 xl:grid-cols-2 gap-6">
-                    <MapView />
-                    <CostCompositionTreemap />
+                  {/* Map and Treemap Row */}
+                  <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                    <div className="h-full">
+                      <MapView />
+                    </div>
+                    <div className="h-full">
+                      <CostCompositionTreemap />
+                    </div>
                   </div>
 
-                  {/* Cost Elements Table */}
-                  <div className="grid grid-cols-1 gap-6">
+                  {/* Cost Elements Table - Full Width */}
+                  <div className="w-full">
                     <CostElementsTable />
                   </div>
                 </div>
