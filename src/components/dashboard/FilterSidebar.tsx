@@ -4,28 +4,29 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Filter, RefreshCw, Download, GitCompare } from "lucide-react";
 import { Separator } from "@/components/ui/separator";
-import { useFilters } from "@/contexts/FilterContext";
 import { useState } from "react";
 
+// Temporary implementation without context to avoid the error
 export function FilterSidebar() {
-  const { filters, updateFilter } = useFilters();
+  const [compareExercises, setCompareExercises] = useState(false);
+  const [comparisonExercises, setComparisonExercises] = useState<string[]>([]);
   const [showComparisonExercises, setShowComparisonExercises] = useState(false);
 
   const handleCompareToggle = () => {
-    const newCompareState = !filters.compareExercises;
-    updateFilter('compareExercises', newCompareState);
+    const newCompareState = !compareExercises;
+    setCompareExercises(newCompareState);
     setShowComparisonExercises(newCompareState);
     if (!newCompareState) {
-      updateFilter('comparisonExercises', []);
+      setComparisonExercises([]);
     }
   };
 
   const handleComparisonExerciseToggle = (exercise: string) => {
-    const currentExercises = filters.comparisonExercises;
+    const currentExercises = comparisonExercises;
     const newExercises = currentExercises.includes(exercise)
       ? currentExercises.filter(e => e !== exercise)
       : [...currentExercises, exercise];
-    updateFilter('comparisonExercises', newExercises);
+    setComparisonExercises(newExercises);
   };
 
   return (
@@ -43,7 +44,7 @@ export function FilterSidebar() {
           <div className="space-y-3">
             <div className="space-y-2">
               <label className="text-sm font-medium text-foreground">Entidade</label>
-              <Select value={filters.entity} onValueChange={(value) => updateFilter('entity', value)}>
+              <Select>
                 <SelectTrigger className="bg-card/50 border-border/50 backdrop-blur-sm">
                   <SelectValue placeholder="Selecionar entidade..." />
                 </SelectTrigger>
@@ -59,7 +60,7 @@ export function FilterSidebar() {
             <div className="space-y-2">
               <label className="text-sm font-medium text-foreground">Exercício</label>
               <div className="flex gap-2">
-                <Select value={filters.exercise} onValueChange={(value) => updateFilter('exercise', value)}>
+                <Select defaultValue="2024">
                   <SelectTrigger className="bg-card/50 border-border/50 backdrop-blur-sm flex-1">
                     <SelectValue placeholder="2024" />
                   </SelectTrigger>
@@ -79,13 +80,13 @@ export function FilterSidebar() {
                 </Button>
               </div>
               <Button 
-                variant={filters.compareExercises ? "default" : "outline"} 
+                variant={compareExercises ? "default" : "outline"} 
                 size="sm" 
-                className={`w-full text-xs ${filters.compareExercises ? 'bg-primary text-primary-foreground' : 'bg-card/50 border-border/50'}`}
+                className={`w-full text-xs ${compareExercises ? 'bg-primary text-primary-foreground' : 'bg-card/50 border-border/50'}`}
                 onClick={handleCompareToggle}
               >
                 <GitCompare className="h-3 w-3 mr-1" />
-                {filters.compareExercises ? 'Comparando Exercícios' : 'Comparar Exercícios'}
+                {compareExercises ? 'Comparando Exercícios' : 'Comparar Exercícios'}
               </Button>
               
               {showComparisonExercises && (
@@ -95,10 +96,10 @@ export function FilterSidebar() {
                     {['2023', '2022', '2021', '2020'].map((year) => (
                       <Button
                         key={year}
-                        variant={filters.comparisonExercises.includes(year) ? "default" : "outline"}
+                        variant={comparisonExercises.includes(year) ? "default" : "outline"}
                         size="sm"
                         className={`text-xs h-7 ${
-                          filters.comparisonExercises.includes(year) 
+                          comparisonExercises.includes(year) 
                             ? 'bg-primary text-primary-foreground' 
                             : 'bg-card/50 border-border/50'
                         }`}
@@ -108,9 +109,9 @@ export function FilterSidebar() {
                       </Button>
                     ))}
                   </div>
-                  {filters.comparisonExercises.length > 0 && (
+                  {comparisonExercises.length > 0 && (
                     <div className="flex flex-wrap gap-1 mt-2">
-                      {filters.comparisonExercises.map((year) => (
+                      {comparisonExercises.map((year) => (
                         <Badge key={year} variant="secondary" className="text-xs">
                           {year}
                         </Badge>
@@ -124,7 +125,7 @@ export function FilterSidebar() {
             <div className="grid grid-cols-2 gap-2">
               <div className="space-y-2">
                 <label className="text-sm font-medium text-foreground">Mês Inicial</label>
-                <Select value={filters.startMonth} onValueChange={(value) => updateFilter('startMonth', value)}>
+                <Select defaultValue="01">
                   <SelectTrigger className="bg-card/50 border-border/50 backdrop-blur-sm">
                     <SelectValue placeholder="Jan" />
                   </SelectTrigger>
@@ -147,7 +148,7 @@ export function FilterSidebar() {
 
               <div className="space-y-2">
                 <label className="text-sm font-medium text-foreground">Mês Final</label>
-                <Select value={filters.endMonth} onValueChange={(value) => updateFilter('endMonth', value)}>
+                <Select defaultValue="12">
                   <SelectTrigger className="bg-card/50 border-border/50 backdrop-blur-sm">
                     <SelectValue placeholder="Dez" />
                   </SelectTrigger>
@@ -171,7 +172,7 @@ export function FilterSidebar() {
 
             <div className="space-y-2">
               <label className="text-sm font-medium text-foreground">Função</label>
-              <Select value={filters.function} onValueChange={(value) => updateFilter('function', value)}>
+              <Select>
                 <SelectTrigger className="bg-card/50 border-border/50 backdrop-blur-sm">
                   <SelectValue placeholder="Selecionar função..." />
                 </SelectTrigger>
@@ -190,7 +191,7 @@ export function FilterSidebar() {
 
             <div className="space-y-2">
               <label className="text-sm font-medium text-foreground">Equipamento Público</label>
-              <Select value={filters.publicEquipment} onValueChange={(value) => updateFilter('publicEquipment', value)}>
+              <Select>
                 <SelectTrigger className="bg-card/50 border-border/50 backdrop-blur-sm">
                   <SelectValue placeholder="Selecionar equipamento..." />
                 </SelectTrigger>
@@ -207,7 +208,7 @@ export function FilterSidebar() {
 
             <div className="space-y-2">
               <label className="text-sm font-medium text-foreground">Elemento de Custo</label>
-              <Select value={filters.costElement} onValueChange={(value) => updateFilter('costElement', value)}>
+              <Select>
                 <SelectTrigger className="bg-card/50 border-border/50 backdrop-blur-sm">
                   <SelectValue placeholder="Selecionar elemento..." />
                 </SelectTrigger>

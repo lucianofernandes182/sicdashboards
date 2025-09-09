@@ -46,8 +46,14 @@ export function FilterProvider({ children }: { children: ReactNode }) {
     setFilters(defaultFilters);
   };
 
+  const value = {
+    filters,
+    updateFilter,
+    resetFilters
+  };
+
   return (
-    <FilterContext.Provider value={{ filters, updateFilter, resetFilters }}>
+    <FilterContext.Provider value={value}>
       {children}
     </FilterContext.Provider>
   );

@@ -1,7 +1,6 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip, Legend } from "recharts";
 import { Crown, Scale } from "lucide-react";
-import { useFilters } from "@/contexts/FilterContext";
 import { useMemo } from "react";
 
 const data = [
@@ -46,16 +45,6 @@ const CustomTooltip = ({ active, payload }: any) => {
         <p className="text-sm" style={{ color: data.color }}>
           Percentual: <span className="font-bold">{data.value?.toFixed(1)}%</span>
         </p>
-        {data.comparisonData && data.comparisonData.length > 0 && (
-          <div className="mt-2 pt-2 border-t border-border/20">
-            <p className="text-xs text-muted-foreground mb-1">Comparação:</p>
-            {data.comparisonData.map((comp: any, index: number) => (
-              <p key={index} className="text-xs" style={{ color: data.color }}>
-                {comp.year}: <span className="font-semibold">{comp.value.toFixed(1)}%</span>
-              </p>
-            ))}
-          </div>
-        )}
       </div>
     );
   }
@@ -63,31 +52,14 @@ const CustomTooltip = ({ active, payload }: any) => {
 };
 
 export function PowerDistributionChart() {
-  const { filters } = useFilters();
-
   const chartData = useMemo(() => {
     const baseData = [
       { name: "Executivo", value: 65.5, color: "hsl(var(--chart-primary))", icon: Crown },
       { name: "Legislativo", value: 34.5, color: "hsl(var(--chart-secondary))", icon: Scale },
     ];
 
-    // If comparing exercises, show comparison data
-    if (filters.compareExercises && filters.comparisonExercises.length > 0) {
-      // For comparison, we could show multiple pie charts or modify the tooltip
-      // For now, we'll adjust the values slightly based on selected comparison years
-      const variation = filters.comparisonExercises.length * 0.5;
-      return baseData.map(item => ({
-        ...item,
-        value: item.value + (Math.random() - 0.5) * variation,
-        comparisonData: filters.comparisonExercises.map(year => ({
-          year,
-          value: item.value + (parseInt(year) - 2024) * 0.8 + (Math.random() - 0.5) * 2
-        }))
-      }));
-    }
-
     return baseData;
-  }, [filters.compareExercises, filters.comparisonExercises]);
+  }, []);
 
   return (
     <Card className="glass neon-border group hover:shadow-neon transition-all duration-500 animate-fade-in-up relative overflow-hidden h-full flex flex-col">
@@ -160,14 +132,6 @@ export function PowerDistributionChart() {
             );
           })}
         </div>
-        
-        {filters.compareExercises && filters.comparisonExercises.length > 0 && (
-          <div className="mt-3 p-2 rounded-lg bg-muted/10 border border-border/30">
-            <p className="text-xs text-muted-foreground text-center">
-              Comparando com: {filters.comparisonExercises.join(', ')}
-            </p>
-          </div>
-        )}
       </CardContent>
     </Card>
   );

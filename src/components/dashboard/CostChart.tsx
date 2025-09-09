@@ -12,7 +12,6 @@ import {
   Area,
   AreaChart,
 } from "recharts";
-import { useFilters } from "@/contexts/FilterContext";
 import { useMemo } from "react";
 
 const data = [
@@ -47,8 +46,6 @@ const CustomTooltip = ({ active, payload, label }: any) => {
 };
 
 export function CostChart() {
-  const { filters } = useFilters();
-
   const chartData = useMemo(() => {
     // Base data for current exercise
     const baseData = [
@@ -66,24 +63,8 @@ export function CostChart() {
       { month: "Dez", accumulated: 185, monthly: 42, budget: 48 },
     ];
 
-    // If comparing exercises, add comparison data
-    if (filters.compareExercises && filters.comparisonExercises.length > 0) {
-      return baseData.map((item, index) => {
-        const comparisonData: any = { ...item };
-        
-        filters.comparisonExercises.forEach((year, yearIndex) => {
-          // Generate comparison data with some variation
-          const variation = (parseInt(year) - 2024) * 0.1;
-          comparisonData[`accumulated_${year}`] = Math.max(0, item.accumulated + (item.accumulated * variation) + (Math.sin(index) * 5));
-          comparisonData[`monthly_${year}`] = Math.max(0, item.monthly + (item.monthly * variation) + (Math.cos(index) * 3));
-        });
-        
-        return comparisonData;
-      });
-    }
-
     return baseData;
-  }, [filters.compareExercises, filters.comparisonExercises]);
+  }, []);
 
   const renderLines = () => {
     const lines = [];
@@ -102,7 +83,7 @@ export function CostChart() {
           r: 6,
           stroke: "hsl(var(--background))"
         }}
-        name={`Acumulado ${filters.exercise}`}
+        name="Acumulado 2024"
         className="drop-shadow-md"
       />
     );
@@ -125,34 +106,6 @@ export function CostChart() {
       />
     );
 
-    // Comparison exercise lines
-    if (filters.compareExercises && filters.comparisonExercises.length > 0) {
-      const colors = ['hsl(var(--chart-4))', 'hsl(var(--chart-5))', 'hsl(var(--warning))', 'hsl(var(--destructive))'];
-      
-      filters.comparisonExercises.forEach((year, index) => {
-        const color = colors[index % colors.length];
-        
-        lines.push(
-          <Line 
-            key={`accumulated_${year}`}
-            type="monotone" 
-            dataKey={`accumulated_${year}`} 
-            stroke={color}
-            strokeWidth={2}
-            strokeDasharray="4 4"
-            dot={{ 
-              fill: color, 
-              strokeWidth: 2, 
-              r: 4,
-              stroke: "hsl(var(--background))"
-            }}
-            name={`Acumulado ${year}`}
-            opacity={0.7}
-          />
-        );
-      });
-    }
-
     return lines;
   };
 
@@ -165,31 +118,11 @@ export function CostChart() {
         key="monthly"
         dataKey="monthly" 
         fill="url(#monthlyGradient)"
-        name={`Mensal ${filters.exercise}`}
+        name="Mensal 2024"
         radius={[6, 6, 0, 0]}
         className="drop-shadow-sm"
       />
     );
-
-    // Comparison exercise bars (grouped)
-    if (filters.compareExercises && filters.comparisonExercises.length > 0) {
-      const colors = ['hsl(var(--chart-4))', 'hsl(var(--chart-5))', 'hsl(var(--warning))', 'hsl(var(--destructive))'];
-      
-      filters.comparisonExercises.forEach((year, index) => {
-        const color = colors[index % colors.length];
-        
-        bars.push(
-          <Bar 
-            key={`monthly_${year}`}
-            dataKey={`monthly_${year}`} 
-            fill={color}
-            name={`Mensal ${year}`}
-            radius={[6, 6, 0, 0]}
-            opacity={0.6}
-          />
-        );
-      });
-    }
 
     return bars;
   };
