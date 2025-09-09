@@ -6,7 +6,7 @@ import { Filter, RefreshCw, Download, GitCompare } from "lucide-react";
 import { Separator } from "@/components/ui/separator";
 import { useState } from "react";
 
-// Temporary implementation without context to avoid the error
+// Filtros limpos e funcionais sem contexto
 export function FilterSidebar() {
   const [compareExercises, setCompareExercises] = useState(false);
   const [comparisonExercises, setComparisonExercises] = useState<string[]>([]);
