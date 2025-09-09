@@ -7,12 +7,12 @@ import { CostCompositionTreemap } from "@/components/dashboard/CostCompositionTr
 import { DetailedCostTable } from "@/components/dashboard/DetailedCostTable";
 import { FilterSidebar } from "@/components/dashboard/FilterSidebar";
 import MapView from "@/components/dashboard/MapView";
-import { DollarSign, TrendingUp, Target, Calendar, Zap, Activity, Eye } from "lucide-react";
+import { CheckSquare, Scale, AlertTriangle, Activity, Zap, Home, Eye } from "lucide-react";
 import { ThemeToggle } from "@/components/ui/theme-toggle";
 import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router-dom";
 
-const Index = () => {
+const AlternativeView = () => {
   const navigate = useNavigate();
 
   return (
@@ -35,21 +35,21 @@ const Index = () => {
               <div className="absolute -inset-4 bg-gradient-primary opacity-20 blur-2xl -z-10" />
             </div>
             <p className="text-xl md:text-2xl text-muted-foreground max-w-3xl mx-auto leading-relaxed">
-              Sistema inteligente de análise e monitoramento de custos governamentais com visualização em tempo real
+              Visualização alternativa do sistema de análise e monitoramento de custos governamentais
             </p>
             <div className="flex justify-center items-center gap-4">
               <div className="flex items-center gap-2 px-6 py-3 bg-gradient-primary text-primary-foreground rounded-full font-semibold shadow-neon animate-pulse-glow">
-                <Zap className="h-4 w-4" />
-                Status: Online
+                <Eye className="h-4 w-4" />
+                Protótipo Alternativo
               </div>
               <Button
                 variant="outline"
                 size="sm"
-                onClick={() => navigate('/alternative')}
+                onClick={() => navigate('/')}
                 className="flex items-center gap-2 glass border-primary/20"
               >
-                <Eye className="h-4 w-4" />
-                Protótipo Alternativo
+                <Home className="h-4 w-4" />
+                Visão Principal
               </Button>
               <ThemeToggle />
             </div>
@@ -83,35 +83,28 @@ const Index = () => {
 
                 {/* Main Content Area */}
                 <div className="xl:col-span-4 space-y-8">
-                  {/* Metrics Row */}
-                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                  {/* Alternative Metrics Row */}
+                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
                     <MetricCard
-                      title="Custo Total"
-                      value="R$ 62,5M"
-                      change={{ value: 12.5, type: "increase" }}
-                      icon={<DollarSign className="h-6 w-6 text-primary" />}
+                      title="Custo Total Selecionado"
+                      value="R$ 45.2M"
+                      change={{ value: 8.3, type: "increase" }}
+                      icon={<CheckSquare className="h-6 w-6 text-primary" />}
                       gradient="bg-gradient-primary"
                     />
                     <MetricCard
-                      title="Orçamento Utilizado"
-                      value="78.3%"
-                      change={{ value: 5.2, type: "increase" }}
-                      icon={<Target className="h-6 w-6 text-secondary" />}
+                      title="Composição por Poder"
+                      value="65.5% | 34.5%"
+                      change={{ value: 2.1, type: "decrease" }}
+                      icon={<Scale className="h-6 w-6 text-secondary" />}
                       gradient="bg-gradient-secondary"
                     />
                     <MetricCard
-                      title="Economia Mensal"
-                      value="R$ 2.1M"
-                      change={{ value: 8.7, type: "decrease" }}
-                      icon={<TrendingUp className="h-6 w-6 text-accent" />}
-                      gradient="bg-gradient-accent"
-                    />
-                    <MetricCard
-                      title="Projeção Anual"
-                      value="R$ 185M"
-                      change={{ value: 3.1, type: "increase" }}
-                      icon={<Calendar className="h-6 w-6 text-warning" />}
-                      gradient="bg-gradient-to-br from-warning to-warning-glow"
+                      title="Gastos Não Considerados"
+                      value="R$ 17.3M"
+                      change={{ value: 15.2, type: "increase" }}
+                      icon={<AlertTriangle className="h-6 w-6 text-destructive" />}
+                      gradient="bg-gradient-to-br from-destructive to-destructive/80"
                     />
                   </div>
 
@@ -198,4 +191,4 @@ const Index = () => {
   );
 };
 
-export default Index;
+export default AlternativeView;
