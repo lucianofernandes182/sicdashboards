@@ -25,19 +25,19 @@ const facilityColors = {
 const MapView = () => {
 
   return (
-    <Card className="glass neon-border group hover:shadow-neon transition-all duration-500 animate-fade-in-up relative overflow-hidden">
+    <Card className="glass neon-border group hover:shadow-neon transition-all duration-500 animate-fade-in-up relative overflow-hidden h-full flex flex-col">
       <div className="absolute inset-0 bg-gradient-accent opacity-5 group-hover:opacity-10 transition-opacity duration-500" />
       
-      <CardHeader className="relative z-10">
+      <CardHeader className="relative z-10 flex-shrink-0">
         <CardTitle className="text-lg font-bold glow-text flex items-center gap-2">
           <MapPin className="h-5 w-5 text-primary" />
           Mapa de Equipamentos Públicos
         </CardTitle>
       </CardHeader>
       
-      <CardContent className="relative z-10 p-6">
+      <CardContent className="relative z-10 p-6 flex-1 flex flex-col">
         {/* Mock Map */}
-        <div className="relative h-80 bg-gradient-to-br from-primary/5 to-secondary/5 rounded-lg border border-border/20 overflow-hidden">
+        <div className="relative flex-1 bg-gradient-to-br from-primary/5 to-secondary/5 rounded-lg border border-border/20 overflow-hidden">
           {/* Grid background */}
           <div className="absolute inset-0 opacity-30">
             <svg className="w-full h-full" xmlns="http://www.w3.org/2000/svg">
@@ -71,7 +71,7 @@ const MapView = () => {
         </div>
 
         {/* Facility Legend */}
-        <div className="mt-4 space-y-3">
+        <div className="mt-4 space-y-3 flex-shrink-0">
           <div className="flex flex-wrap gap-2">
             {Object.entries(facilityColors).map(([type, color]) => (
               <Badge 

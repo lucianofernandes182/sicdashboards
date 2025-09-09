@@ -52,11 +52,11 @@ const CustomTooltip = ({ active, payload }: any) => {
 
 export function PowerDistributionChart() {
   return (
-    <Card className="col-span-2 glass neon-border group hover:shadow-neon transition-all duration-500 animate-fade-in-up relative overflow-hidden">
+    <Card className="glass neon-border group hover:shadow-neon transition-all duration-500 animate-fade-in-up relative overflow-hidden h-full flex flex-col">
       {/* Animated background */}
       <div className="absolute inset-0 bg-gradient-secondary opacity-5 group-hover:opacity-10 transition-opacity duration-500" />
       
-      <CardHeader className="relative z-10">
+      <CardHeader className="relative z-10 flex-shrink-0">
         <CardTitle className="text-lg font-bold glow-text flex items-center gap-2">
           <div className="p-2 rounded-lg bg-primary/10 border border-primary/20">
             <Scale className="h-4 w-4 text-primary" />
@@ -68,47 +68,49 @@ export function PowerDistributionChart() {
         </CardDescription>
       </CardHeader>
       
-      <CardContent className="relative z-10">
-        <ResponsiveContainer width="100%" height={280}>
-          <PieChart>
-            <defs>
-              <filter id="glow">
-                <feGaussianBlur stdDeviation="3" result="coloredBlur"/>
-                <feMerge> 
-                  <feMergeNode in="coloredBlur"/>
-                  <feMergeNode in="SourceGraphic"/>
-                </feMerge>
-              </filter>
-            </defs>
-            
-            <Pie
-              data={data}
-              cx="50%"
-              cy="50%"
-              labelLine={false}
-              label={renderCustomizedLabel}
-              outerRadius={100}
-              innerRadius={50}
-              dataKey="value"
-              strokeWidth={3}
-              stroke="hsl(var(--background))"
-            >
-              {data.map((entry, index) => (
-                <Cell 
-                  key={`cell-${index}`} 
-                  fill={entry.color}
-                  filter="url(#glow)"
-                  className="hover:opacity-80 transition-opacity duration-300"
-                />
-              ))}
-            </Pie>
-            
-            <Tooltip content={<CustomTooltip />} />
-          </PieChart>
-        </ResponsiveContainer>
+      <CardContent className="relative z-10 flex-1 flex flex-col">
+        <div className="flex-1">
+          <ResponsiveContainer width="100%" height={250}>
+            <PieChart>
+              <defs>
+                <filter id="glow">
+                  <feGaussianBlur stdDeviation="3" result="coloredBlur"/>
+                  <feMerge> 
+                    <feMergeNode in="coloredBlur"/>
+                    <feMergeNode in="SourceGraphic"/>
+                  </feMerge>
+                </filter>
+              </defs>
+              
+              <Pie
+                data={data}
+                cx="50%"
+                cy="50%"
+                labelLine={false}
+                label={renderCustomizedLabel}
+                outerRadius={100}
+                innerRadius={50}
+                dataKey="value"
+                strokeWidth={3}
+                stroke="hsl(var(--background))"
+              >
+                {data.map((entry, index) => (
+                  <Cell 
+                    key={`cell-${index}`} 
+                    fill={entry.color}
+                    filter="url(#glow)"
+                    className="hover:opacity-80 transition-opacity duration-300"
+                  />
+                ))}
+              </Pie>
+              
+              <Tooltip content={<CustomTooltip />} />
+            </PieChart>
+          </ResponsiveContainer>
+        </div>
         
         {/* Custom Legend */}
-        <div className="flex justify-center gap-4 mt-4">
+        <div className="flex justify-center gap-4 mt-4 flex-shrink-0">
           {data.map((entry, index) => {
             const IconComponent = entry.icon;
             return (
