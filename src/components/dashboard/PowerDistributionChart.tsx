@@ -89,19 +89,16 @@ export function PowerDistributionChart() {
       {/* Animated background */}
       <div className="absolute inset-0 bg-gradient-secondary opacity-5 group-hover:opacity-10 transition-opacity duration-500" />
       
-      <CardHeader className="relative z-10 flex-shrink-0">
+      <CardHeader className="relative z-10 flex-shrink-0 pb-2">
         <CardTitle className="text-lg font-bold glow-text flex items-center gap-2">
           <div className="p-2 rounded-lg bg-primary/10 border border-primary/20">
             <Scale className="h-4 w-4 text-primary" />
           </div>
           Custo por Poder
         </CardTitle>
-        <CardDescription className="text-muted-foreground">
-          Distribuição percentual dos custos entre poderes
-        </CardDescription>
       </CardHeader>
       
-      <CardContent className="relative z-10 flex-1 flex flex-col">
+      <CardContent className="relative z-10 flex-1 flex flex-col p-2">
         <div className="flex-1">
           <ResponsiveContainer width="100%" height="100%">
             <PieChart>
@@ -175,40 +172,28 @@ export function PowerDistributionChart() {
         </div>
         
         {/* Custom Legend */}
-        <div className="flex justify-center gap-6 mt-4 flex-shrink-0">
+        <div className="flex justify-center gap-4 mt-2 flex-shrink-0">
           <div className="text-center">
             <div className="text-xs font-semibold text-foreground mb-1">Executivo</div>
-            <div className="flex items-center gap-2 justify-center">
-              <div className="w-3 h-3 bg-[#4285F4] rounded"></div>
+            <div className="flex items-center gap-1 justify-center">
+              <div className="w-2 h-2 bg-[#4285F4] rounded"></div>
               <span className="text-xs text-muted-foreground">2024: 63%</span>
             </div>
-            <div className="flex items-center gap-2 justify-center mt-1">
-              <div className="w-3 h-3 bg-[#FFA726] rounded"></div>
+            <div className="flex items-center gap-1 justify-center mt-0.5">
+              <div className="w-2 h-2 bg-[#FFA726] rounded"></div>
               <span className="text-xs text-muted-foreground">2025: 64%</span>
             </div>
           </div>
           <div className="text-center">
             <div className="text-xs font-semibold text-foreground mb-1">Legislativo</div>
-            <div className="flex items-center gap-2 justify-center">
-              <div className="w-3 h-3 bg-[#4285F4] rounded"></div>
+            <div className="flex items-center gap-1 justify-center">
+              <div className="w-2 h-2 bg-[#4285F4] rounded"></div>
               <span className="text-xs text-muted-foreground">2024: 37%</span>
             </div>
-            <div className="flex items-center gap-2 justify-center mt-1">
-              <div className="w-3 h-3 bg-[#FFA726] rounded"></div>
+            <div className="flex items-center gap-1 justify-center mt-0.5">
+              <div className="w-2 h-2 bg-[#FFA726] rounded"></div>
               <span className="text-xs text-muted-foreground">2025: 36%</span>
             </div>
-          </div>
-        </div>
-        
-        {/* Powers Legend */}
-        <div className="flex justify-center gap-4 mt-2 flex-shrink-0">
-          <div className="flex items-center gap-2 px-3 py-1 rounded-lg bg-muted/20 border border-border/50">
-            <Crown className="h-3 w-3 text-muted-foreground" />
-            <span className="text-xs text-muted-foreground">Executivo</span>
-          </div>
-          <div className="flex items-center gap-2 px-3 py-1 rounded-lg bg-muted/20 border border-border/50">
-            <Scale className="h-3 w-3 text-muted-foreground" />
-            <span className="text-xs text-muted-foreground">Legislativo</span>
           </div>
         </div>
       </CardContent>
