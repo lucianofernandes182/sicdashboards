@@ -1,9 +1,32 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Button } from "@/components/ui/button";
-import { Filter, RefreshCw } from "lucide-react";
+import { Checkbox } from "@/components/ui/checkbox";
+import { Badge } from "@/components/ui/badge";
+import { Filter, RefreshCw, X } from "lucide-react";
+import { useState } from "react";
 
 export function FilterSidebarTreeview() {
+  const [selectedSources, setSelectedSources] = useState<string[]>([]);
+
+  const sources = [
+    { id: "recursos-humanos", label: "Recursos Humanos" },
+    { id: "materiais", label: "Materiais" },
+    { id: "contabilidade", label: "Contabilidade" }
+  ];
+
+  const handleSourceToggle = (sourceId: string) => {
+    setSelectedSources(prev => 
+      prev.includes(sourceId) 
+        ? prev.filter(id => id !== sourceId)
+        : [...prev, sourceId]
+    );
+  };
+
+  const removeSource = (sourceId: string) => {
+    setSelectedSources(prev => prev.filter(id => id !== sourceId));
+  };
+
   return (
     <div className="space-y-4">
       <Card className="glass neon-border">
@@ -15,17 +38,6 @@ export function FilterSidebarTreeview() {
         </CardHeader>
         
         <CardContent className="space-y-4">
-          {/* Informações Resumidas */}
-          <div className="space-y-3 pb-4 border-b border-border/20">
-            <div className="space-y-2">
-              <h4 className="text-sm font-semibold text-foreground">Total Selecionado</h4>
-              <div className="p-3 rounded-lg bg-gradient-primary/10 border border-primary/20">
-                <p className="text-lg font-bold text-primary">R$ 62,5M</p>
-                <p className="text-xs text-muted-foreground">6 níveis expandidos</p>
-              </div>
-            </div>
-          </div>
-
           {/* Filter Fields - Apenas Exercício e Fontes Geradoras */}
           <div className="space-y-3">
             <div className="space-y-2">
@@ -52,18 +64,52 @@ export function FilterSidebarTreeview() {
               </div>
             </div>
 
-            <div className="space-y-2">
+            <div className="space-y-3">
               <label className="text-sm font-medium text-foreground">Fontes Geradoras</label>
-              <Select>
-                <SelectTrigger className="bg-card/50 border-border/50 backdrop-blur-sm">
-                  <SelectValue placeholder="Selecionar fonte..." />
-                </SelectTrigger>
-                <SelectContent className="bg-card border-border/50 backdrop-blur-lg z-50">
-                  <SelectItem value="recursos-humanos">Recursos Humanos</SelectItem>
-                  <SelectItem value="materiais">Materiais</SelectItem>
-                  <SelectItem value="contabilidade">Contabilidade</SelectItem>
-                </SelectContent>
-              </Select>
+              
+              {/* Checkboxes for multiple selection */}
+              <div className="space-y-2">
+                {sources.map((source) => (
+                  <div key={source.id} className="flex items-center space-x-2">
+                    <Checkbox
+                      id={source.id}
+                      checked={selectedSources.includes(source.id)}
+                      onCheckedChange={() => handleSourceToggle(source.id)}
+                      className="data-[state=checked]:bg-primary data-[state=checked]:border-primary"
+                    />
+                    <label 
+                      htmlFor={source.id} 
+                      className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 cursor-pointer"
+                    >
+                      {source.label}
+                    </label>
+                  </div>
+                ))}
+              </div>
+
+              {/* Selected sources badges */}
+              {selectedSources.length > 0 && (
+                <div className="flex flex-wrap gap-1 mt-2">
+                  {selectedSources.map((sourceId) => {
+                    const source = sources.find(s => s.id === sourceId);
+                    return (
+                      <Badge 
+                        key={sourceId} 
+                        variant="secondary" 
+                        className="text-xs flex items-center gap-1"
+                      >
+                        {source?.label}
+                        <button
+                          onClick={() => removeSource(sourceId)}
+                          className="ml-1 hover:bg-muted-foreground/20 rounded-full p-0.5"
+                        >
+                          <X className="h-2 w-2" />
+                        </button>
+                      </Badge>
+                    );
+                  })}
+                </div>
+              )}
             </div>
           </div>
 
