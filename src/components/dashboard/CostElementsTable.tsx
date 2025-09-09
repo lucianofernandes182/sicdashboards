@@ -42,7 +42,7 @@ export function CostElementsTable() {
   };
 
   return (
-    <Card className="col-span-2 glass neon-border h-[300px] flex flex-col">
+    <Card className="w-full h-[300px] glass neon-border flex flex-col">
       <CardHeader className="flex-shrink-0">
         <CardTitle className="text-lg font-bold glow-text">Elementos de Custos</CardTitle>
       </CardHeader>
