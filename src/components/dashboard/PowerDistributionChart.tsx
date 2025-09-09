@@ -161,14 +161,7 @@ export function PowerDistributionChart() {
             </PieChart>
           </ResponsiveContainer>
           
-          {/* Center Labels */}
-          <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-            <div className="text-center bg-background/80 backdrop-blur-sm rounded-lg p-2 border border-border/50">
-              <div className="text-xs font-bold text-foreground mb-1">Executivo</div>
-              <div className="text-[10px] text-muted-foreground">2024: 63%</div>
-              <div className="text-[10px] text-muted-foreground">2025: 64%</div>
-            </div>
-          </div>
+          {/* Removed fixed center labels */}
         </div>
         
         {/* Custom Legend */}
