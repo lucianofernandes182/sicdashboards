@@ -92,11 +92,13 @@ const Index = () => {
                 <div className="xl:col-span-4 space-y-8">
                   {/* Charts Row */}
                   <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                    <div className="lg:col-span-2">
+                    <div className="lg:col-span-1">
                       <CostChart />
                     </div>
-                    <div className="lg:col-span-1 space-y-6">
+                    <div className="lg:col-span-1">
                       <PowerDistributionChart />
+                    </div>
+                    <div className="lg:col-span-1">
                       <CostElementsTable />
                     </div>
                   </div>
