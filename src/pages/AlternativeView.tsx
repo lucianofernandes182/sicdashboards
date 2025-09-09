@@ -6,14 +6,19 @@ import { CostElementsTable } from "@/components/dashboard/CostElementsTable";
 import { CostCompositionTreemap } from "@/components/dashboard/CostCompositionTreemap";
 import { DetailedCostTable } from "@/components/dashboard/DetailedCostTable";
 import { FilterSidebar } from "@/components/dashboard/FilterSidebar";
+import { FilterSidebarTreeview } from "@/components/dashboard/FilterSidebarTreeview";
+import { TreeViewComponent } from "@/components/dashboard/TreeViewComponent";
+import { AnalyticalGrid } from "@/components/dashboard/AnalyticalGrid";
 import MapView from "@/components/dashboard/MapView";
-import { CheckSquare, Scale, AlertTriangle, Activity, Zap, Home, Eye } from "lucide-react";
+import { CheckSquare, Scale, AlertTriangle, Activity, Zap, Home, Eye, GitBranch } from "lucide-react";
 import { ThemeToggle } from "@/components/ui/theme-toggle";
 import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router-dom";
+import { useState } from "react";
 
 const AlternativeView = () => {
   const navigate = useNavigate();
+  const [selectedTreeNode, setSelectedTreeNode] = useState<any>(null);
 
   return (
     <div className="min-h-screen bg-gradient-background relative overflow-hidden">
@@ -66,12 +71,16 @@ const AlternativeView = () => {
           {/* Navigation Tabs */}
           <Tabs defaultValue="overview" className="space-y-8">
             <div className="flex justify-center">
-              <TabsList className="glass p-1 grid grid-cols-3 w-full max-w-md h-12">
+              <TabsList className="glass p-1 grid grid-cols-4 w-full max-w-2xl h-12">
                 <TabsTrigger value="overview" className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground transition-all duration-300">
                   Visão Geral
                 </TabsTrigger>
                 <TabsTrigger value="analysis" className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground transition-all duration-300">
                   Análise
+                </TabsTrigger>
+                <TabsTrigger value="treeview" className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground transition-all duration-300">
+                  <GitBranch className="h-4 w-4 mr-1" />
+                  Treeview
                 </TabsTrigger>
                 <TabsTrigger value="reports" className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground transition-all duration-300">
                   Relatórios
@@ -156,6 +165,29 @@ const AlternativeView = () => {
                 {/* Analysis Content */}
                 <div className="xl:col-span-4">
                   <DetailedCostTable />
+                </div>
+              </div>
+            </TabsContent>
+
+            <TabsContent value="treeview" className="space-y-8">
+              <div className="grid grid-cols-1 xl:grid-cols-5 gap-8">
+                {/* Filter Sidebar - Simplified for Treeview */}
+                <div className="xl:col-span-1">
+                  <div className="sticky top-8">
+                    <FilterSidebarTreeview />
+                  </div>
+                </div>
+
+                {/* Treeview Content */}
+                <div className="xl:col-span-4 space-y-6">
+                  {/* TreeView Component */}
+                  <TreeViewComponent onNodeSelect={setSelectedTreeNode} />
+                  
+                  {/* Analytical Grid */}
+                  <AnalyticalGrid 
+                    selectedNodeName={selectedTreeNode?.name || "Secretaria Municipal de Educação"}
+                    selectedNodeLevel={selectedTreeNode?.level || 4}
+                  />
                 </div>
               </div>
             </TabsContent>
