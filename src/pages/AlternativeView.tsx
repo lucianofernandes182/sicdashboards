@@ -102,7 +102,7 @@ const AlternativeView = () => {
                     />
                     <MetricCard
                       title="Composição por Poder"
-                      value="65.5% | 34.5%"
+                      value="Exec: 65.5% | Leg: 34.5%"
                       change={{ value: 2.1, type: "decrease" }}
                       icon={<Scale className="h-6 w-6 text-secondary" />}
                       gradient="bg-gradient-secondary"
