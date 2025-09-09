@@ -126,7 +126,7 @@ const AlternativeView = () => {
                   </div>
 
                   {/* Charts Row - Custo Mensal/Acumulado, Custo por Poder e Elemento de Custos */}
-                  <div className="grid grid-cols-1 lg:grid-cols-12 gap-6" style={{ height: '300px' }}>
+                  <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 h-[300px] overflow-hidden">
                     <div className="lg:col-span-6 flex">
                       <CostChart />
                     </div>

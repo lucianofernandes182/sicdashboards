@@ -179,7 +179,7 @@ export function CostChart() {
   };
 
   return (
-    <Card className="w-full h-full glass neon-border group hover:shadow-neon transition-all duration-500 animate-fade-in-up relative overflow-hidden flex flex-col">
+    <Card className="w-full h-[300px] glass neon-border group hover:shadow-neon transition-all duration-500 animate-fade-in-up relative overflow-hidden flex flex-col">
       {/* Animated background */}
       <div className="absolute inset-0 bg-gradient-primary opacity-5 group-hover:opacity-10 transition-opacity duration-500" />
       

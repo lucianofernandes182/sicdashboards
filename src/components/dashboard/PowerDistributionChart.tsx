@@ -85,7 +85,7 @@ export function PowerDistributionChart() {
   const chartData2025 = useMemo(() => comparativeData2025, []);
 
   return (
-    <Card className="glass neon-border group hover:shadow-neon transition-all duration-500 animate-fade-in-up relative overflow-hidden h-full flex flex-col">
+    <Card className="glass neon-border group hover:shadow-neon transition-all duration-500 animate-fade-in-up relative overflow-hidden h-[300px] flex flex-col">
       {/* Animated background */}
       <div className="absolute inset-0 bg-gradient-secondary opacity-5 group-hover:opacity-10 transition-opacity duration-500" />
       
