@@ -1,69 +1,92 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
-import { Badge } from "@/components/ui/badge";
 
 const costElements = [
-  { element: "Outros Custos", percentage: 4.5, amount: "R$ 2.8M", trend: "up" },
-  { element: "Tributários", percentage: 4.0, amount: "R$ 2.5M", trend: "down" },
-  { element: "Manutenção e Operação", percentage: 1.0, amount: "R$ 625K", trend: "up" },
-  { element: "Previdenciários e Assistenciais", percentage: 2.0, amount: "R$ 1.2M", trend: "stable" },
-  { element: "Pessoal e Encargos", percentage: 1.0, amount: "R$ 625K", trend: "up" },
+  { element: "Outros Custos", value2024: 4.5, value2025: 7.0 },
+  { element: "Tributários", value2024: 4.0, value2025: 6.0 },
+  { element: "Manutenção e Operação", value2024: 1.0, value2025: 2.5 },
+  { element: "Previdenciários e Assistenciais", value2024: 2.0, value2025: 4.0 },
+  { element: "Pessoal e Encargos", value2024: 1.0, value2025: 3.0 },
 ];
 
-const getTrendColor = (trend: string) => {
-  switch (trend) {
-    case "up": return "bg-accent text-accent-foreground";
-    case "down": return "bg-destructive text-destructive-foreground";
-    default: return "bg-muted text-muted-foreground";
-  }
-};
-
-const getTrendText = (trend: string) => {
-  switch (trend) {
-    case "up": return "↗️ Alta";
-    case "down": return "↘️ Baixa";
-    default: return "→ Estável";
-  }
-};
+const otherExpenses = [
+  { element: "Gastos", value2024: 6.0, value2025: 5.0 },
+];
 
 export function CostElementsTable() {
+  const renderBarChart = (item: { element: string; value2024: number; value2025: number }) => {
+    const total = item.value2024 + item.value2025;
+    const percentage2024 = (item.value2024 / total) * 100;
+    const percentage2025 = (item.value2025 / total) * 100;
+
+    return (
+      <div className="space-y-3">
+        <div className="flex justify-between items-center">
+          <span className="text-sm font-medium text-foreground">{item.element}</span>
+        </div>
+        <div className="flex h-8 bg-muted rounded-lg overflow-hidden">
+          <div 
+            className="bg-yellow-500 flex items-center justify-center text-white text-xs font-semibold"
+            style={{ width: `${percentage2024}%` }}
+          >
+            {item.value2024}
+          </div>
+          <div 
+            className="bg-blue-600 flex items-center justify-center text-white text-xs font-semibold"
+            style={{ width: `${percentage2025}%` }}
+          >
+            {item.value2025}
+          </div>
+        </div>
+      </div>
+    );
+  };
+
   return (
-    <Card className="col-span-2">
+    <Card className="col-span-2 glass neon-border">
       <CardHeader>
-        <CardTitle>Elementos de Custos</CardTitle>
+        <CardTitle className="text-lg font-bold glow-text">Elementos de Custos</CardTitle>
       </CardHeader>
-      <CardContent>
-        <Table>
-          <TableHeader>
-            <TableRow>
-              <TableHead>Elemento</TableHead>
-              <TableHead className="text-right">%</TableHead>
-              <TableHead className="text-right">Valor</TableHead>
-              <TableHead className="text-right">Tendência</TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {costElements.map((item, index) => (
-              <TableRow key={index}>
-                <TableCell className="font-medium">{item.element}</TableCell>
-                <TableCell className="text-right">{item.percentage}%</TableCell>
-                <TableCell className="text-right font-mono">{item.amount}</TableCell>
-                <TableCell className="text-right">
-                  <Badge variant="outline" className={getTrendColor(item.trend)}>
-                    {getTrendText(item.trend)}
-                  </Badge>
-                </TableCell>
-              </TableRow>
+      <CardContent className="space-y-6">
+        <div className="space-y-4">
+          {costElements.map((item, index) => (
+            <div key={index}>
+              {renderBarChart(item)}
+            </div>
+          ))}
+        </div>
+
+        <div className="pt-6 border-t border-border/20">
+          <h3 className="text-md font-semibold text-foreground mb-4">Demais Gastos</h3>
+          <div className="space-y-4">
+            {otherExpenses.map((item, index) => (
+              <div key={index}>
+                {renderBarChart(item)}
+              </div>
             ))}
-          </TableBody>
-        </Table>
+          </div>
+        </div>
+
+        {/* Legend */}
+        <div className="flex items-center justify-center gap-6 pt-4 border-t border-border/20">
+          <div className="flex items-center gap-2">
+            <div className="w-3 h-3 bg-yellow-500 rounded"></div>
+            <span className="text-xs text-muted-foreground">2024</span>
+          </div>
+          <div className="flex items-center gap-2">
+            <div className="w-3 h-3 bg-blue-600 rounded"></div>
+            <span className="text-xs text-muted-foreground">2025</span>
+          </div>
+        </div>
+
+        {/* Percentage Scale */}
+        <div className="flex justify-between text-xs text-muted-foreground pt-2">
+          <span>0%</span>
+          <span>20%</span>
+          <span>40%</span>
+          <span>60%</span>
+          <span>80%</span>
+          <span>100%</span>
+        </div>
       </CardContent>
     </Card>
   );

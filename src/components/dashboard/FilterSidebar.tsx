@@ -2,7 +2,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Filter, RefreshCw, Download, GitCompare } from "lucide-react";
+import { Filter, RefreshCw, GitCompare } from "lucide-react";
 import { Separator } from "@/components/ui/separator";
 import { useState } from "react";
 
@@ -265,10 +265,6 @@ export function FilterSidebar() {
             <Button className="w-full bg-gradient-primary hover:bg-gradient-primary/90 text-primary-foreground shadow-neon">
               <Filter className="h-4 w-4 mr-2" />
               Aplicar Filtros
-            </Button>
-            <Button variant="outline" className="w-full bg-card/50 border-border/50">
-              <Download className="h-4 w-4 mr-2" />
-              Exportar Dados
             </Button>
           </div>
         </CardContent>

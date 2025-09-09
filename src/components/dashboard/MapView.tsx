@@ -3,23 +3,16 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { MapPin } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 
-// Mock data for public facilities - More examples spread across the map
+// Mock data for public facilities - Fewer, more realistic distribution
 const publicFacilities = [
-  { id: 1, name: "Escola Municipal João Silva", type: "escola", cost: "R$ 2.5M" },
-  { id: 2, name: "UBS Centro", type: "ubs", cost: "R$ 1.8M" },
-  { id: 3, name: "Praça da Liberdade", type: "praca", cost: "R$ 800K" },
-  { id: 4, name: "Cemitério Municipal", type: "cemiterio", cost: "R$ 600K" },
-  { id: 5, name: "Mercado Municipal", type: "mercado", cost: "R$ 1.2M" },
-  { id: 6, name: "Terminal Rodoviário", type: "terminal", cost: "R$ 3.1M" },
-  { id: 7, name: "Escola Estadual Maria Clara", type: "escola", cost: "R$ 2.8M" },
-  { id: 8, name: "UBS Vila Nova", type: "ubs", cost: "R$ 1.5M" },
-  { id: 9, name: "Parque Central", type: "praca", cost: "R$ 1.1M" },
-  { id: 10, name: "Centro Esportivo", type: "esporte", cost: "R$ 2.2M" },
-  { id: 11, name: "Biblioteca Municipal", type: "biblioteca", cost: "R$ 900K" },
-  { id: 12, name: "Posto de Saúde Norte", type: "ubs", cost: "R$ 1.7M" },
-  { id: 13, name: "Escola Técnica", type: "escola", cost: "R$ 3.2M" },
-  { id: 14, name: "Centro Cultural", type: "cultura", cost: "R$ 1.9M" },
-  { id: 15, name: "Terminal Urbano Sul", type: "terminal", cost: "R$ 2.7M" }
+  { id: 1, name: "Escola Municipal Central", type: "escola", cost: "R$ 2.5M" },
+  { id: 2, name: "UBS Vila Velha", type: "ubs", cost: "R$ 1.8M" },
+  { id: 3, name: "Praça da Bandeira", type: "praca", cost: "R$ 800K" },
+  { id: 4, name: "Terminal Rodoviário", type: "terminal", cost: "R$ 3.1M" },
+  { id: 5, name: "Centro Esportivo Municipal", type: "esporte", cost: "R$ 2.2M" },
+  { id: 6, name: "Biblioteca Pública", type: "biblioteca", cost: "R$ 900K" },
+  { id: 7, name: "UBS Itaparica", type: "ubs", cost: "R$ 1.7M" },
+  { id: 8, name: "Centro Cultural", type: "cultura", cost: "R$ 1.9M" },
 ];
 
 const facilityColors = {
@@ -65,25 +58,23 @@ const MapView = () => {
           {/* Map Base Layer */}
           <div className="absolute inset-0 bg-gradient-to-br from-[#e8f5e8] to-[#f0f8f0] dark:from-[#1a2e1a] dark:to-[#243324]"></div>
           
-          {/* Roads and Streets - Google Maps style */}
+          {/* Roads and Streets - Simplified, more realistic layout */}
           <div className="absolute inset-0">
             <svg className="w-full h-full" xmlns="http://www.w3.org/2000/svg">
-              {/* Main highways */}
-              <line x1="0%" y1="30%" x2="100%" y2="35%" stroke="#ffffff" strokeWidth="8" opacity="0.9"/>
-              <line x1="0%" y1="70%" x2="100%" y2="65%" stroke="#ffffff" strokeWidth="8" opacity="0.9"/>
-              <line x1="25%" y1="0%" x2="20%" y2="100%" stroke="#ffffff" strokeWidth="8" opacity="0.9"/>
-              <line x1="75%" y1="0%" x2="80%" y2="100%" stroke="#ffffff" strokeWidth="8" opacity="0.9"/>
+              {/* Main avenue (horizontal) */}
+              <line x1="0%" y1="45%" x2="100%" y2="45%" stroke="#ffffff" strokeWidth="6" opacity="0.9"/>
               
-              {/* Secondary roads */}
-              <line x1="0%" y1="15%" x2="100%" y2="18%" stroke="#ffffff" strokeWidth="4" opacity="0.8"/>
-              <line x1="0%" y1="45%" x2="100%" y2="48%" stroke="#ffffff" strokeWidth="4" opacity="0.8"/>
-              <line x1="0%" y1="85%" x2="100%" y2="82%" stroke="#ffffff" strokeWidth="4" opacity="0.8"/>
-              <line x1="45%" y1="0%" x2="48%" y2="100%" stroke="#ffffff" strokeWidth="4" opacity="0.8"/>
+              {/* Secondary avenue (vertical) */}
+              <line x1="40%" y1="0%" x2="40%" y2="100%" stroke="#ffffff" strokeWidth="6" opacity="0.9"/>
               
-              {/* Minor streets */}
-              <line x1="10%" y1="0%" x2="12%" y2="100%" stroke="#ffffff" strokeWidth="2" opacity="0.7"/>
-              <line x1="60%" y1="0%" x2="58%" y2="100%" stroke="#ffffff" strokeWidth="2" opacity="0.7"/>
-              <line x1="90%" y1="0%" x2="88%" y2="100%" stroke="#ffffff" strokeWidth="2" opacity="0.7"/>
+              {/* Coastal road */}
+              <line x1="0%" y1="80%" x2="100%" y2="75%" stroke="#ffffff" strokeWidth="4" opacity="0.8"/>
+              
+              {/* Local streets */}
+              <line x1="0%" y1="25%" x2="100%" y2="25%" stroke="#ffffff" strokeWidth="3" opacity="0.7"/>
+              <line x1="0%" y1="65%" x2="100%" y2="65%" stroke="#ffffff" strokeWidth="3" opacity="0.7"/>
+              <line x1="15%" y1="0%" x2="15%" y2="100%" stroke="#ffffff" strokeWidth="3" opacity="0.7"/>
+              <line x1="70%" y1="0%" x2="70%" y2="100%" stroke="#ffffff" strokeWidth="3" opacity="0.7"/>
             </svg>
           </div>
 
@@ -100,14 +91,12 @@ const MapView = () => {
           <div className="absolute top-[60%] left-[15%] w-[10%] h-[5%] bg-[#e0e0e0] dark:bg-[#4a4a4a] border border-[#d0d0d0] dark:border-[#5a5a5a] opacity-80"></div>
           <div className="absolute top-[75%] right-[25%] w-[7%] h-[10%] bg-[#e0e0e0] dark:bg-[#4a4a4a] border border-[#d0d0d0] dark:border-[#5a5a5a] opacity-80"></div>
 
-          {/* Google Maps style facility markers */}
+          {/* Facility markers - Fewer, more strategic positions */}
           {publicFacilities.map((facility, index) => {
             const positions = [
-              { left: 15, top: 25 }, { left: 35, top: 20 }, { left: 28, top: 45 },
-              { left: 55, top: 30 }, { left: 42, top: 50 }, { left: 68, top: 40 },
-              { left: 78, top: 25 }, { left: 85, top: 50 }, { left: 72, top: 65 },
-              { left: 45, top: 75 }, { left: 22, top: 70 }, { left: 58, top: 80 },
-              { left: 32, top: 85 }, { left: 82, top: 75 }, { left: 52, top: 90 }
+              { left: 20, top: 30 }, { left: 35, top: 25 }, { left: 50, top: 40 },
+              { left: 60, top: 50 }, { left: 45, top: 70 }, { left: 25, top: 60 },
+              { left: 75, top: 35 }, { left: 80, top: 65 }
             ];
             
             const position = positions[index] || { left: 50, top: 50 };
@@ -225,7 +214,7 @@ const MapView = () => {
           
           <div className="text-xs text-muted-foreground mt-4 p-3 bg-muted/20 rounded-lg border border-border/30">
             <div className="font-medium mb-1">📍 Visualização Interativa de Equipamentos Públicos</div>
-            Mapa simulado com {publicFacilities.length} equipamentos distribuídos pela cidade. 
+            Mapa simulado com {publicFacilities.length} equipamentos estratégicos distribuídos pela cidade. 
             Passe o mouse sobre os marcadores para ver detalhes dos custos de cada equipamento.
           </div>
         </div>
