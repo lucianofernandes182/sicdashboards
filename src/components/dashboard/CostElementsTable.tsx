@@ -42,11 +42,11 @@ export function CostElementsTable() {
   };
 
   return (
-    <Card className="col-span-2 glass neon-border">
-      <CardHeader>
+    <Card className="col-span-2 glass neon-border h-full flex flex-col">
+      <CardHeader className="flex-shrink-0">
         <CardTitle className="text-lg font-bold glow-text">Elementos de Custos</CardTitle>
       </CardHeader>
-      <CardContent className="space-y-6">
+      <CardContent className="flex-1 flex flex-col justify-between space-y-4">
         <div className="space-y-4">
           {costElements.map((item, index) => (
             <div key={index}>
