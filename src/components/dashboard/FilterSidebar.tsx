@@ -17,38 +17,6 @@ export function FilterSidebar() {
         </CardHeader>
         
         <CardContent className="space-y-4">
-          {/* Custo Total Display */}
-          <div className="p-4 rounded-lg bg-gradient-primary/10 border border-primary/20">
-            <div className="text-center space-y-1">
-              <p className="text-xs text-muted-foreground uppercase tracking-wide">Custo Total Selecionado</p>
-              <p className="text-2xl font-bold glow-text text-primary">25.000.000.000,00</p>
-            </div>
-            
-            <Separator className="my-3 bg-border/50" />
-            
-            <div className="space-y-2">
-              <div className="text-xs text-muted-foreground uppercase tracking-wide mb-2">Composição por Poder</div>
-              <div className="flex justify-between items-center">
-                <span className="text-sm">Executivo</span>
-                <Badge variant="outline" className="text-xs">20.000,0 Bi</Badge>
-              </div>
-              <div className="flex justify-between items-center">
-                <span className="text-sm">Legislativo</span>
-                <Badge variant="outline" className="text-xs">5.000,0 Bi</Badge>
-              </div>
-            </div>
-            
-            <Separator className="my-3 bg-border/50" />
-            
-            <div className="space-y-2">
-              <div className="text-xs text-muted-foreground uppercase tracking-wide mb-2">Gastos (não considerados nos Custos)</div>
-              <div className="flex justify-between items-center">
-                <span className="text-sm">Demais Gastos</span>
-                <Badge variant="outline" className="text-xs">1.000,0 Bi</Badge>
-              </div>
-            </div>
-          </div>
-
           {/* Filter Fields */}
           <div className="space-y-3">
             <div className="space-y-2">
