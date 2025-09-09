@@ -25,33 +25,32 @@ const AlternativeView = () => {
       </div>
 
       <div className="relative z-10 p-6 md:p-8 lg:p-10">
+        {/* Header Controls - Canto Superior Direito */}
+        <div className="absolute top-6 right-6 flex items-center gap-2">
+          <div className="flex items-center gap-1 px-3 py-1.5 bg-gradient-primary text-primary-foreground rounded-full text-xs font-medium shadow-neon">
+            <Zap className="h-3 w-3" />
+            Online
+          </div>
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => navigate('/')}
+            className="flex items-center gap-1 glass border-primary/20 text-xs px-3 py-1.5 h-auto"
+          >
+            <Eye className="h-3 w-3" />
+            Principal
+          </Button>
+          <ThemeToggle />
+        </div>
+
         <div className="max-w-8xl mx-auto space-y-8">
           {/* Hero Header */}
-          <header className="text-center space-y-6 animate-fade-in-up">
+          <header className="text-center space-y-6 animate-fade-in-up pt-12">
             <div className="relative">
-              <h1 className="text-5xl md:text-6xl lg:text-7xl font-black bg-gradient-primary bg-clip-text text-transparent animate-gradient bg-gradient-to-r from-primary via-secondary to-accent">
-                NEXUS COST
+              <h1 className="text-4xl md:text-5xl lg:text-6xl font-black bg-gradient-primary bg-clip-text text-transparent animate-gradient bg-gradient-to-r from-primary via-secondary to-accent">
+                Apuração de Custos do Município de Vila Velha
               </h1>
               <div className="absolute -inset-4 bg-gradient-primary opacity-20 blur-2xl -z-10" />
-            </div>
-            <p className="text-xl md:text-2xl text-muted-foreground max-w-3xl mx-auto leading-relaxed">
-              Visualização alternativa do sistema de análise e monitoramento de custos governamentais
-            </p>
-            <div className="flex justify-center items-center gap-4">
-              <div className="flex items-center gap-2 px-6 py-3 bg-gradient-primary text-primary-foreground rounded-full font-semibold shadow-neon animate-pulse-glow">
-                <Eye className="h-4 w-4" />
-                Protótipo Alternativo
-              </div>
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() => navigate('/')}
-                className="flex items-center gap-2 glass border-primary/20"
-              >
-                <Home className="h-4 w-4" />
-                Visão Principal
-              </Button>
-              <ThemeToggle />
             </div>
           </header>
 
