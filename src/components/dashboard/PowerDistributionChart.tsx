@@ -16,7 +16,7 @@ const comparativeData2025 = [
 const RADIAN = Math.PI / 180;
 
 const renderCustomizedLabel2024 = ({
-  cx, cy, midAngle, innerRadius, outerRadius, percent, name
+  cx, cy, midAngle, innerRadius, outerRadius, percent, name, index
 }: any) => {
   const radius = innerRadius + (outerRadius - innerRadius) * 0.5;
   const x = cx + radius * Math.cos(-midAngle * RADIAN);
@@ -29,17 +29,17 @@ const renderCustomizedLabel2024 = ({
       fill="white" 
       textAnchor={x > cx ? 'start' : 'end'} 
       dominantBaseline="central"
-      fontSize="11"
+      fontSize="10"
       fontWeight="600"
       className="drop-shadow-lg"
     >
-      2024
+      {index === 0 ? `${(percent * 100).toFixed(0)}%` : `${(percent * 100).toFixed(0)}%`}
     </text>
   );
 };
 
 const renderCustomizedLabel2025 = ({
-  cx, cy, midAngle, innerRadius, outerRadius, percent, name
+  cx, cy, midAngle, innerRadius, outerRadius, percent, name, index
 }: any) => {
   const radius = innerRadius + (outerRadius - innerRadius) * 0.5;
   const x = cx + radius * Math.cos(-midAngle * RADIAN);
@@ -52,11 +52,11 @@ const renderCustomizedLabel2025 = ({
       fill="white" 
       textAnchor={x > cx ? 'start' : 'end'} 
       dominantBaseline="central"
-      fontSize="11"
+      fontSize="10"
       fontWeight="600"
       className="drop-shadow-lg"
     >
-      2025
+      {index === 0 ? `${(percent * 100).toFixed(0)}%` : `${(percent * 100).toFixed(0)}%`}
     </text>
   );
 };
@@ -166,22 +166,37 @@ export function PowerDistributionChart() {
           
           {/* Center Labels */}
           <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-            <div className="text-center">
-              <div className="text-xs font-medium text-muted-foreground">2024: 37%</div>
-              <div className="text-xs font-medium text-muted-foreground">2025: 36%</div>
+            <div className="text-center bg-background/80 backdrop-blur-sm rounded-lg p-2 border border-border/50">
+              <div className="text-xs font-bold text-foreground mb-1">Executivo</div>
+              <div className="text-[10px] text-muted-foreground">2024: 63%</div>
+              <div className="text-[10px] text-muted-foreground">2025: 64%</div>
             </div>
           </div>
         </div>
         
         {/* Custom Legend */}
         <div className="flex justify-center gap-6 mt-4 flex-shrink-0">
-          <div className="flex items-center gap-2">
-            <div className="w-4 h-3 bg-[#4285F4] rounded"></div>
-            <span className="text-sm text-muted-foreground">2024 63%</span>
+          <div className="text-center">
+            <div className="text-xs font-semibold text-foreground mb-1">Executivo</div>
+            <div className="flex items-center gap-2 justify-center">
+              <div className="w-3 h-3 bg-[#4285F4] rounded"></div>
+              <span className="text-xs text-muted-foreground">2024: 63%</span>
+            </div>
+            <div className="flex items-center gap-2 justify-center mt-1">
+              <div className="w-3 h-3 bg-[#FFA726] rounded"></div>
+              <span className="text-xs text-muted-foreground">2025: 64%</span>
+            </div>
           </div>
-          <div className="flex items-center gap-2">
-            <div className="w-4 h-3 bg-[#FFA726] rounded"></div>
-            <span className="text-sm text-muted-foreground">2025 64%</span>
+          <div className="text-center">
+            <div className="text-xs font-semibold text-foreground mb-1">Legislativo</div>
+            <div className="flex items-center gap-2 justify-center">
+              <div className="w-3 h-3 bg-[#4285F4] rounded"></div>
+              <span className="text-xs text-muted-foreground">2024: 37%</span>
+            </div>
+            <div className="flex items-center gap-2 justify-center mt-1">
+              <div className="w-3 h-3 bg-[#FFA726] rounded"></div>
+              <span className="text-xs text-muted-foreground">2025: 36%</span>
+            </div>
           </div>
         </div>
         
