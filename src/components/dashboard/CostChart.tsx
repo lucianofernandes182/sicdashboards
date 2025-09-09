@@ -179,7 +179,7 @@ export function CostChart() {
   };
 
   return (
-    <Card className="col-span-4 glass neon-border group hover:shadow-neon transition-all duration-500 animate-fade-in-up relative overflow-hidden">
+    <Card className="w-full h-full glass neon-border group hover:shadow-neon transition-all duration-500 animate-fade-in-up relative overflow-hidden flex flex-col">
       {/* Animated background */}
       <div className="absolute inset-0 bg-gradient-primary opacity-5 group-hover:opacity-10 transition-opacity duration-500" />
       
@@ -201,8 +201,9 @@ export function CostChart() {
         </div>
       </CardHeader>
       
-      <CardContent className="pl-2 relative z-10">
-        <ResponsiveContainer width="100%" height={380}>
+      <CardContent className="pl-2 relative z-10 flex-1 flex flex-col">
+        <div className="flex-1 min-h-0">
+          <ResponsiveContainer width="100%" height="100%">
           <ComposedChart data={chartData} margin={{ top: 20, right: 60, left: 20, bottom: 40 }}>
             <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" opacity={0.3} />
             
@@ -238,7 +239,8 @@ export function CostChart() {
             {renderBars()}
             {renderLines()}
           </ComposedChart>
-        </ResponsiveContainer>
+          </ResponsiveContainer>
+        </div>
         
         {/* Legend */}
         <div className="flex items-center justify-center gap-6 mt-4">
