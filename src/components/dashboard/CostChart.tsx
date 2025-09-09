@@ -14,19 +14,67 @@ import {
 } from "recharts";
 import { useMemo } from "react";
 
-const data = [
-  { month: "Jan", accumulated: 20, monthly: 15, budget: 18 },
-  { month: "Fev", accumulated: 35, monthly: 18, budget: 22 },
-  { month: "Mar", accumulated: 50, monthly: 12, budget: 25 },
-  { month: "Abr", accumulated: 65, monthly: 22, budget: 28 },
-  { month: "Mai", accumulated: 80, monthly: 28, budget: 30 },
-  { month: "Jun", accumulated: 95, monthly: 25, budget: 32 },
-  { month: "Jul", accumulated: 110, monthly: 30, budget: 35 },
-  { month: "Ago", accumulated: 125, monthly: 32, budget: 38 },
-  { month: "Set", accumulated: 140, monthly: 35, budget: 40 },
-  { month: "Out", accumulated: 155, monthly: 38, budget: 42 },
-  { month: "Nov", accumulated: 170, monthly: 40, budget: 45 },
-  { month: "Dez", accumulated: 185, monthly: 42, budget: 48 },
+const comparativeData = [
+  { 
+    month: "Janeiro", 
+    monthly2024: 5, monthly2025: 3,
+    accumulated2024: 19, accumulated2025: 6
+  },
+  { 
+    month: "Fevereiro", 
+    monthly2024: 7, monthly2025: 4,
+    accumulated2024: 25, accumulated2025: 12
+  },
+  { 
+    month: "Março", 
+    monthly2024: 8, monthly2025: 6,
+    accumulated2024: 37, accumulated2025: 15
+  },
+  { 
+    month: "Abril", 
+    monthly2024: 15, monthly2025: 8,
+    accumulated2024: 44, accumulated2025: 28
+  },
+  { 
+    month: "Maio", 
+    monthly2024: 21, monthly2025: 11,
+    accumulated2024: 51, accumulated2025: 37
+  },
+  { 
+    month: "Junho", 
+    monthly2024: 18, monthly2025: 13,
+    accumulated2024: 30, accumulated2025: 50
+  },
+  { 
+    month: "Julho", 
+    monthly2024: 25, monthly2025: 15,
+    accumulated2024: 47, accumulated2025: 32
+  },
+  { 
+    month: "Agosto", 
+    monthly2024: 32, monthly2025: 18,
+    accumulated2024: 63, accumulated2025: 50
+  },
+  { 
+    month: "Setembro", 
+    monthly2024: 53, monthly2025: 22,
+    accumulated2024: 75, accumulated2025: 72
+  },
+  { 
+    month: "Outubro", 
+    monthly2024: 62, monthly2025: 25,
+    accumulated2024: 79, accumulated2025: 97
+  },
+  { 
+    month: "Novembro", 
+    monthly2024: 75, monthly2025: 28,
+    accumulated2024: 74, accumulated2025: 125
+  },
+  { 
+    month: "Dezembro", 
+    monthly2024: 87, monthly2025: 32,
+    accumulated2024: 85, accumulated2025: 157
+  },
 ];
 
 const CustomTooltip = ({ active, payload, label }: any) => {
@@ -47,62 +95,51 @@ const CustomTooltip = ({ active, payload, label }: any) => {
 
 export function CostChart() {
   const chartData = useMemo(() => {
-    // Base data for current exercise
-    const baseData = [
-      { month: "Jan", accumulated: 20, monthly: 15, budget: 18 },
-      { month: "Fev", accumulated: 35, monthly: 18, budget: 22 },
-      { month: "Mar", accumulated: 50, monthly: 12, budget: 25 },
-      { month: "Abr", accumulated: 65, monthly: 22, budget: 28 },
-      { month: "Mai", accumulated: 80, monthly: 28, budget: 30 },
-      { month: "Jun", accumulated: 95, monthly: 25, budget: 32 },
-      { month: "Jul", accumulated: 110, monthly: 30, budget: 35 },
-      { month: "Ago", accumulated: 125, monthly: 32, budget: 38 },
-      { month: "Set", accumulated: 140, monthly: 35, budget: 40 },
-      { month: "Out", accumulated: 155, monthly: 38, budget: 42 },
-      { month: "Nov", accumulated: 170, monthly: 40, budget: 45 },
-      { month: "Dez", accumulated: 185, monthly: 42, budget: 48 },
-    ];
-
-    return baseData;
+    return comparativeData;
   }, []);
 
   const renderLines = () => {
     const lines = [];
     
-    // Current exercise lines
+    // 2024 accumulated line (blue)
     lines.push(
       <Line 
-        key="accumulated"
+        key="accumulated2024"
+        yAxisId="right"
         type="monotone" 
-        dataKey="accumulated" 
-        stroke="hsl(var(--chart-secondary))" 
-        strokeWidth={4}
+        dataKey="accumulated2024" 
+        stroke="#4285F4" 
+        strokeWidth={3}
+        strokeDasharray="8 8"
         dot={{ 
-          fill: "hsl(var(--chart-secondary))", 
-          strokeWidth: 3, 
-          r: 6,
-          stroke: "hsl(var(--background))"
+          fill: "#4285F4", 
+          strokeWidth: 2, 
+          r: 5,
+          stroke: "white"
         }}
         name="Acumulado 2024"
         className="drop-shadow-md"
       />
     );
 
+    // 2025 accumulated line (orange)
     lines.push(
       <Line 
-        key="budget"
+        key="accumulated2025"
+        yAxisId="right"
         type="monotone" 
-        dataKey="budget" 
-        stroke="hsl(var(--chart-tertiary))" 
+        dataKey="accumulated2025" 
+        stroke="#FFA726" 
         strokeWidth={3}
         strokeDasharray="8 8"
         dot={{ 
-          fill: "hsl(var(--chart-tertiary))", 
+          fill: "#FFA726", 
           strokeWidth: 2, 
-          r: 4,
-          stroke: "hsl(var(--background))"
+          r: 5,
+          stroke: "white"
         }}
-        name="Orçamento"
+        name="Acumulado 2025"
+        className="drop-shadow-md"
       />
     );
 
@@ -112,14 +149,28 @@ export function CostChart() {
   const renderBars = () => {
     const bars = [];
     
-    // Current exercise bar
+    // 2024 bars (blue)
     bars.push(
       <Bar 
-        key="monthly"
-        dataKey="monthly" 
-        fill="url(#monthlyGradient)"
-        name="Mensal 2024"
-        radius={[6, 6, 0, 0]}
+        key="monthly2024"
+        yAxisId="left"
+        dataKey="monthly2024" 
+        fill="#4285F4"
+        name="2024"
+        radius={[2, 2, 0, 0]}
+        className="drop-shadow-sm"
+      />
+    );
+
+    // 2025 bars (orange)
+    bars.push(
+      <Bar 
+        key="monthly2025"
+        yAxisId="left"
+        dataKey="monthly2025" 
+        fill="#FFA726"
+        name="2025"
+        radius={[2, 2, 0, 0]}
         className="drop-shadow-sm"
       />
     );
@@ -152,30 +203,34 @@ export function CostChart() {
       
       <CardContent className="pl-2 relative z-10">
         <ResponsiveContainer width="100%" height={380}>
-          <ComposedChart data={chartData} margin={{ top: 20, right: 30, left: 20, bottom: 5 }}>
-            <defs>
-              <linearGradient id="monthlyGradient" x1="0" y1="0" x2="0" y2="1">
-                <stop offset="0%" stopColor="hsl(var(--chart-primary))" stopOpacity={0.8} />
-                <stop offset="100%" stopColor="hsl(var(--chart-primary))" stopOpacity={0.2} />
-              </linearGradient>
-              <linearGradient id="accumulatedGradient" x1="0" y1="0" x2="0" y2="1">
-                <stop offset="0%" stopColor="hsl(var(--chart-secondary))" stopOpacity={0.6} />
-                <stop offset="100%" stopColor="hsl(var(--chart-secondary))" stopOpacity={0.1} />
-              </linearGradient>
-            </defs>
-            
+          <ComposedChart data={chartData} margin={{ top: 20, right: 60, left: 20, bottom: 40 }}>
             <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" opacity={0.3} />
             
             <XAxis 
               dataKey="month" 
               axisLine={false}
               tickLine={false}
-              tick={{ fill: 'hsl(var(--muted-foreground))', fontSize: 12 }}
+              tick={{ fill: 'hsl(var(--muted-foreground))', fontSize: 10 }}
+              angle={-45}
+              textAnchor="end"
+              height={60}
             />
+            
             <YAxis 
+              yAxisId="left"
               axisLine={false}
               tickLine={false}
               tick={{ fill: 'hsl(var(--muted-foreground))', fontSize: 12 }}
+              domain={[0, 100]}
+            />
+            
+            <YAxis 
+              yAxisId="right"
+              orientation="right"
+              axisLine={false}
+              tickLine={false}
+              tick={{ fill: 'hsl(var(--muted-foreground))', fontSize: 12 }}
+              domain={[0, 180]}
             />
             
             <Tooltip content={<CustomTooltip />} />
@@ -184,6 +239,18 @@ export function CostChart() {
             {renderLines()}
           </ComposedChart>
         </ResponsiveContainer>
+        
+        {/* Legend */}
+        <div className="flex items-center justify-center gap-6 mt-4">
+          <div className="flex items-center gap-2">
+            <div className="w-4 h-3 bg-[#4285F4] rounded"></div>
+            <span className="text-sm text-muted-foreground">Executivo</span>
+          </div>
+          <div className="flex items-center gap-2">
+            <div className="w-4 h-3 bg-[#FFA726] rounded"></div>
+            <span className="text-sm text-muted-foreground">Legislativo</span>
+          </div>
+        </div>
       </CardContent>
     </Card>
   );
