@@ -26,13 +26,11 @@ const Index = () => {
       <div className="relative z-10 p-6 md:p-8 lg:p-10">
         {/* Brasão de Vila Velha - Canto Superior Esquerdo */}
         <div className="absolute top-6 left-6">
-          <div className="flex items-center justify-center w-12 h-12 rounded-full bg-white/10 backdrop-blur-sm border border-white/20 p-1">
-            <img 
-              src="/lovable-uploads/acff9526-10f0-4e00-a220-2818bfdb205c.png" 
-              alt="Brasão de Vila Velha" 
-              className="w-10 h-10 object-contain"
-            />
-          </div>
+          <img 
+            src="/lovable-uploads/acff9526-10f0-4e00-a220-2818bfdb205c.png" 
+            alt="Brasão de Vila Velha" 
+            className="w-16 h-16 object-contain"
+          />
         </div>
 
         {/* Header Controls - Canto Superior Direito */}
