@@ -125,29 +125,27 @@ const AlternativeView = () => {
                     />
                   </div>
 
-                  {/* Charts Row */}
-                  <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                    <div className="lg:col-span-2">
+                  {/* Charts Row - Custo Mensal/Acumulado, Custo por Poder e Elemento de Custos */}
+                  <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
+                    <div className="lg:col-span-6">
                       <CostChart />
                     </div>
-                    <div className="lg:col-span-1">
+                    <div className="lg:col-span-3">
                       <PowerDistributionChart />
+                    </div>
+                    <div className="lg:col-span-3">
+                      <CostElementsTable />
                     </div>
                   </div>
 
-                  {/* Map Full Width Row */}
-                  <div className="w-full">
-                    <MapView />
-                  </div>
-
-                  {/* Treemap Row */}
+                  {/* Composição dos Custos por Função */}
                   <div className="w-full">
                     <CostCompositionTreemap />
                   </div>
 
-                  {/* Cost Elements Table - Full Width */}
+                  {/* Mapa */}
                   <div className="w-full">
-                    <CostElementsTable />
+                    <MapView />
                   </div>
                 </div>
               </div>
