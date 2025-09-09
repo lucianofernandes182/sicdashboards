@@ -103,7 +103,7 @@ export function PowerDistributionChart() {
       
       <CardContent className="relative z-10 flex-1 flex flex-col">
         <div className="flex-1">
-          <ResponsiveContainer width="100%" height={280}>
+          <ResponsiveContainer width="100%" height="100%">
             <PieChart>
               <defs>
                 <filter id="glow">
@@ -122,8 +122,8 @@ export function PowerDistributionChart() {
                 cy="50%"
                 labelLine={false}
                 label={renderCustomizedLabel2024}
-                outerRadius={70}
-                innerRadius={40}
+                outerRadius={50}
+                innerRadius={30}
                 dataKey="value"
                 strokeWidth={2}
                 stroke="white"
@@ -145,8 +145,8 @@ export function PowerDistributionChart() {
                 cy="50%"
                 labelLine={false}
                 label={renderCustomizedLabel2025}
-                outerRadius={105}
-                innerRadius={75}
+                outerRadius={75}
+                innerRadius={55}
                 dataKey="value"
                 strokeWidth={2}
                 stroke="white"

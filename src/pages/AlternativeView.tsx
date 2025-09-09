@@ -126,7 +126,7 @@ const AlternativeView = () => {
                   </div>
 
                   {/* Charts Row - Custo Mensal/Acumulado, Custo por Poder e Elemento de Custos */}
-                  <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 h-96">
+                  <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 relative z-10" style={{ height: '300px' }}>
                     <div className="lg:col-span-6 flex">
                       <CostChart />
                     </div>
@@ -139,7 +139,7 @@ const AlternativeView = () => {
                   </div>
 
                   {/* Composição dos Custos por Função */}
-                  <div className="w-full">
+                  <div className="w-full relative z-0">
                     <CostCompositionTreemap />
                   </div>
 

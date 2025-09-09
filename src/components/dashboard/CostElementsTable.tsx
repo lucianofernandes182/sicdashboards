@@ -19,11 +19,11 @@ export function CostElementsTable() {
     const percentage2025 = (item.value2025 / total) * 100;
 
     return (
-      <div className="space-y-3">
+      <div className="space-y-1">
         <div className="flex justify-between items-center">
-          <span className="text-sm font-medium text-foreground">{item.element}</span>
+          <span className="text-xs font-medium text-foreground">{item.element}</span>
         </div>
-        <div className="flex h-8 bg-muted rounded-lg overflow-hidden">
+        <div className="flex h-6 bg-muted rounded-lg overflow-hidden">
           <div 
             className="bg-yellow-500 flex items-center justify-center text-white text-xs font-semibold"
             style={{ width: `${percentage2024}%` }}
@@ -47,7 +47,7 @@ export function CostElementsTable() {
         <CardTitle className="text-lg font-bold glow-text">Elementos de Custos</CardTitle>
       </CardHeader>
       <CardContent className="flex-1 flex flex-col justify-between space-y-4">
-        <div className="space-y-4">
+        <div className="space-y-2">
           {costElements.map((item, index) => (
             <div key={index}>
               {renderBarChart(item)}
@@ -55,9 +55,9 @@ export function CostElementsTable() {
           ))}
         </div>
 
-        <div className="pt-6 border-t border-border/20">
-          <h3 className="text-md font-semibold text-foreground mb-4">Demais Gastos</h3>
-          <div className="space-y-4">
+        <div className="pt-4 border-t border-border/20">
+          <h3 className="text-sm font-semibold text-foreground mb-2">Demais Gastos</h3>
+          <div className="space-y-2">
             {otherExpenses.map((item, index) => (
               <div key={index}>
                 {renderBarChart(item)}
