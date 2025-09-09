@@ -1,5 +1,4 @@
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { MetricCard } from "@/components/dashboard/MetricCard";
 import { CostChart } from "@/components/dashboard/CostChart";
 import { PowerDistributionChart } from "@/components/dashboard/PowerDistributionChart";
 import { CostElementsTable } from "@/components/dashboard/CostElementsTable";
@@ -7,7 +6,7 @@ import { CostCompositionTreemap } from "@/components/dashboard/CostCompositionTr
 import { DetailedCostTable } from "@/components/dashboard/DetailedCostTable";
 import { FilterSidebar } from "@/components/dashboard/FilterSidebar";
 import MapView from "@/components/dashboard/MapView";
-import { DollarSign, TrendingUp, Target, Calendar, Zap, Activity, Eye } from "lucide-react";
+import { Zap, Activity, Eye } from "lucide-react";
 import { ThemeToggle } from "@/components/ui/theme-toggle";
 import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router-dom";
@@ -83,38 +82,6 @@ const Index = () => {
 
                 {/* Main Content Area */}
                 <div className="xl:col-span-4 space-y-8">
-                  {/* Metrics Row */}
-                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-                    <MetricCard
-                      title="Custo Total"
-                      value="R$ 62,5M"
-                      change={{ value: 12.5, type: "increase" }}
-                      icon={<DollarSign className="h-6 w-6 text-primary" />}
-                      gradient="bg-gradient-primary"
-                    />
-                    <MetricCard
-                      title="Orçamento Utilizado"
-                      value="78.3%"
-                      change={{ value: 5.2, type: "increase" }}
-                      icon={<Target className="h-6 w-6 text-secondary" />}
-                      gradient="bg-gradient-secondary"
-                    />
-                    <MetricCard
-                      title="Economia Mensal"
-                      value="R$ 2.1M"
-                      change={{ value: 8.7, type: "decrease" }}
-                      icon={<TrendingUp className="h-6 w-6 text-accent" />}
-                      gradient="bg-gradient-accent"
-                    />
-                    <MetricCard
-                      title="Projeção Anual"
-                      value="R$ 185M"
-                      change={{ value: 3.1, type: "increase" }}
-                      icon={<Calendar className="h-6 w-6 text-warning" />}
-                      gradient="bg-gradient-to-br from-warning to-warning-glow"
-                    />
-                  </div>
-
                   {/* Charts Row */}
                   <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
                     <div className="lg:col-span-2">

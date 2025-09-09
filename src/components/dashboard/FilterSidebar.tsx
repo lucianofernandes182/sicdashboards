@@ -227,6 +227,39 @@ export function FilterSidebar() {
             </div>
           </div>
 
+          {/* Informações Resumidas */}
+          <div className="space-y-3 pt-4 border-t border-border/20">
+            <div className="space-y-2">
+              <h4 className="text-sm font-semibold text-foreground">Custo Total Selecionado</h4>
+              <div className="p-3 rounded-lg bg-gradient-primary/10 border border-primary/20">
+                <p className="text-lg font-bold text-primary">R$ 62,5M</p>
+                <p className="text-xs text-muted-foreground">+12.5% vs mês anterior</p>
+              </div>
+            </div>
+
+            <div className="space-y-2">
+              <h4 className="text-sm font-semibold text-foreground">Composição por Poder</h4>
+              <div className="space-y-1">
+                <div className="flex items-center justify-between p-2 rounded bg-muted/20">
+                  <span className="text-xs text-foreground">Executivo</span>
+                  <span className="text-xs font-semibold text-primary">65.5%</span>
+                </div>
+                <div className="flex items-center justify-between p-2 rounded bg-muted/20">
+                  <span className="text-xs text-foreground">Legislativo</span>
+                  <span className="text-xs font-semibold text-secondary">34.5%</span>
+                </div>
+              </div>
+            </div>
+
+            <div className="space-y-2">
+              <h4 className="text-sm font-semibold text-foreground">Gastos Não Considerados</h4>
+              <div className="p-3 rounded-lg bg-muted/10 border border-border/30">
+                <p className="text-sm font-medium text-foreground">R$ 3.2M</p>
+                <p className="text-xs text-muted-foreground">Valores fora do escopo atual</p>
+              </div>
+            </div>
+          </div>
+
           {/* Action Buttons */}
           <div className="space-y-2 pt-4">
             <Button className="w-full bg-gradient-primary hover:bg-gradient-primary/90 text-primary-foreground shadow-neon">
