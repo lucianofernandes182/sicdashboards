@@ -100,31 +100,6 @@ const AlternativeView = () => {
 
                 {/* Main Content Area */}
                 <div className="xl:col-span-4 space-y-8">
-                  {/* Alternative Metrics Row */}
-                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-                    <MetricCard
-                      title="Custo Total Selecionado"
-                      value="R$ 45.2M"
-                      change={{ value: 8.3, type: "increase" }}
-                      icon={<CheckSquare className="h-6 w-6 text-primary" />}
-                      gradient="bg-gradient-primary"
-                    />
-                    <MetricCard
-                      title="Composição por Poder"
-                      value="Exec: 65.5% | Leg: 34.5%"
-                      change={{ value: 2.1, type: "decrease" }}
-                      icon={<Scale className="h-6 w-6 text-secondary" />}
-                      gradient="bg-gradient-secondary"
-                    />
-                    <MetricCard
-                      title="Gastos Não Considerados"
-                      value="R$ 17.3M"
-                      change={{ value: 15.2, type: "increase" }}
-                      icon={<AlertTriangle className="h-6 w-6 text-destructive" />}
-                      gradient="bg-gradient-to-br from-destructive to-destructive/80"
-                    />
-                  </div>
-
                   {/* Charts Row - Custo Mensal/Acumulado, Custo por Poder e Elemento de Custos */}
                   <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 h-[300px]">
                     <div className="lg:col-span-6">
