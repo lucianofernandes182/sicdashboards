@@ -23,7 +23,7 @@ export function CostElementsTable() {
         <div className="flex justify-between items-center">
           <span className="text-xs font-medium text-foreground">{item.element}</span>
         </div>
-        <div className="flex h-6 bg-muted rounded-lg overflow-hidden">
+        <div className="flex h-4 bg-muted rounded-lg overflow-hidden">
           <div 
             className="bg-yellow-500 flex items-center justify-center text-white text-xs font-semibold"
             style={{ width: `${percentage2024}%` }}
@@ -46,8 +46,8 @@ export function CostElementsTable() {
       <CardHeader className="flex-shrink-0">
         <CardTitle className="text-lg font-bold glow-text">Elementos de Custos</CardTitle>
       </CardHeader>
-      <CardContent className="flex-1 flex flex-col justify-between space-y-4">
-        <div className="space-y-2">
+      <CardContent className="flex-1 flex flex-col space-y-2 p-4 overflow-hidden">
+        <div className="space-y-1">
           {costElements.map((item, index) => (
             <div key={index}>
               {renderBarChart(item)}
@@ -55,9 +55,9 @@ export function CostElementsTable() {
           ))}
         </div>
 
-        <div className="pt-4 border-t border-border/20">
-          <h3 className="text-sm font-semibold text-foreground mb-2">Demais Gastos</h3>
-          <div className="space-y-2">
+        <div className="pt-2 border-t border-border/20">
+          <h3 className="text-xs font-semibold text-foreground mb-1">Demais Gastos</h3>
+          <div className="space-y-1">
             {otherExpenses.map((item, index) => (
               <div key={index}>
                 {renderBarChart(item)}
@@ -67,24 +67,21 @@ export function CostElementsTable() {
         </div>
 
         {/* Legend */}
-        <div className="flex items-center justify-center gap-6 pt-4 border-t border-border/20">
-          <div className="flex items-center gap-2">
-            <div className="w-3 h-3 bg-yellow-500 rounded"></div>
+        <div className="flex items-center justify-center gap-4 pt-2 border-t border-border/20">
+          <div className="flex items-center gap-1">
+            <div className="w-2 h-2 bg-yellow-500 rounded"></div>
             <span className="text-xs text-muted-foreground">2024</span>
           </div>
-          <div className="flex items-center gap-2">
-            <div className="w-3 h-3 bg-blue-600 rounded"></div>
+          <div className="flex items-center gap-1">
+            <div className="w-2 h-2 bg-blue-600 rounded"></div>
             <span className="text-xs text-muted-foreground">2025</span>
           </div>
         </div>
 
         {/* Percentage Scale */}
-        <div className="flex justify-between text-xs text-muted-foreground pt-2">
+        <div className="flex justify-between text-xs text-muted-foreground">
           <span>0%</span>
-          <span>20%</span>
-          <span>40%</span>
-          <span>60%</span>
-          <span>80%</span>
+          <span>50%</span>
           <span>100%</span>
         </div>
       </CardContent>
