@@ -24,16 +24,19 @@ const Index = () => {
       </div>
 
       <div className="relative z-10 p-6 md:p-8 lg:p-10">
-        {/* Header Controls - Canto Superior Direito */}
-        <div className="absolute top-6 right-6 flex items-center gap-3">
-          {/* Brasão de Vila Velha */}
+        {/* Brasão de Vila Velha - Canto Superior Esquerdo */}
+        <div className="absolute top-6 left-6">
           <div className="flex items-center justify-center w-12 h-12 rounded-full bg-white/10 backdrop-blur-sm border border-white/20 p-1">
             <img 
-              src="/lovable-uploads/4ca62efd-7a75-4137-bade-3a65bb713dab.png" 
+              src="/lovable-uploads/acff9526-10f0-4e00-a220-2818bfdb205c.png" 
               alt="Brasão de Vila Velha" 
-              className="w-10 h-10 object-contain mix-blend-multiply dark:mix-blend-normal dark:brightness-110"
+              className="w-10 h-10 object-contain"
             />
           </div>
+        </div>
+
+        {/* Header Controls - Canto Superior Direito */}
+        <div className="absolute top-6 right-6 flex items-center gap-3">
           <div className="flex items-center gap-1 px-3 py-1.5 bg-gradient-primary text-primary-foreground rounded-full text-xs font-medium shadow-neon">
             <Zap className="h-3 w-3" />
             Online
