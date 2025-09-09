@@ -112,14 +112,14 @@ const Index = () => {
                     </div>
                   </div>
 
-                  {/* Map and Treemap Row */}
-                  <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                    <div className="h-full">
-                      <MapView />
-                    </div>
-                    <div className="h-full">
-                      <CostCompositionTreemap />
-                    </div>
+                  {/* Map Full Width Row */}
+                  <div className="w-full">
+                    <MapView />
+                  </div>
+
+                  {/* Treemap Row */}
+                  <div className="w-full">
+                    <CostCompositionTreemap />
                   </div>
 
                   {/* Cost Elements Table - Full Width */}
