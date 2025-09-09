@@ -95,8 +95,9 @@ const Index = () => {
                     <div className="lg:col-span-2">
                       <CostChart />
                     </div>
-                    <div className="lg:col-span-1">
+                    <div className="lg:col-span-1 space-y-6">
                       <PowerDistributionChart />
+                      <CostElementsTable />
                     </div>
                   </div>
 
@@ -110,10 +111,6 @@ const Index = () => {
                     <CostCompositionTreemap />
                   </div>
 
-                  {/* Cost Elements Table - Full Width */}
-                  <div className="w-full">
-                    <CostElementsTable />
-                  </div>
                 </div>
               </div>
             </TabsContent>
