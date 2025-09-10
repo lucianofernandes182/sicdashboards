@@ -19,6 +19,7 @@ import { useState } from "react";
 const AlternativeView = () => {
   const navigate = useNavigate();
   const [selectedTreeNode, setSelectedTreeNode] = useState<any>(null);
+  const [sidebarCollapsed, setSidebarCollapsed] = useState(true);
 
   return (
     <div className="min-h-screen bg-gradient-background relative overflow-hidden">
@@ -89,17 +90,15 @@ const AlternativeView = () => {
             </div>
 
             <TabsContent value="overview" className="space-y-8">
-              {/* Main Layout with Filter and Content */}
-              <div className="grid grid-cols-1 xl:grid-cols-5 gap-8">
-                {/* Filter Sidebar - Integrated */}
-                <div className="xl:col-span-1">
-                  <div className="sticky top-8">
-                    <FilterSidebar />
-                  </div>
-                </div>
-
-                {/* Main Content Area */}
-                <div className="xl:col-span-4 space-y-8">
+              {/* Filter Sidebar */}
+              <FilterSidebar 
+                isCollapsed={sidebarCollapsed} 
+                onToggle={() => setSidebarCollapsed(!sidebarCollapsed)} 
+              />
+              
+              {/* Main Content Area */}
+              <div className={`transition-all duration-300 ${sidebarCollapsed ? 'ml-0' : 'ml-80'}`}>
+                <div className="space-y-8">
                   {/* Charts Row - Custo Mensal/Acumulado, Custo por Poder e Elemento de Custos */}
                   <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 h-[300px]">
                     <div className="lg:col-span-6">
@@ -127,32 +126,28 @@ const AlternativeView = () => {
             </TabsContent>
 
             <TabsContent value="analysis" className="space-y-8">
-              <div className="grid grid-cols-1 xl:grid-cols-5 gap-8">
-                {/* Filter Sidebar */}
-                <div className="xl:col-span-1">
-                  <div className="sticky top-8">
-                    <FilterSidebar />
-                  </div>
-                </div>
-
-                {/* Analysis Content */}
-                <div className="xl:col-span-4">
-                  <DetailedCostTable />
-                </div>
+              {/* Filter Sidebar */}
+              <FilterSidebar 
+                isCollapsed={sidebarCollapsed} 
+                onToggle={() => setSidebarCollapsed(!sidebarCollapsed)} 
+              />
+              
+              {/* Analysis Content */}
+              <div className={`transition-all duration-300 ${sidebarCollapsed ? 'ml-0' : 'ml-80'}`}>
+                <DetailedCostTable />
               </div>
             </TabsContent>
 
             <TabsContent value="treeview" className="space-y-8">
-              <div className="grid grid-cols-1 xl:grid-cols-5 gap-8">
-                {/* Filter Sidebar - Simplified for Treeview */}
-                <div className="xl:col-span-1">
-                  <div className="sticky top-8">
-                    <FilterSidebarTreeview />
-                  </div>
-                </div>
-
-                {/* Treeview Content */}
-                <div className="xl:col-span-4 space-y-6">
+              {/* Filter Sidebar - Simplified for Treeview */}
+              <FilterSidebarTreeview 
+                isCollapsed={sidebarCollapsed} 
+                onToggle={() => setSidebarCollapsed(!sidebarCollapsed)} 
+              />
+              
+              {/* Treeview Content */}
+              <div className={`transition-all duration-300 ${sidebarCollapsed ? 'ml-0' : 'ml-80'}`}>
+                <div className="space-y-6">
                   {/* TreeView Component */}
                   <TreeViewComponent onNodeSelect={setSelectedTreeNode} />
                   
@@ -166,32 +161,29 @@ const AlternativeView = () => {
             </TabsContent>
 
             <TabsContent value="reports" className="space-y-8">
-              <div className="grid grid-cols-1 xl:grid-cols-5 gap-8">
-                {/* Filter Sidebar */}
-                <div className="xl:col-span-1">
-                  <div className="sticky top-8">
-                    <FilterSidebar />
-                  </div>
-                </div>
-
-                {/* Reports Content */}
-                <div className="xl:col-span-4">
-                  <div className="glass p-12 rounded-2xl border border-primary/20 text-center animate-fade-in-up">
-                    <div className="max-w-md mx-auto space-y-6">
-                      <div className="p-4 rounded-full bg-gradient-primary w-20 h-20 flex items-center justify-center mx-auto animate-pulse-glow">
-                        <Activity className="h-8 w-8 text-primary-foreground" />
-                      </div>
-                      <h3 className="text-2xl font-bold glow-text">
-                        Relatórios Avançados
-                      </h3>
-                      <p className="text-muted-foreground leading-relaxed">
-                        Sistema de relatórios inteligentes em desenvolvimento. Em breve você terá acesso a análises preditivas, 
-                        exportações personalizadas e insights automatizados.
-                      </p>
-                      <div className="inline-flex items-center gap-2 px-4 py-2 bg-muted/20 rounded-full text-sm border border-border/50">
-                        <div className="w-2 h-2 bg-success rounded-full animate-pulse" />
-                        Em desenvolvimento
-                      </div>
+              {/* Filter Sidebar */}
+              <FilterSidebar 
+                isCollapsed={sidebarCollapsed} 
+                onToggle={() => setSidebarCollapsed(!sidebarCollapsed)} 
+              />
+              
+              {/* Reports Content */}
+              <div className={`transition-all duration-300 ${sidebarCollapsed ? 'ml-0' : 'ml-80'}`}>
+                <div className="glass p-12 rounded-2xl border border-primary/20 text-center animate-fade-in-up">
+                  <div className="max-w-md mx-auto space-y-6">
+                    <div className="p-4 rounded-full bg-gradient-primary w-20 h-20 flex items-center justify-center mx-auto animate-pulse-glow">
+                      <Activity className="h-8 w-8 text-primary-foreground" />
+                    </div>
+                    <h3 className="text-2xl font-bold glow-text">
+                      Relatórios Avançados
+                    </h3>
+                    <p className="text-muted-foreground leading-relaxed">
+                      Sistema de relatórios inteligentes em desenvolvimento. Em breve você terá acesso a análises preditivas, 
+                      exportações personalizadas e insights automatizados.
+                    </p>
+                    <div className="inline-flex items-center gap-2 px-4 py-2 bg-muted/20 rounded-full text-sm border border-border/50">
+                      <div className="w-2 h-2 bg-success rounded-full animate-pulse" />
+                      Em desenvolvimento
                     </div>
                   </div>
                 </div>
