@@ -266,24 +266,22 @@ export function FilterSidebar({ isCollapsed = false, onToggle }: FilterSidebarPr
                 </div>
 
                 <div>
-                  <label className="text-xs font-medium text-muted-foreground">Equipamento</label>
+                  <label className="text-xs font-medium text-muted-foreground">Objeto de Custo</label>
                   <Select>
                     <SelectTrigger className="h-7 text-xs bg-card/50 border-border/50">
                       <SelectValue placeholder="Selecionar..." />
                     </SelectTrigger>
                     <SelectContent className="bg-card border-border/50 backdrop-blur-lg z-50">
-                      <SelectItem value="escola">Escolas</SelectItem>
-                      <SelectItem value="ubs">UBS</SelectItem>
-                      <SelectItem value="praca">Praças</SelectItem>
-                      <SelectItem value="cemiterio">Cemitérios</SelectItem>
-                      <SelectItem value="mercado">Mercados</SelectItem>
-                      <SelectItem value="terminal">Terminais</SelectItem>
+                      <SelectItem value="atividade">Atividade</SelectItem>
+                      <SelectItem value="projeto">Projeto</SelectItem>
+                      <SelectItem value="operacao">Operação Especial</SelectItem>
+                      <SelectItem value="reserva">Reserva de Contingência</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
 
                 <div>
-                  <label className="text-xs font-medium text-muted-foreground">Elemento</label>
+                  <label className="text-xs font-medium text-muted-foreground">Elemento de Custo</label>
                   <Select>
                     <SelectTrigger className="h-7 text-xs bg-card/50 border-border/50">
                       <SelectValue placeholder="Selecionar..." />
@@ -298,6 +296,23 @@ export function FilterSidebar({ isCollapsed = false, onToggle }: FilterSidebarPr
                       <SelectItem value="tributarios">Tributários</SelectItem>
                       <SelectItem value="previdencia">Previdência</SelectItem>
                       <SelectItem value="manutencao">Manutenção</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+
+                <div>
+                  <label className="text-xs font-medium text-muted-foreground">Equipamento Público</label>
+                  <Select>
+                    <SelectTrigger className="h-7 text-xs bg-card/50 border-border/50">
+                      <SelectValue placeholder="Selecionar..." />
+                    </SelectTrigger>
+                    <SelectContent className="bg-card border-border/50 backdrop-blur-lg z-50">
+                      <SelectItem value="escola">Escolas</SelectItem>
+                      <SelectItem value="ubs">UBS</SelectItem>
+                      <SelectItem value="praca">Praças</SelectItem>
+                      <SelectItem value="cemiterio">Cemitérios</SelectItem>
+                      <SelectItem value="mercado">Mercados</SelectItem>
+                      <SelectItem value="terminal">Terminais</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
