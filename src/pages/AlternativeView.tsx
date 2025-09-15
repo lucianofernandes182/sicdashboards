@@ -4,7 +4,6 @@ import { CostChart } from "@/components/dashboard/CostChart";
 import { PowerDistributionChart } from "@/components/dashboard/PowerDistributionChart";
 import { CostElementsTable } from "@/components/dashboard/CostElementsTable";
 import { CostCompositionTreemap } from "@/components/dashboard/CostCompositionTreemap";
-import { FunctionDetailGrid } from "@/components/dashboard/FunctionDetailGrid";
 import { DetailedCostTable } from "@/components/dashboard/DetailedCostTable";
 import { FilterSidebar } from "@/components/dashboard/FilterSidebar";
 import { FilterSidebarTreeview } from "@/components/dashboard/FilterSidebarTreeview";
@@ -21,7 +20,6 @@ const AlternativeView = () => {
   const navigate = useNavigate();
   const [selectedTreeNode, setSelectedTreeNode] = useState<any>(null);
   const [sidebarCollapsed, setSidebarCollapsed] = useState(true);
-  const [selectedFunction, setSelectedFunction] = useState<string | null>(null);
 
   return (
     <div className="min-h-screen bg-gradient-background relative overflow-hidden">
@@ -116,16 +114,8 @@ const AlternativeView = () => {
 
                   {/* Composição dos Custos por Função */}
                   <div className="w-full">
-                    <CostCompositionTreemap onFunctionSelect={setSelectedFunction} />
+                    <CostCompositionTreemap />
                   </div>
-
-                  {/* Detailed Grid for Selected Function */}
-                  {selectedFunction && (
-                    <FunctionDetailGrid 
-                      selectedFunction={selectedFunction}
-                      onClose={() => setSelectedFunction(null)}
-                    />
-                  )}
 
                   {/* Mapa */}
                   <div className="w-full">

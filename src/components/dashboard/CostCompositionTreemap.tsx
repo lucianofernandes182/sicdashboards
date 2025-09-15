@@ -1,4 +1,6 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { FunctionDetailGrid } from "./FunctionDetailGrid";
+import { useState } from "react";
 
 const departments = [
   { name: "Defesa Pública", value: 2.8, color: "bg-chart-primary" },
@@ -12,13 +14,10 @@ const departments = [
   { name: "Transporte e Logística", value: 4.8, color: "bg-chart-quaternary" },
 ];
 
-interface CostCompositionTreemapProps {
-  onFunctionSelect?: (functionName: string) => void;
-}
-
-export function CostCompositionTreemap({ onFunctionSelect }: CostCompositionTreemapProps) {
+export function CostCompositionTreemap() {
+  const [selectedFunction, setSelectedFunction] = useState<string | null>(null);
   return (
-    <Card className="col-span-6">
+    <Card className="col-span-12">
       <CardHeader>
         <CardTitle>Composição dos Custos por Função</CardTitle>
         <CardDescription>
@@ -26,7 +25,7 @@ export function CostCompositionTreemap({ onFunctionSelect }: CostCompositionTree
         </CardDescription>
       </CardHeader>
       <CardContent>
-        <div className="grid grid-cols-8 gap-2 h-64">
+        <div className="grid grid-cols-8 gap-2 h-64 mb-4">
           {departments.map((dept, index) => {
             // Calculate relative size based on value
             const sizeClass = dept.value > 10 
@@ -40,8 +39,10 @@ export function CostCompositionTreemap({ onFunctionSelect }: CostCompositionTree
             return (
               <div
                 key={index}
-                className={`${dept.color} ${sizeClass} rounded-lg flex flex-col justify-center items-center text-white text-xs font-semibold text-center p-2 transition-all duration-200 hover:scale-105 hover:shadow-lg cursor-pointer`}
-                onClick={() => onFunctionSelect?.(dept.name)}
+                className={`${dept.color} ${sizeClass} rounded-lg flex flex-col justify-center items-center text-white text-xs font-semibold text-center p-2 transition-all duration-200 hover:scale-105 hover:shadow-lg cursor-pointer ${
+                  selectedFunction === dept.name ? 'ring-2 ring-primary ring-offset-2' : ''
+                }`}
+                onClick={() => setSelectedFunction(selectedFunction === dept.name ? null : dept.name)}
               >
                 <div className="leading-tight">{dept.name}</div>
                 <div className="text-lg font-bold mt-1">{dept.value}%</div>
@@ -49,6 +50,14 @@ export function CostCompositionTreemap({ onFunctionSelect }: CostCompositionTree
             );
           })}
         </div>
+        
+        {/* Integrated Detail Grid */}
+        {selectedFunction && (
+          <FunctionDetailGrid 
+            selectedFunction={selectedFunction}
+            onClose={() => setSelectedFunction(null)}
+          />
+        )}
       </CardContent>
     </Card>
   );
