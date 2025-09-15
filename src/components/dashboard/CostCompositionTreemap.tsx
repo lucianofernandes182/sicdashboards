@@ -12,7 +12,11 @@ const departments = [
   { name: "Transporte e Logística", value: 4.8, color: "bg-chart-quaternary" },
 ];
 
-export function CostCompositionTreemap() {
+interface CostCompositionTreemapProps {
+  onFunctionSelect?: (functionName: string) => void;
+}
+
+export function CostCompositionTreemap({ onFunctionSelect }: CostCompositionTreemapProps) {
   return (
     <Card className="col-span-6">
       <CardHeader>
@@ -37,6 +41,7 @@ export function CostCompositionTreemap() {
               <div
                 key={index}
                 className={`${dept.color} ${sizeClass} rounded-lg flex flex-col justify-center items-center text-white text-xs font-semibold text-center p-2 transition-all duration-200 hover:scale-105 hover:shadow-lg cursor-pointer`}
+                onClick={() => onFunctionSelect?.(dept.name)}
               >
                 <div className="leading-tight">{dept.name}</div>
                 <div className="text-lg font-bold mt-1">{dept.value}%</div>
