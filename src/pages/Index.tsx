@@ -15,6 +15,7 @@ import { useState } from "react";
 const Index = () => {
   const navigate = useNavigate();
   const [sidebarCollapsed, setSidebarCollapsed] = useState(true);
+  const [activeView, setActiveView] = useState("overview");
 
   return (
     <div className="min-h-screen bg-gradient-background relative overflow-hidden">
@@ -65,26 +66,15 @@ const Index = () => {
           </header>
 
           {/* Navigation Tabs */}
-          <Tabs defaultValue="overview" className="space-y-8">
-            <div className="flex justify-center">
-              <TabsList className="glass p-1 grid grid-cols-3 w-full max-w-md h-12">
-                <TabsTrigger value="overview" className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground transition-all duration-300">
-                  Visão Geral
-                </TabsTrigger>
-                <TabsTrigger value="analysis" className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground transition-all duration-300">
-                  Análise
-                </TabsTrigger>
-                <TabsTrigger value="reports" className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground transition-all duration-300">
-                  Relatórios
-                </TabsTrigger>
-              </TabsList>
-            </div>
+          <Tabs value={activeView} onValueChange={setActiveView} className="space-y-8">
 
             <TabsContent value="overview" className="space-y-8">
               {/* Filter Sidebar */}
               <FilterSidebar 
                 isCollapsed={sidebarCollapsed} 
-                onToggle={() => setSidebarCollapsed(!sidebarCollapsed)} 
+                onToggle={() => setSidebarCollapsed(!sidebarCollapsed)}
+                activeView={activeView}
+                onViewChange={setActiveView}
               />
               
               {/* Main Content Area */}
@@ -120,7 +110,9 @@ const Index = () => {
               {/* Filter Sidebar */}
               <FilterSidebar 
                 isCollapsed={sidebarCollapsed} 
-                onToggle={() => setSidebarCollapsed(!sidebarCollapsed)} 
+                onToggle={() => setSidebarCollapsed(!sidebarCollapsed)}
+                activeView={activeView}
+                onViewChange={setActiveView}
               />
               
               {/* Analysis Content */}
@@ -133,7 +125,9 @@ const Index = () => {
               {/* Filter Sidebar */}
               <FilterSidebar 
                 isCollapsed={sidebarCollapsed} 
-                onToggle={() => setSidebarCollapsed(!sidebarCollapsed)} 
+                onToggle={() => setSidebarCollapsed(!sidebarCollapsed)}
+                activeView={activeView}
+                onViewChange={setActiveView}
               />
               
               {/* Reports Content */}

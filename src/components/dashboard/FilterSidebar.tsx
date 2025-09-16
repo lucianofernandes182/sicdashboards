@@ -9,9 +9,11 @@ import { useState } from "react";
 interface FilterSidebarProps {
   isCollapsed?: boolean;
   onToggle?: () => void;
+  activeView?: string;
+  onViewChange?: (view: string) => void;
 }
 
-export function FilterSidebar({ isCollapsed = false, onToggle }: FilterSidebarProps) {
+export function FilterSidebar({ isCollapsed = false, onToggle, activeView = "overview", onViewChange }: FilterSidebarProps) {
   const [compareExercises, setCompareExercises] = useState(false);
   const [comparisonExercises, setComparisonExercises] = useState<string[]>([]);
   const [showComparisonExercises, setShowComparisonExercises] = useState(false);
@@ -68,6 +70,37 @@ export function FilterSidebar({ isCollapsed = false, onToggle }: FilterSidebarPr
 
       {/* Scrollable Content */}
       <div className="flex-1 overflow-y-auto p-3">
+        {/* View Selection */}
+        <div className="space-y-2 mb-4">
+          <h3 className="text-xs font-semibold text-muted-foreground px-1">Visualização</h3>
+          <div className="grid grid-cols-1 gap-1">
+            <Button
+              variant={activeView === "overview" ? "default" : "outline"}
+              size="sm"
+              className="w-full justify-start text-xs h-7 glass border-border/50"
+              onClick={() => onViewChange?.("overview")}
+            >
+              Visão Geral
+            </Button>
+            <Button
+              variant={activeView === "analysis" ? "default" : "outline"}
+              size="sm"
+              className="w-full justify-start text-xs h-7 glass border-border/50"
+              onClick={() => onViewChange?.("analysis")}
+            >
+              Análise
+            </Button>
+            <Button
+              variant={activeView === "reports" ? "default" : "outline"}
+              size="sm"
+              className="w-full justify-start text-xs h-7 glass border-border/50"
+              onClick={() => onViewChange?.("reports")}
+            >
+              Relatórios
+            </Button>
+          </div>
+        </div>
+
         <Accordion type="multiple" defaultValue={["summary", "filters"]} className="space-y-2">
           {/* Resumo Section */}
           <AccordionItem value="summary" className="border border-border/20 rounded-lg bg-card/30">
