@@ -190,11 +190,11 @@ const DetailBreakdownView = () => {
           </CardHeader>
           <CardContent className="flex">
             {/* Legend */}
-            <div className="w-32 space-y-2 mr-4">
+            <div className="w-28 space-y-1 mr-2">
               {legendData.map((item, index) => (
-                <div key={index} className="flex items-center gap-2">
+                <div key={index} className="flex items-center gap-1">
                   <div 
-                    className="w-3 h-3 rounded-full" 
+                    className="w-2 h-2 rounded-full" 
                     style={{ backgroundColor: item.color }}
                   />
                   <span className="text-xs text-muted-foreground">{item.name}</span>
@@ -204,7 +204,7 @@ const DetailBreakdownView = () => {
             
             {/* Two-level Pie Chart */}
             <div className="flex-1">
-              <ResponsiveContainer width="100%" height={300}>
+              <ResponsiveContainer width="100%" height={400}>
                 <PieChart>
                   {/* Inner pie - Years */}
                   <Pie
@@ -212,9 +212,11 @@ const DetailBreakdownView = () => {
                     cx="50%"
                     cy="50%"
                     innerRadius={0}
-                    outerRadius={60}
+                    outerRadius={80}
                     paddingAngle={1}
                     dataKey="value"
+                    label={({ name, value }) => `${name}\n${value}%`}
+                    labelLine={false}
                   >
                     {yearData.map((entry, index) => (
                       <Cell key={`inner-${index}`} fill={entry.color} />
@@ -226,10 +228,12 @@ const DetailBreakdownView = () => {
                     data={costUnitsData}
                     cx="50%"
                     cy="50%"
-                    innerRadius={70}
-                    outerRadius={120}
+                    innerRadius={90}
+                    outerRadius={160}
                     paddingAngle={2}
                     dataKey="value"
+                    label={({ value }) => `${value}%`}
+                    labelLine={false}
                   >
                     {costUnitsData.map((entry, index) => (
                       <Cell key={`outer-${index}`} fill={entry.color} />
