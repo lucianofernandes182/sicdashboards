@@ -46,123 +46,128 @@ const DetailBreakdownView = () => {
 
   return (
     <div className="space-y-6">
-      {/* Header Section with Hierarchy */}
-      <div className="grid grid-cols-1 lg:grid-cols-4 gap-4">
-        {/* Hierarchy Cards */}
-        <Card className="glass border-border/20">
-          <CardHeader className="pb-2">
-            <CardTitle className="text-xs font-semibold text-muted-foreground">Função</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="text-sm font-bold text-foreground">12 - EDUCAÇÃO</div>
-          </CardContent>
-        </Card>
+      {/* Top Section: Hierarchy Cards (Left) + Cost Chart (Right) */}
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        {/* Left Column: Hierarchy Cards + KPIs */}
+        <div className="space-y-4">
+          {/* Hierarchy Cards */}
+          <Card className="glass border-border/20">
+            <CardHeader className="pb-2">
+              <CardTitle className="text-xs font-semibold text-muted-foreground">Função</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="text-sm font-bold text-foreground">12 - EDUCAÇÃO</div>
+            </CardContent>
+          </Card>
 
-        <Card className="glass border-border/20">
-          <CardHeader className="pb-2">
-            <CardTitle className="text-xs font-semibold text-muted-foreground">Objeto de Custos</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="text-xs font-bold text-foreground">043 - ESCOLA DE ENSINO FUNDAMENTAL</div>
-          </CardContent>
-        </Card>
+          <Card className="glass border-border/20">
+            <CardHeader className="pb-2">
+              <CardTitle className="text-xs font-semibold text-muted-foreground">Objeto de Custos</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="text-xs font-bold text-foreground">043 - ESCOLA DE ENSINO FUNDAMENTAL</div>
+            </CardContent>
+          </Card>
 
-        <Card className="glass border-border/20">
-          <CardHeader className="pb-2">
-            <CardTitle className="text-xs font-semibold text-muted-foreground">Equipamento Público</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="text-xs font-bold text-foreground">1.3.3205200.12.0001</div>
-            <div className="text-xs text-muted-foreground mt-1">UMEI VEREADOR ARNALDO BORGO</div>
-          </CardContent>
-        </Card>
+          <Card className="glass border-border/20">
+            <CardHeader className="pb-2">
+              <CardTitle className="text-xs font-semibold text-muted-foreground">Equipamento Público</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="text-xs font-bold text-foreground">1.3.3205200.12.0001</div>
+              <div className="text-xs text-muted-foreground mt-1">UMEI VEREADOR ARNALDO BORGO</div>
+            </CardContent>
+          </Card>
 
-        {/* Cost Comparison Card */}
-        <Card className="glass border-border/20">
-          <CardContent className="p-3">
-            <div className="grid grid-cols-2 gap-3">
-              <div className="bg-muted/30 p-2 rounded">
-                <div className="text-xs text-muted-foreground">2024 (Anterior)</div>
-                <div className="text-sm font-bold text-foreground">1.500,2 Mi</div>
+          {/* Cost Comparison Card */}
+          <Card className="glass border-border/20">
+            <CardContent className="p-3">
+              <div className="grid grid-cols-2 gap-3">
+                <div className="bg-muted/30 p-2 rounded">
+                  <div className="text-xs text-muted-foreground">2024 (Anterior)</div>
+                  <div className="text-sm font-bold text-foreground">1.500,2 Mi</div>
+                </div>
+                <div className="bg-primary/10 p-2 rounded">
+                  <div className="text-xs text-muted-foreground">2025</div>
+                  <div className="text-sm font-bold text-primary">1.500,2 Mi</div>
+                </div>
               </div>
-              <div className="bg-primary/10 p-2 rounded">
-                <div className="text-xs text-muted-foreground">2025</div>
-                <div className="text-sm font-bold text-primary">1.500,2 Mi</div>
+              <div className="mt-2 text-center">
+                <div className="text-xs text-muted-foreground">Variação</div>
+                <div className="flex items-center justify-center gap-1 text-xs text-destructive">
+                  <TrendingUp className="h-3 w-3" />
+                  + R$ 38,5M | 500,0 (%)
+                </div>
               </div>
-            </div>
-            <div className="mt-2 text-center">
-              <div className="text-xs text-muted-foreground">Variação</div>
-              <div className="flex items-center justify-center gap-1 text-xs text-destructive">
-                <TrendingUp className="h-3 w-3" />
-                + R$ 38,5M | 500,0 (%)
-              </div>
-            </div>
-          </CardContent>
-        </Card>
+            </CardContent>
+          </Card>
+
+          {/* KPI Cards */}
+          <Card className="glass border-border/20 bg-primary/5">
+            <CardContent className="p-4 text-center">
+              <div className="text-xs text-muted-foreground">ALUNOS MATRICULADOS</div>
+              <div className="text-2xl font-bold text-primary">1.535</div>
+            </CardContent>
+          </Card>
+
+          <Card className="glass border-border/20 bg-secondary/5">
+            <CardContent className="p-4 text-center">
+              <div className="text-xs text-muted-foreground">CUSTO POR ALUNO</div>
+              <div className="text-2xl font-bold text-secondary">R$ 2.500,00</div>
+            </CardContent>
+          </Card>
+        </div>
+
+        {/* Right Column: Monthly and Accumulated Cost Chart */}
+        <div className="lg:col-span-2">
+          <Card className="glass border-border/20 h-full">
+            <CardHeader>
+              <CardTitle className="text-sm font-semibold">CUSTO MENSAL E ACUMULADO</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <ResponsiveContainer width="100%" height={400}>
+                <ComposedChart data={costData}>
+                  <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
+                  <XAxis 
+                    dataKey="month" 
+                    stroke="hsl(var(--muted-foreground))"
+                    fontSize={10}
+                  />
+                  <YAxis stroke="hsl(var(--muted-foreground))" fontSize={10} />
+                  <Tooltip 
+                    contentStyle={{
+                      backgroundColor: 'hsl(var(--card))',
+                      border: '1px solid hsl(var(--border))',
+                      borderRadius: '8px'
+                    }}
+                  />
+                  <Bar dataKey="2024Accumulated" fill="#F59E0B" name="2024 Acumulado" />
+                  <Bar dataKey="2025Accumulated" fill="#3B82F6" name="2025 Acumulado" />
+                  <Line 
+                    type="monotone" 
+                    dataKey="2024Monthly" 
+                    stroke="#F59E0B" 
+                    strokeDasharray="5 5"
+                    name="2024 Mensal"
+                    strokeWidth={2}
+                  />
+                  <Line 
+                    type="monotone" 
+                    dataKey="2025Monthly" 
+                    stroke="#3B82F6" 
+                    strokeDasharray="5 5"
+                    name="2025 Mensal"
+                    strokeWidth={2}
+                  />
+                </ComposedChart>
+              </ResponsiveContainer>
+            </CardContent>
+          </Card>
+        </div>
       </div>
 
-      {/* KPI Cards */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-        <Card className="glass border-border/20 bg-primary/5">
-          <CardContent className="p-4 text-center">
-            <div className="text-xs text-muted-foreground">ALUNOS MATRICULADOS</div>
-            <div className="text-2xl font-bold text-primary">1.535</div>
-          </CardContent>
-        </Card>
-
-        <Card className="glass border-border/20 bg-secondary/5">
-          <CardContent className="p-4 text-center">
-            <div className="text-xs text-muted-foreground">CUSTO POR ALUNO</div>
-            <div className="text-2xl font-bold text-secondary">R$ 2.500,00</div>
-          </CardContent>
-        </Card>
-      </div>
-
-      {/* Charts Section */}
+      {/* Bottom Section: Pie Chart (Left) + Bar Charts (Right) */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        {/* Monthly and Accumulated Cost Chart */}
-        <Card className="glass border-border/20">
-          <CardHeader>
-            <CardTitle className="text-sm font-semibold">CUSTO MENSAL E ACUMULADO</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <ResponsiveContainer width="100%" height={300}>
-              <ComposedChart data={costData}>
-                <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
-                <XAxis 
-                  dataKey="month" 
-                  stroke="hsl(var(--muted-foreground))"
-                  fontSize={10}
-                />
-                <YAxis stroke="hsl(var(--muted-foreground))" fontSize={10} />
-                <Tooltip 
-                  contentStyle={{
-                    backgroundColor: 'hsl(var(--card))',
-                    border: '1px solid hsl(var(--border))',
-                    borderRadius: '8px'
-                  }}
-                />
-                <Bar dataKey="2024Accumulated" fill="#F59E0B" name="2024 Acumulado" />
-                <Bar dataKey="2025Accumulated" fill="#3B82F6" name="2025 Acumulado" />
-                <Line 
-                  type="monotone" 
-                  dataKey="2024Monthly" 
-                  stroke="#F59E0B" 
-                  strokeDasharray="5 5"
-                  name="2024 Mensal"
-                />
-                <Line 
-                  type="monotone" 
-                  dataKey="2025Monthly" 
-                  stroke="#3B82F6" 
-                  strokeDasharray="5 5"
-                  name="2025 Mensal"
-                />
-              </ComposedChart>
-            </ResponsiveContainer>
-          </CardContent>
-        </Card>
-
         {/* Cost Units Pie Chart */}
         <Card className="glass border-border/20">
           <CardHeader>
@@ -200,93 +205,93 @@ const DetailBreakdownView = () => {
             </div>
           </CardContent>
         </Card>
-      </div>
 
-      {/* Bottom Charts Section */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        {/* Cost Elements */}
-        <Card className="glass border-border/20">
-          <CardHeader>
-            <CardTitle className="text-sm font-semibold">ELEMENTOS DE CUSTOS</CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            {costElementsData.map((item, index) => (
-              <div key={index} className="space-y-2">
-                <div className="flex justify-between text-xs">
-                  <span className="text-muted-foreground">{item.name}</span>
-                </div>
-                <div className="relative">
-                  <div className="flex h-6 rounded overflow-hidden bg-muted/20">
-                    <div 
-                      className="bg-amber-500 flex items-center justify-center text-xs text-white font-medium"
-                      style={{ width: `${(item['2024'] / (item['2024'] + item['2025'])) * 100}%` }}
-                    >
-                      {item['2024'].toLocaleString()}
-                    </div>
-                    <div 
-                      className="bg-blue-600 flex items-center justify-center text-xs text-white font-medium"
-                      style={{ width: `${(item['2025'] / (item['2024'] + item['2025'])) * 100}%` }}
-                    >
-                      {item['2025'].toLocaleString()}
+        {/* Right Column: Cost Elements + Other Expenses */}
+        <div className="space-y-6">
+          {/* Cost Elements */}
+          <Card className="glass border-border/20">
+            <CardHeader>
+              <CardTitle className="text-sm font-semibold">ELEMENTOS DE CUSTOS</CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              {costElementsData.map((item, index) => (
+                <div key={index} className="space-y-2">
+                  <div className="flex justify-between text-xs">
+                    <span className="text-muted-foreground">{item.name}</span>
+                  </div>
+                  <div className="relative">
+                    <div className="flex h-6 rounded overflow-hidden bg-muted/20">
+                      <div 
+                        className="bg-amber-500 flex items-center justify-center text-xs text-white font-medium"
+                        style={{ width: `${(item['2024'] / (item['2024'] + item['2025'])) * 100}%` }}
+                      >
+                        {item['2024'].toLocaleString()}
+                      </div>
+                      <div 
+                        className="bg-blue-600 flex items-center justify-center text-xs text-white font-medium"
+                        style={{ width: `${(item['2025'] / (item['2024'] + item['2025'])) * 100}%` }}
+                      >
+                        {item['2025'].toLocaleString()}
+                      </div>
                     </div>
                   </div>
                 </div>
-              </div>
-            ))}
-            <div className="flex justify-center gap-6 text-xs mt-4">
-              <div className="flex items-center gap-2">
-                <div className="w-3 h-3 bg-amber-500 rounded"></div>
-                <span>2024</span>
-              </div>
-              <div className="flex items-center gap-2">
-                <div className="w-3 h-3 bg-blue-600 rounded"></div>
-                <span>2025</span>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-
-        {/* Other Expenses */}
-        <Card className="glass border-border/20">
-          <CardHeader>
-            <CardTitle className="text-sm font-semibold">Demais Gastos</CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            {otherExpensesData.map((item, index) => (
-              <div key={index} className="space-y-2">
-                <div className="flex justify-between text-xs">
-                  <span className="text-muted-foreground">{item.name}</span>
+              ))}
+              <div className="flex justify-center gap-6 text-xs mt-4">
+                <div className="flex items-center gap-2">
+                  <div className="w-3 h-3 bg-amber-500 rounded"></div>
+                  <span>2024</span>
                 </div>
-                <div className="relative">
-                  <div className="flex h-6 rounded overflow-hidden bg-muted/20">
-                    <div 
-                      className="bg-amber-500 flex items-center justify-center text-xs text-white font-medium"
-                      style={{ width: `${(item['2024'] / (item['2024'] + item['2025'])) * 100}%` }}
-                    >
-                      {item['2024']}
-                    </div>
-                    <div 
-                      className="bg-blue-600 flex items-center justify-center text-xs text-white font-medium"
-                      style={{ width: `${(item['2025'] / (item['2024'] + item['2025'])) * 100}%` }}
-                    >
-                      {item['2025']}
+                <div className="flex items-center gap-2">
+                  <div className="w-3 h-3 bg-blue-600 rounded"></div>
+                  <span>2025</span>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* Other Expenses */}
+          <Card className="glass border-border/20">
+            <CardHeader>
+              <CardTitle className="text-sm font-semibold">Demais Gastos</CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              {otherExpensesData.map((item, index) => (
+                <div key={index} className="space-y-2">
+                  <div className="flex justify-between text-xs">
+                    <span className="text-muted-foreground">{item.name}</span>
+                  </div>
+                  <div className="relative">
+                    <div className="flex h-6 rounded overflow-hidden bg-muted/20">
+                      <div 
+                        className="bg-amber-500 flex items-center justify-center text-xs text-white font-medium"
+                        style={{ width: `${(item['2024'] / (item['2024'] + item['2025'])) * 100}%` }}
+                      >
+                        {item['2024']}
+                      </div>
+                      <div 
+                        className="bg-blue-600 flex items-center justify-center text-xs text-white font-medium"
+                        style={{ width: `${(item['2025'] / (item['2024'] + item['2025'])) * 100}%` }}
+                      >
+                        {item['2025']}
+                      </div>
                     </div>
                   </div>
                 </div>
+              ))}
+              <div className="flex justify-center gap-6 text-xs mt-4">
+                <div className="flex items-center gap-2">
+                  <div className="w-3 h-3 bg-amber-500 rounded"></div>
+                  <span>2024</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <div className="w-3 h-3 bg-blue-600 rounded"></div>
+                  <span>2025</span>
+                </div>
               </div>
-            ))}
-            <div className="flex justify-center gap-6 text-xs mt-4">
-              <div className="flex items-center gap-2">
-                <div className="w-3 h-3 bg-amber-500 rounded"></div>
-                <span>2024</span>
-              </div>
-              <div className="flex items-center gap-2">
-                <div className="w-3 h-3 bg-blue-600 rounded"></div>
-                <span>2025</span>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
+            </CardContent>
+          </Card>
+        </div>
       </div>
     </div>
   );
