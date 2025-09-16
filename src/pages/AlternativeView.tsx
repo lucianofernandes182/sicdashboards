@@ -70,135 +70,82 @@ const AlternativeView = () => {
             </div>
           </header>
 
-          {/* Navigation Tabs */}
-          <Tabs value={activeView} onValueChange={setActiveView} className="space-y-8">
-            <div className="flex justify-center">
-              <TabsList className="glass p-1 grid grid-cols-4 w-full max-w-2xl h-12">
-                <TabsTrigger value="overview" className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground transition-all duration-300">
-                  Visão Geral
-                </TabsTrigger>
-                <TabsTrigger value="analysis" className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground transition-all duration-300">
-                  Análise
-                </TabsTrigger>
-                <TabsTrigger value="treeview" className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground transition-all duration-300">
-                  <GitBranch className="h-4 w-4 mr-1" />
-                  Treeview
-                </TabsTrigger>
-                <TabsTrigger value="reports" className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground transition-all duration-300">
-                  Relatórios
-                </TabsTrigger>
-              </TabsList>
-            </div>
-
-            <TabsContent value="overview" className="space-y-8">
-              {/* Filter Sidebar */}
-              <FilterSidebar 
-                isCollapsed={sidebarCollapsed} 
-                onToggle={() => setSidebarCollapsed(!sidebarCollapsed)}
-                activeView={activeView}
-                onViewChange={setActiveView}
-              />
-              
-              {/* Main Content Area */}
-              <div className={`transition-all duration-300 ${sidebarCollapsed ? 'ml-0' : 'ml-80'}`}>
-                <div className="space-y-8">
-                  {/* Charts Row - Custo Mensal/Acumulado, Custo por Poder e Elemento de Custos */}
-                  <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 h-[300px]">
-                    <div className="lg:col-span-6">
-                      <CostChart />
-                    </div>
-                    <div className="lg:col-span-3">
-                      <PowerDistributionChart />
-                    </div>
-                    <div className="lg:col-span-3">
-                      <CostElementsTable />
-                    </div>
+          {/* Main Content Area */}
+          <div className={`transition-all duration-300 ${sidebarCollapsed ? 'ml-0' : 'ml-80'}`}>
+            {/* Filter Sidebar */}
+            <FilterSidebar 
+              isCollapsed={sidebarCollapsed} 
+              onToggle={() => setSidebarCollapsed(!sidebarCollapsed)}
+              activeView={activeView}
+              onViewChange={setActiveView}
+            />
+            
+            {/* Conditional Content Based on Active View */}
+            {activeView === "overview" && (
+              <div className="space-y-8">
+                {/* Charts Row - Custo Mensal/Acumulado, Custo por Poder e Elemento de Custos */}
+                <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 h-[300px]">
+                  <div className="lg:col-span-6">
+                    <CostChart />
                   </div>
-
-                  {/* Composição dos Custos por Função */}
-                  <div className="w-full">
-                    <CostCompositionTreemap />
+                  <div className="lg:col-span-3">
+                    <PowerDistributionChart />
                   </div>
+                  <div className="lg:col-span-3">
+                    <CostElementsTable />
+                  </div>
+                </div>
 
-                  {/* Mapa */}
-                  <div className="w-full">
-                    <MapView />
+                {/* Composição dos Custos por Função */}
+                <div className="w-full">
+                  <CostCompositionTreemap />
+                </div>
+
+                {/* Mapa */}
+                <div className="w-full">
+                  <MapView />
+                </div>
+              </div>
+            )}
+
+            {activeView === "analysis" && (
+              <DetailedCostTable />
+            )}
+
+            {activeView === "treeview" && (
+              <div className="space-y-6">
+                {/* TreeView Component */}
+                <TreeViewComponent onNodeSelect={setSelectedTreeNode} />
+                
+                {/* Analytical Grid */}
+                <AnalyticalGrid 
+                  selectedNodeName={selectedTreeNode?.name || "Secretaria Municipal de Educação"}
+                  selectedNodeLevel={selectedTreeNode?.level || 4}
+                />
+              </div>
+            )}
+
+            {activeView === "reports" && (
+              <div className="glass p-12 rounded-2xl border border-primary/20 text-center animate-fade-in-up">
+                <div className="max-w-md mx-auto space-y-6">
+                  <div className="p-4 rounded-full bg-gradient-primary w-20 h-20 flex items-center justify-center mx-auto animate-pulse-glow">
+                    <Activity className="h-8 w-8 text-primary-foreground" />
+                  </div>
+                  <h3 className="text-2xl font-bold glow-text">
+                    Relatórios Avançados
+                  </h3>
+                  <p className="text-muted-foreground leading-relaxed">
+                    Sistema de relatórios inteligentes em desenvolvimento. Em breve você terá acesso a análises preditivas, 
+                    exportações personalizadas e insights automatizados.
+                  </p>
+                  <div className="inline-flex items-center gap-2 px-4 py-2 bg-muted/20 rounded-full text-sm border border-border/50">
+                    <div className="w-2 h-2 bg-success rounded-full animate-pulse" />
+                    Em desenvolvimento
                   </div>
                 </div>
               </div>
-            </TabsContent>
-
-            <TabsContent value="analysis" className="space-y-8">
-              {/* Filter Sidebar */}
-              <FilterSidebar 
-                isCollapsed={sidebarCollapsed} 
-                onToggle={() => setSidebarCollapsed(!sidebarCollapsed)}
-                activeView={activeView}
-                onViewChange={setActiveView}
-              />
-              
-              {/* Analysis Content */}
-              <div className={`transition-all duration-300 ${sidebarCollapsed ? 'ml-0' : 'ml-80'}`}>
-                <DetailedCostTable />
-              </div>
-            </TabsContent>
-
-            <TabsContent value="treeview" className="space-y-8">
-              {/* Filter Sidebar - Simplified for Treeview */}
-              <FilterSidebar 
-                isCollapsed={sidebarCollapsed} 
-                onToggle={() => setSidebarCollapsed(!sidebarCollapsed)}
-                activeView={activeView}
-                onViewChange={setActiveView}
-              />
-              
-              {/* Treeview Content */}
-              <div className={`transition-all duration-300 ${sidebarCollapsed ? 'ml-0' : 'ml-80'}`}>
-                <div className="space-y-6">
-                  {/* TreeView Component */}
-                  <TreeViewComponent onNodeSelect={setSelectedTreeNode} />
-                  
-                  {/* Analytical Grid */}
-                  <AnalyticalGrid 
-                    selectedNodeName={selectedTreeNode?.name || "Secretaria Municipal de Educação"}
-                    selectedNodeLevel={selectedTreeNode?.level || 4}
-                  />
-                </div>
-              </div>
-            </TabsContent>
-
-            <TabsContent value="reports" className="space-y-8">
-              {/* Filter Sidebar */}
-              <FilterSidebar 
-                isCollapsed={sidebarCollapsed} 
-                onToggle={() => setSidebarCollapsed(!sidebarCollapsed)}
-                activeView={activeView}
-                onViewChange={setActiveView}
-              />
-              
-              {/* Reports Content */}
-              <div className={`transition-all duration-300 ${sidebarCollapsed ? 'ml-0' : 'ml-80'}`}>
-                <div className="glass p-12 rounded-2xl border border-primary/20 text-center animate-fade-in-up">
-                  <div className="max-w-md mx-auto space-y-6">
-                    <div className="p-4 rounded-full bg-gradient-primary w-20 h-20 flex items-center justify-center mx-auto animate-pulse-glow">
-                      <Activity className="h-8 w-8 text-primary-foreground" />
-                    </div>
-                    <h3 className="text-2xl font-bold glow-text">
-                      Relatórios Avançados
-                    </h3>
-                    <p className="text-muted-foreground leading-relaxed">
-                      Sistema de relatórios inteligentes em desenvolvimento. Em breve você terá acesso a análises preditivas, 
-                      exportações personalizadas e insights automatizados.
-                    </p>
-                    <div className="inline-flex items-center gap-2 px-4 py-2 bg-muted/20 rounded-full text-sm border border-border/50">
-                      <div className="w-2 h-2 bg-success rounded-full animate-pulse" />
-                      Em desenvolvimento
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </TabsContent>
-          </Tabs>
+            )}
+          </div>
         </div>
       </div>
     </div>
