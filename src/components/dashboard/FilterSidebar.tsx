@@ -73,7 +73,7 @@ export function FilterSidebar({ isCollapsed = false, onToggle, activeView = "ove
         {/* View Selection */}
         <div className="space-y-2 mb-4">
           <h3 className="text-xs font-semibold text-muted-foreground px-1">Visualização</h3>
-          <div className="grid grid-cols-1 gap-1">
+          <div className="grid grid-cols-2 gap-1">
             <Button
               variant={activeView === "overview" ? "default" : "outline"}
               size="sm"
@@ -89,6 +89,14 @@ export function FilterSidebar({ isCollapsed = false, onToggle, activeView = "ove
               onClick={() => onViewChange?.("analysis")}
             >
               Análise
+            </Button>
+            <Button
+              variant={activeView === "treeview" ? "default" : "outline"}
+              size="sm"
+              className="w-full justify-start text-xs h-7 glass border-border/50"
+              onClick={() => onViewChange?.("treeview")}
+            >
+              Treeview
             </Button>
             <Button
               variant={activeView === "reports" ? "default" : "outline"}

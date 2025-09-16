@@ -20,6 +20,7 @@ const AlternativeView = () => {
   const navigate = useNavigate();
   const [selectedTreeNode, setSelectedTreeNode] = useState<any>(null);
   const [sidebarCollapsed, setSidebarCollapsed] = useState(true);
+  const [activeView, setActiveView] = useState("overview");
 
   return (
     <div className="min-h-screen bg-gradient-background relative overflow-hidden">
@@ -70,7 +71,7 @@ const AlternativeView = () => {
           </header>
 
           {/* Navigation Tabs */}
-          <Tabs defaultValue="overview" className="space-y-8">
+          <Tabs value={activeView} onValueChange={setActiveView} className="space-y-8">
             <div className="flex justify-center">
               <TabsList className="glass p-1 grid grid-cols-4 w-full max-w-2xl h-12">
                 <TabsTrigger value="overview" className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground transition-all duration-300">
@@ -93,7 +94,9 @@ const AlternativeView = () => {
               {/* Filter Sidebar */}
               <FilterSidebar 
                 isCollapsed={sidebarCollapsed} 
-                onToggle={() => setSidebarCollapsed(!sidebarCollapsed)} 
+                onToggle={() => setSidebarCollapsed(!sidebarCollapsed)}
+                activeView={activeView}
+                onViewChange={setActiveView}
               />
               
               {/* Main Content Area */}
@@ -129,7 +132,9 @@ const AlternativeView = () => {
               {/* Filter Sidebar */}
               <FilterSidebar 
                 isCollapsed={sidebarCollapsed} 
-                onToggle={() => setSidebarCollapsed(!sidebarCollapsed)} 
+                onToggle={() => setSidebarCollapsed(!sidebarCollapsed)}
+                activeView={activeView}
+                onViewChange={setActiveView}
               />
               
               {/* Analysis Content */}
@@ -140,9 +145,11 @@ const AlternativeView = () => {
 
             <TabsContent value="treeview" className="space-y-8">
               {/* Filter Sidebar - Simplified for Treeview */}
-              <FilterSidebarTreeview 
+              <FilterSidebar 
                 isCollapsed={sidebarCollapsed} 
-                onToggle={() => setSidebarCollapsed(!sidebarCollapsed)} 
+                onToggle={() => setSidebarCollapsed(!sidebarCollapsed)}
+                activeView={activeView}
+                onViewChange={setActiveView}
               />
               
               {/* Treeview Content */}
@@ -164,7 +171,9 @@ const AlternativeView = () => {
               {/* Filter Sidebar */}
               <FilterSidebar 
                 isCollapsed={sidebarCollapsed} 
-                onToggle={() => setSidebarCollapsed(!sidebarCollapsed)} 
+                onToggle={() => setSidebarCollapsed(!sidebarCollapsed)}
+                activeView={activeView}
+                onViewChange={setActiveView}
               />
               
               {/* Reports Content */}
