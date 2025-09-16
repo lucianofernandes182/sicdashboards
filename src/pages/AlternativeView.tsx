@@ -10,6 +10,7 @@ import { FilterSidebarTreeview } from "@/components/dashboard/FilterSidebarTreev
 import { TreeViewComponent } from "@/components/dashboard/TreeViewComponent";
 import { AnalyticalGrid } from "@/components/dashboard/AnalyticalGrid";
 import DetailBreakdownView from "@/components/dashboard/DetailBreakdownView";
+import ProjectionsView from "@/components/dashboard/ProjectionsView";
 import MapView from "@/components/dashboard/MapView";
 import { CheckSquare, Scale, AlertTriangle, Activity, Zap, Home, Eye, GitBranch } from "lucide-react";
 import { ThemeToggle } from "@/components/ui/theme-toggle";
@@ -128,6 +129,10 @@ const AlternativeView = () => {
 
             {activeView === "detalhamento" && (
               <DetailBreakdownView />
+            )}
+
+            {activeView === "projecoes" && (
+              <ProjectionsView />
             )}
           </div>
         </div>

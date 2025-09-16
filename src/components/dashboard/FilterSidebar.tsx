@@ -106,6 +106,14 @@ export function FilterSidebar({ isCollapsed = false, onToggle, activeView = "ove
             >
               Detalhamento
             </Button>
+            <Button
+              variant={activeView === "projecoes" ? "default" : "outline"}
+              size="sm"
+              className="w-full justify-start text-xs h-7 glass border-border/50"
+              onClick={() => onViewChange?.("projecoes")}
+            >
+              Projeções
+            </Button>
           </div>
         </div>
 

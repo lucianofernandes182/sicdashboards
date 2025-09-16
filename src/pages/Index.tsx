@@ -8,6 +8,7 @@ import { FilterSidebar } from "@/components/dashboard/FilterSidebar";
 import MapView from "@/components/dashboard/MapView";
 import { TreeViewComponent } from "@/components/dashboard/TreeViewComponent";
 import DetailBreakdownView from "@/components/dashboard/DetailBreakdownView";
+import ProjectionsView from "@/components/dashboard/ProjectionsView";
 import { AnalyticalGrid } from "@/components/dashboard/AnalyticalGrid";
 import { Zap, Activity, Eye } from "lucide-react";
 import { ThemeToggle } from "@/components/ui/theme-toggle";
@@ -166,6 +167,21 @@ const Index = () => {
               {/* Detalhamento Content */}
               <div className={`transition-all duration-300 ${sidebarCollapsed ? 'ml-0' : 'ml-80'}`}>
                 <DetailBreakdownView />
+              </div>
+            </TabsContent>
+
+            <TabsContent value="projecoes" className="space-y-8">
+              {/* Filter Sidebar */}
+              <FilterSidebar 
+                isCollapsed={sidebarCollapsed} 
+                onToggle={() => setSidebarCollapsed(!sidebarCollapsed)}
+                activeView={activeView}
+                onViewChange={setActiveView}
+              />
+              
+              {/* Projections Content */}
+              <div className={`transition-all duration-300 ${sidebarCollapsed ? 'ml-0' : 'ml-80'}`}>
+                <ProjectionsView />
               </div>
             </TabsContent>
           </Tabs>
