@@ -21,13 +21,28 @@ const DetailBreakdownView = () => {
     { month: 'Dez', '2024Accumulated': 130, '2025Accumulated': 180, '2024Monthly': 20, '2025Monthly': 35 },
   ];
 
+  // Data for two-level pie chart
+  const yearData = [
+    { name: '2024', value: 50, color: '#3B82F6' },
+    { name: '2025', value: 50, color: '#F59E0B' },
+  ];
+
   const costUnitsData = [
-    { name: 'Pedagogia', value: 35, color: '#3B82F6' },
-    { name: 'Administração', value: 25, color: '#F59E0B' },
-    { name: 'Biblioteca', value: 15, color: '#8B5CF6' },
-    { name: 'Centros Esportivos', value: 12, color: '#10B981' },
-    { name: 'Laboratórios', value: 8, color: '#EF4444' },
-    { name: 'Alimentação e Nutrição', value: 5, color: '#F97316' },
+    { name: 'Pedagogia', value: 30, color: '#4F46E5', year: '2024' },
+    { name: 'Administração', value: 20, color: '#F59E0B', year: '2024' },
+    { name: 'Biblioteca', value: 15, color: '#8B5CF6', year: '2025' },
+    { name: 'Centros Esportivos', value: 12, color: '#10B981', year: '2025' },
+    { name: 'Laboratórios', value: 13, color: '#EF4444', year: '2024' },
+    { name: 'Alimentação e Nutrição', value: 10, color: '#F97316', year: '2025' },
+  ];
+
+  const legendData = [
+    { name: 'Pedagogia', color: '#4F46E5' },
+    { name: 'Administração', color: '#F59E0B' },
+    { name: 'Biblioteca', color: '#8B5CF6' },
+    { name: 'Centros Esportivos', color: '#10B981' },
+    { name: 'Laboratórios', color: '#EF4444' },
+    { name: 'Alimentação e Nutrição', color: '#F97316' },
   ];
 
   const costElementsData = [
@@ -173,27 +188,10 @@ const DetailBreakdownView = () => {
           <CardHeader>
             <CardTitle className="text-sm font-semibold">UNIDADE DE CUSTOS</CardTitle>
           </CardHeader>
-          <CardContent>
-            <ResponsiveContainer width="100%" height={300}>
-              <PieChart>
-                <Pie
-                  data={costUnitsData}
-                  cx="50%"
-                  cy="50%"
-                  innerRadius={60}
-                  outerRadius={120}
-                  paddingAngle={2}
-                  dataKey="value"
-                >
-                  {costUnitsData.map((entry, index) => (
-                    <Cell key={`cell-${index}`} fill={entry.color} />
-                  ))}
-                </Pie>
-                <Tooltip />
-              </PieChart>
-            </ResponsiveContainer>
-            <div className="grid grid-cols-2 gap-2 mt-4">
-              {costUnitsData.map((item, index) => (
+          <CardContent className="flex">
+            {/* Legend */}
+            <div className="w-32 space-y-2 mr-4">
+              {legendData.map((item, index) => (
                 <div key={index} className="flex items-center gap-2">
                   <div 
                     className="w-3 h-3 rounded-full" 
@@ -202,6 +200,45 @@ const DetailBreakdownView = () => {
                   <span className="text-xs text-muted-foreground">{item.name}</span>
                 </div>
               ))}
+            </div>
+            
+            {/* Two-level Pie Chart */}
+            <div className="flex-1">
+              <ResponsiveContainer width="100%" height={300}>
+                <PieChart>
+                  {/* Inner pie - Years */}
+                  <Pie
+                    data={yearData}
+                    cx="50%"
+                    cy="50%"
+                    innerRadius={0}
+                    outerRadius={60}
+                    paddingAngle={1}
+                    dataKey="value"
+                  >
+                    {yearData.map((entry, index) => (
+                      <Cell key={`inner-${index}`} fill={entry.color} />
+                    ))}
+                  </Pie>
+                  
+                  {/* Outer pie - Categories */}
+                  <Pie
+                    data={costUnitsData}
+                    cx="50%"
+                    cy="50%"
+                    innerRadius={70}
+                    outerRadius={120}
+                    paddingAngle={2}
+                    dataKey="value"
+                  >
+                    {costUnitsData.map((entry, index) => (
+                      <Cell key={`outer-${index}`} fill={entry.color} />
+                    ))}
+                  </Pie>
+                  
+                  <Tooltip formatter={(value, name) => [`${value}%`, name]} />
+                </PieChart>
+              </ResponsiveContainer>
             </div>
           </CardContent>
         </Card>
