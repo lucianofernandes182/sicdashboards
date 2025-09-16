@@ -9,6 +9,7 @@ import { FilterSidebar } from "@/components/dashboard/FilterSidebar";
 import { FilterSidebarTreeview } from "@/components/dashboard/FilterSidebarTreeview";
 import { TreeViewComponent } from "@/components/dashboard/TreeViewComponent";
 import { AnalyticalGrid } from "@/components/dashboard/AnalyticalGrid";
+import DetailBreakdownView from "@/components/dashboard/DetailBreakdownView";
 import MapView from "@/components/dashboard/MapView";
 import { CheckSquare, Scale, AlertTriangle, Activity, Zap, Home, Eye, GitBranch } from "lucide-react";
 import { ThemeToggle } from "@/components/ui/theme-toggle";
@@ -125,25 +126,8 @@ const AlternativeView = () => {
               </div>
             )}
 
-            {activeView === "reports" && (
-              <div className="glass p-12 rounded-2xl border border-primary/20 text-center animate-fade-in-up">
-                <div className="max-w-md mx-auto space-y-6">
-                  <div className="p-4 rounded-full bg-gradient-primary w-20 h-20 flex items-center justify-center mx-auto animate-pulse-glow">
-                    <Activity className="h-8 w-8 text-primary-foreground" />
-                  </div>
-                  <h3 className="text-2xl font-bold glow-text">
-                    Relatórios Avançados
-                  </h3>
-                  <p className="text-muted-foreground leading-relaxed">
-                    Sistema de relatórios inteligentes em desenvolvimento. Em breve você terá acesso a análises preditivas, 
-                    exportações personalizadas e insights automatizados.
-                  </p>
-                  <div className="inline-flex items-center gap-2 px-4 py-2 bg-muted/20 rounded-full text-sm border border-border/50">
-                    <div className="w-2 h-2 bg-success rounded-full animate-pulse" />
-                    Em desenvolvimento
-                  </div>
-                </div>
-              </div>
+            {activeView === "detalhamento" && (
+              <DetailBreakdownView />
             )}
           </div>
         </div>

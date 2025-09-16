@@ -99,12 +99,12 @@ export function FilterSidebar({ isCollapsed = false, onToggle, activeView = "ove
               Treeview
             </Button>
             <Button
-              variant={activeView === "reports" ? "default" : "outline"}
+              variant={activeView === "detalhamento" ? "default" : "outline"}
               size="sm"
               className="w-full justify-start text-xs h-7 glass border-border/50"
-              onClick={() => onViewChange?.("reports")}
+              onClick={() => onViewChange?.("detalhamento")}
             >
-              Relatórios
+              Detalhamento
             </Button>
           </div>
         </div>
