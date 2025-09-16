@@ -6,6 +6,9 @@ import { CostCompositionTreemap } from "@/components/dashboard/CostCompositionTr
 import { DetailedCostTable } from "@/components/dashboard/DetailedCostTable";
 import { FilterSidebar } from "@/components/dashboard/FilterSidebar";
 import MapView from "@/components/dashboard/MapView";
+import { TreeViewComponent } from "@/components/dashboard/TreeViewComponent";
+import DetailBreakdownView from "@/components/dashboard/DetailBreakdownView";
+import { AnalyticalGrid } from "@/components/dashboard/AnalyticalGrid";
 import { Zap, Activity, Eye } from "lucide-react";
 import { ThemeToggle } from "@/components/ui/theme-toggle";
 import { Button } from "@/components/ui/button";
@@ -16,6 +19,11 @@ const Index = () => {
   const navigate = useNavigate();
   const [sidebarCollapsed, setSidebarCollapsed] = useState(true);
   const [activeView, setActiveView] = useState("overview");
+  const [selectedTreeNode, setSelectedTreeNode] = useState(null);
+
+  const handleTreeNodeSelect = (node: any) => {
+    setSelectedTreeNode(node?.name || null);
+  };
 
   return (
     <div className="min-h-screen bg-gradient-background relative overflow-hidden">
@@ -121,7 +129,7 @@ const Index = () => {
               </div>
             </TabsContent>
 
-            <TabsContent value="reports" className="space-y-8">
+            <TabsContent value="treeview" className="space-y-8">
               {/* Filter Sidebar */}
               <FilterSidebar 
                 isCollapsed={sidebarCollapsed} 
@@ -130,26 +138,34 @@ const Index = () => {
                 onViewChange={setActiveView}
               />
               
-              {/* Reports Content */}
+              {/* TreeView Content */}
               <div className={`transition-all duration-300 ${sidebarCollapsed ? 'ml-0' : 'ml-80'}`}>
-                <div className="glass p-12 rounded-2xl border border-primary/20 text-center animate-fade-in-up">
-                  <div className="max-w-md mx-auto space-y-6">
-                    <div className="p-4 rounded-full bg-gradient-primary w-20 h-20 flex items-center justify-center mx-auto animate-pulse-glow">
-                      <Activity className="h-8 w-8 text-primary-foreground" />
+                <div className="space-y-8">
+                  {/* TreeView and Analytical Grid */}
+                  <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                    <div className="lg:col-span-1">
+                      <TreeViewComponent onNodeSelect={handleTreeNodeSelect} />
                     </div>
-                    <h3 className="text-2xl font-bold glow-text">
-                      Relatórios Avançados
-                    </h3>
-                    <p className="text-muted-foreground leading-relaxed">
-                      Sistema de relatórios inteligentes em desenvolvimento. Em breve você terá acesso a análises preditivas, 
-                      exportações personalizadas e insights automatizados.
-                    </p>
-                    <div className="inline-flex items-center gap-2 px-4 py-2 bg-muted/20 rounded-full text-sm border border-border/50">
-                      <div className="w-2 h-2 bg-success rounded-full animate-pulse" />
-                      Em desenvolvimento
+                    <div className="lg:col-span-1">
+                      <AnalyticalGrid selectedNodeName={selectedTreeNode} />
                     </div>
                   </div>
                 </div>
+              </div>
+            </TabsContent>
+
+            <TabsContent value="detalhamento" className="space-y-8">
+              {/* Filter Sidebar */}
+              <FilterSidebar 
+                isCollapsed={sidebarCollapsed} 
+                onToggle={() => setSidebarCollapsed(!sidebarCollapsed)}
+                activeView={activeView}
+                onViewChange={setActiveView}
+              />
+              
+              {/* Detalhamento Content */}
+              <div className={`transition-all duration-300 ${sidebarCollapsed ? 'ml-0' : 'ml-80'}`}>
+                <DetailBreakdownView />
               </div>
             </TabsContent>
           </Tabs>
