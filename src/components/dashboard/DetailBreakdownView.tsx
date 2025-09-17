@@ -175,23 +175,25 @@ const DetailBreakdownView = () => {
                       borderRadius: '8px'
                     }}
                   />
+                  {/* Barras para valores acumulados */}
                   <Bar dataKey="2024Accumulated" fill="#F59E0B" name="2024 Acumulado" />
                   <Bar dataKey="2025Accumulated" fill="#3B82F6" name="2025 Acumulado" />
+                  {/* Linhas para valores mensais */}
                   <Line 
                     type="monotone" 
                     dataKey="2024Monthly" 
-                    stroke="#F59E0B" 
-                    strokeDasharray="5 5"
+                    stroke="#DC2626" 
                     name="2024 Mensal"
-                    strokeWidth={2}
+                    strokeWidth={3}
+                    dot={{ r: 4, fill: "#DC2626" }}
                   />
                   <Line 
                     type="monotone" 
                     dataKey="2025Monthly" 
-                    stroke="#3B82F6" 
-                    strokeDasharray="5 5"
+                    stroke="#059669" 
                     name="2025 Mensal"
-                    strokeWidth={2}
+                    strokeWidth={3}
+                    dot={{ r: 4, fill: "#059669" }}
                   />
                 </ComposedChart>
               </ResponsiveContainer>
