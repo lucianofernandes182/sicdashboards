@@ -57,6 +57,25 @@ const DetailBreakdownView = () => {
     { name: 'Gastos', '2024': 6.0, '2025': 5.0 },
   ];
 
+  const costCenterData = [
+    { name: "Salas de Aula", value2024: 100, value2025: 150 },
+    { name: "Sala dos Professores", value2024: 200, value2025: 250 },
+    { name: "Sala Sec.", value2024: 100, value2025: 160 },
+    { name: "Administração", value2024: 400, value2025: 450 },
+    { name: "Almoxarifado", value2024: 950, value2025: 950 },
+    { name: "Sanitários", value2024: 550, value2025: 500 },
+    { name: "Acervo Bibliográfico", value2024: 670, value2025: 750 },
+    { name: "Sala de Leitura", value2024: 850, value2025: 900 },
+    { name: "Quadra", value2024: 400, value2025: 500 },
+    { name: "Vestiários", value2024: 1000, value2025: 1000 },
+    { name: "Piscina", value2024: 800, value2025: 900 },
+    { name: "Lab. Informática", value2024: 1200, value2025: 1300 },
+    { name: "Lab. Ciências", value2024: 900, value2025: 950 },
+    { name: "Lab. Química", value2024: 550, value2025: 500 },
+    { name: "Auditório", value2024: 670, value2025: 750 },
+    { name: "Restaurante", value2024: 800, value2025: 850 },
+  ];
+
   const COLORS = ['#3B82F6', '#F59E0B', '#8B5CF6', '#10B981', '#EF4444', '#F97316'];
 
   return (
@@ -333,6 +352,64 @@ const DetailBreakdownView = () => {
             </CardContent>
           </Card>
         </div>
+      </div>
+
+      {/* Centro de Custos Section */}
+      <div className="w-full">
+        <Card className="glass border-border/20">
+          <CardHeader>
+            <CardTitle className="text-sm font-semibold text-center">CENTRO DE CUSTOS</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <ResponsiveContainer width="100%" height={300}>
+              <BarChart 
+                data={costCenterData}
+                margin={{ top: 20, right: 30, left: 20, bottom: 60 }}
+              >
+                <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
+                <XAxis 
+                  dataKey="name" 
+                  stroke="hsl(var(--muted-foreground))"
+                  fontSize={10}
+                  angle={-45}
+                  textAnchor="end"
+                  height={80}
+                />
+                <YAxis stroke="hsl(var(--muted-foreground))" fontSize={10} />
+                <Tooltip 
+                  contentStyle={{
+                    backgroundColor: 'hsl(var(--card))',
+                    border: '1px solid hsl(var(--border))',
+                    borderRadius: '8px'
+                  }}
+                  formatter={(value, name) => [value, name === 'value2024' ? '2024' : '2025']}
+                />
+                <Bar 
+                  dataKey="value2024" 
+                  fill="#F59E0B" 
+                  name="2024"
+                  label={{ position: 'top', fontSize: 10 }}
+                />
+                <Bar 
+                  dataKey="value2025" 
+                  fill="#3B82F6" 
+                  name="2025"
+                  label={{ position: 'top', fontSize: 10 }}
+                />
+              </BarChart>
+            </ResponsiveContainer>
+            <div className="flex justify-center gap-6 text-xs mt-4">
+              <div className="flex items-center gap-2">
+                <div className="w-3 h-3 bg-amber-500 rounded"></div>
+                <span>2024</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <div className="w-3 h-3 bg-blue-600 rounded"></div>
+                <span>2025</span>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
       </div>
     </div>
   );
