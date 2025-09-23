@@ -10,17 +10,17 @@ const Home = () => {
     {
       title: "VISÃO ORÇAMENTÁRIA",
       description: "Dentro desse modelo, os programas orçamentários são a base primária para a mensuração dos custos, ou seja, serão os objetos aos quais os custos serão atribuídos.",
-      route: "/dashboard/orcamentaria"
+      route: "/alternative?type=orcamentaria"
     },
     {
       title: "VISÃO INSTITUCIONAL",
       description: "Tendo como premissa a estrutura organizacional das instituições públicas, tal modelo atribui os custos às unidades/estruturas onde efetivamente os produtos e serviços públicos são gerados",
-      route: "/dashboard/institucional"
+      route: "/alternative?type=institucional"
     },
     {
       title: "FOCO NAS POLÍTICAS PÚBLICAS",
       description: "O ponto central desse modelo é atribuir os custos aos programas e ações da despesa que compõem as políticas públicas preestabelecidas pelos governos.",
-      route: "/dashboard/politicas"
+      route: "/alternative?type=politicas"
     }
   ];
 

@@ -12,17 +12,41 @@ import { AnalyticalGrid } from "@/components/dashboard/AnalyticalGrid";
 import DetailBreakdownView from "@/components/dashboard/DetailBreakdownView";
 import ProjectionsView from "@/components/dashboard/ProjectionsView";
 import MapView from "@/components/dashboard/MapView";
-import { CheckSquare, Scale, AlertTriangle, Activity, Zap, Home, Eye, GitBranch } from "lucide-react";
+import { CheckSquare, Scale, AlertTriangle, Activity, Zap, Home, Eye, GitBranch, ArrowLeft } from "lucide-react";
 import { ThemeToggle } from "@/components/ui/theme-toggle";
 import { Button } from "@/components/ui/button";
-import { useNavigate } from "react-router-dom";
+import { Badge } from "@/components/ui/badge";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import { useState } from "react";
 
 const AlternativeView = () => {
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+  const visionType = searchParams.get('type') || 'orcamentaria';
+  
   const [selectedTreeNode, setSelectedTreeNode] = useState<any>(null);
   const [sidebarCollapsed, setSidebarCollapsed] = useState(true);
   const [activeView, setActiveView] = useState("overview");
+
+  const visionTypes = {
+    orcamentaria: {
+      title: "Visão Orçamentária",
+      description: "Dentro desse modelo, os programas orçamentários são a base primária para a mensuração dos custos, ou seja, serão os objetos aos quais os custos serão atribuídos.",
+      color: "bg-blue-500"
+    },
+    institucional: {
+      title: "Visão Institucional", 
+      description: "Tendo como premissa a estrutura organizacional das instituições públicas, tal modelo atribui os custos às unidades/estruturas onde efetivamente os produtos e serviços públicos são gerados",
+      color: "bg-green-500"
+    },
+    politicas: {
+      title: "Foco nas Políticas Públicas",
+      description: "O ponto central desse modelo é atribuir os custos aos programas e ações da despesa que compõem as políticas públicas preestabelecidas pelos governos.",
+      color: "bg-purple-500"
+    }
+  };
+
+  const currentVision = visionTypes[visionType as keyof typeof visionTypes] || visionTypes.orcamentaria;
 
   return (
     <div className="min-h-screen bg-gradient-background relative overflow-hidden">
@@ -45,6 +69,15 @@ const AlternativeView = () => {
 
         {/* Header Controls - Canto Superior Direito */}
         <div className="absolute top-6 right-6 flex items-center gap-3">
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={() => navigate('/')}
+            className="flex items-center gap-1 text-xs px-3 py-1.5 h-auto"
+          >
+            <ArrowLeft className="h-3 w-3" />
+            Voltar
+          </Button>
           <div className="flex items-center gap-1 px-3 py-1.5 bg-gradient-primary text-primary-foreground rounded-full text-xs font-medium shadow-neon">
             <Zap className="h-3 w-3" />
             Online
@@ -71,6 +104,19 @@ const AlternativeView = () => {
               <div className="absolute -inset-4 bg-gradient-primary opacity-20 blur-2xl -z-10" />
             </div>
           </header>
+
+          {/* Vision Info Banner */}
+          <div className="mb-6 p-4 bg-card border rounded-lg">
+            <div className="flex items-center justify-between">
+              <div>
+                <h2 className="text-lg font-semibold text-foreground mb-2">{currentVision.title}</h2>
+                <p className="text-sm text-muted-foreground">{currentVision.description}</p>
+              </div>
+              <Badge variant="secondary" className={`${currentVision.color} text-white`}>
+                {currentVision.title}
+              </Badge>
+            </div>
+          </div>
 
           {/* Main Content Area */}
           <div className={`transition-all duration-300 ${sidebarCollapsed ? 'ml-0' : 'ml-80'}`}>
