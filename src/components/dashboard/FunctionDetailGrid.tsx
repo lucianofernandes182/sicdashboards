@@ -2,7 +2,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { ChevronDown, Filter } from "lucide-react";
+import { ChevronDown, ChevronRight, ArrowLeft } from "lucide-react";
 import { useState } from "react";
 
 interface FunctionDetail {
@@ -11,13 +11,21 @@ interface FunctionDetail {
   cost2024: number;
   cost2025: number;
   variation: number;
-  level: 'funcao' | 'equipamento' | 'elemento';
+  level: 'funcao' | 'equipamento' | 'elemento' | 'detalhes';
   parent?: string;
 }
 
 interface FunctionDetailGridProps {
   selectedFunction: string;
   onClose: () => void;
+}
+
+type NavigationLevel = 'equipamento' | 'elemento' | 'detalhes';
+
+interface NavigationState {
+  level: NavigationLevel;
+  selectedEquipment?: string;
+  selectedElement?: string;
 }
 
 const functionDetails: Record<string, FunctionDetail[]> = {
@@ -37,6 +45,12 @@ const functionDetails: Record<string, FunctionDetail[]> = {
     { id: "edu-8", category: "Material Escolar", cost2024: 800000, cost2025: 1100000, variation: 37.50, level: 'elemento', parent: 'edu-4' },
     { id: "edu-9", category: "Alimentação Escolar", cost2024: 900000, cost2025: 1100000, variation: 22.22, level: 'elemento', parent: 'edu-4' },
     { id: "edu-10", category: "Manutenção", cost2024: 600000, cost2025: 800000, variation: 33.33, level: 'elemento', parent: 'edu-5' },
+    
+    // Nível Detalhes (Elementos de Custos detalhados)
+    { id: "edu-11", category: "Salários Professores", cost2024: 3200000, cost2025: 4200000, variation: 31.25, level: 'detalhes', parent: 'edu-7' },
+    { id: "edu-12", category: "Encargos Sociais", cost2024: 1300000, cost2025: 1700000, variation: 30.77, level: 'detalhes', parent: 'edu-7' },
+    { id: "edu-13", category: "Livros Didáticos", cost2024: 500000, cost2025: 700000, variation: 40.00, level: 'detalhes', parent: 'edu-8' },
+    { id: "edu-14", category: "Material de Papelaria", cost2024: 300000, cost2025: 400000, variation: 33.33, level: 'detalhes', parent: 'edu-8' },
   ],
   "Saúde": [
     // Nível Função
@@ -52,6 +66,12 @@ const functionDetails: Record<string, FunctionDetail[]> = {
     { id: "sau-6", category: "Pessoal Médico", cost2024: 2500000, cost2025: 3300000, variation: 32.00, level: 'elemento', parent: 'sau-4' },
     { id: "sau-7", category: "Medicamentos", cost2024: 1700000, cost2025: 2200000, variation: 29.41, level: 'elemento', parent: 'sau-4' },
     { id: "sau-8", category: "Equipamentos Médicos", cost2024: 2000000, cost2025: 2600000, variation: 30.00, level: 'elemento', parent: 'sau-5' },
+    
+    // Nível Detalhes
+    { id: "sau-9", category: "Médicos Especialistas", cost2024: 1500000, cost2025: 2000000, variation: 33.33, level: 'detalhes', parent: 'sau-6' },
+    { id: "sau-10", category: "Enfermeiros", cost2024: 1000000, cost2025: 1300000, variation: 30.00, level: 'detalhes', parent: 'sau-6' },
+    { id: "sau-11", category: "Medicamentos Básicos", cost2024: 1200000, cost2025: 1500000, variation: 25.00, level: 'detalhes', parent: 'sau-7' },
+    { id: "sau-12", category: "Medicamentos Especiais", cost2024: 500000, cost2025: 700000, variation: 40.00, level: 'detalhes', parent: 'sau-7' },
   ],
   "Segurança Pública": [
     // Nível Função
@@ -107,30 +127,89 @@ const formatVariation = (value: number) => {
 };
 
 export function FunctionDetailGrid({ selectedFunction, onClose }: FunctionDetailGridProps) {
-  const [selectedLevels, setSelectedLevels] = useState<string[]>(['funcao', 'equipamento', 'elemento']);
+  const [navigation, setNavigation] = useState<NavigationState>({ level: 'equipamento' });
   const allDetails = functionDetails[selectedFunction] || [];
   
-  const details = allDetails.filter(item => selectedLevels.includes(item.level));
-  
-  const total2024 = details.reduce((sum, item) => sum + item.cost2024, 0);
-  const total2025 = details.reduce((sum, item) => sum + item.cost2025, 0);
+  // Get current level data based on navigation state
+  const getCurrentLevelData = () => {
+    switch (navigation.level) {
+      case 'equipamento':
+        return allDetails.filter(item => item.level === 'equipamento');
+      case 'elemento':
+        return allDetails.filter(item => 
+          item.level === 'elemento' && item.parent === navigation.selectedEquipment
+        );
+      case 'detalhes':
+        return allDetails.filter(item => 
+          item.level === 'detalhes' && item.parent === navigation.selectedElement
+        );
+      default:
+        return [];
+    }
+  };
+
+  const currentData = getCurrentLevelData();
+  const total2024 = currentData.reduce((sum, item) => sum + item.cost2024, 0);
+  const total2025 = currentData.reduce((sum, item) => sum + item.cost2025, 0);
   const totalVariation = total2024 > 0 ? ((total2025 - total2024) / total2024) * 100 : 0;
 
-  const toggleLevel = (level: string) => {
-    setSelectedLevels(prev => 
-      prev.includes(level) 
-        ? prev.filter(l => l !== level)
-        : [...prev, level]
-    );
+  const handleRowClick = (item: FunctionDetail) => {
+    if (navigation.level === 'equipamento') {
+      setNavigation({
+        level: 'elemento',
+        selectedEquipment: item.id
+      });
+    } else if (navigation.level === 'elemento') {
+      setNavigation({
+        ...navigation,
+        level: 'detalhes',
+        selectedElement: item.id
+      });
+    }
+  };
+
+  const canDrillDown = (item: FunctionDetail) => {
+    if (navigation.level === 'equipamento') {
+      return allDetails.some(detail => detail.level === 'elemento' && detail.parent === item.id);
+    } else if (navigation.level === 'elemento') {
+      return allDetails.some(detail => detail.level === 'detalhes' && detail.parent === item.id);
+    }
+    return false;
+  };
+
+  const goBack = () => {
+    if (navigation.level === 'elemento') {
+      setNavigation({ level: 'equipamento' });
+    } else if (navigation.level === 'detalhes') {
+      setNavigation({
+        level: 'elemento',
+        selectedEquipment: navigation.selectedEquipment
+      });
+    }
   };
 
   const getLevelBadge = (level: string) => {
     const configs = {
-      'funcao': { label: 'Função', color: 'bg-blue-500' },
       'equipamento': { label: 'Equipamento', color: 'bg-green-500' },
-      'elemento': { label: 'Elemento', color: 'bg-orange-500' }
+      'elemento': { label: 'Elemento', color: 'bg-orange-500' },
+      'detalhes': { label: 'Detalhes', color: 'bg-purple-500' }
     };
     return configs[level as keyof typeof configs];
+  };
+
+  const getCurrentLevelTitle = () => {
+    switch (navigation.level) {
+      case 'equipamento':
+        return 'Equipamentos Públicos';
+      case 'elemento':
+        const equipmentName = allDetails.find(d => d.id === navigation.selectedEquipment)?.category;
+        return `Elementos de Custo - ${equipmentName}`;
+      case 'detalhes':
+        const elementName = allDetails.find(d => d.id === navigation.selectedElement)?.category;
+        return `Detalhes do Elemento - ${elementName}`;
+      default:
+        return '';
+    }
   };
 
   return (
@@ -150,27 +229,25 @@ export function FunctionDetailGrid({ selectedFunction, onClose }: FunctionDetail
           </Button>
         </div>
         
-        {/* Level Filters */}
+        {/* Navigation Breadcrumb */}
         <div className="flex items-center gap-2 mt-3">
-          <Filter className="h-4 w-4 text-muted-foreground" />
-          <span className="text-sm text-muted-foreground">Níveis:</span>
-          {['funcao', 'equipamento', 'elemento'].map(level => {
-            const config = getLevelBadge(level);
-            return (
-              <Badge
-                key={level}
-                variant={selectedLevels.includes(level) ? "default" : "outline"}
-                className={`cursor-pointer transition-all ${
-                  selectedLevels.includes(level) 
-                    ? `${config.color} text-white hover:opacity-80` 
-                    : 'hover:bg-muted'
-                }`}
-                onClick={() => toggleLevel(level)}
-              >
-                {config.label}
-              </Badge>
-            );
-          })}
+          {navigation.level !== 'equipamento' && (
+            <Button 
+              variant="ghost" 
+              size="sm"
+              onClick={goBack}
+              className="flex items-center gap-1 text-sm h-8"
+            >
+              <ArrowLeft className="h-3 w-3" />
+              Voltar
+            </Button>
+          )}
+          <Badge 
+            variant="default" 
+            className={`${getLevelBadge(navigation.level).color} text-white`}
+          >
+            {getCurrentLevelTitle()}
+          </Badge>
         </div>
       </CardHeader>
       <CardContent>
@@ -205,10 +282,15 @@ export function FunctionDetailGrid({ selectedFunction, onClose }: FunctionDetail
               </TableRow>
             </TableHeader>
             <TableBody>
-              {details.map((detail) => {
+              {currentData.map((detail) => {
                 const levelConfig = getLevelBadge(detail.level);
+                const hasChildren = canDrillDown(detail);
                 return (
-                  <TableRow key={detail.id} className="hover:bg-muted/50">
+                  <TableRow 
+                    key={detail.id} 
+                    className={`hover:bg-muted/50 ${hasChildren ? 'cursor-pointer' : ''}`}
+                    onClick={() => hasChildren && handleRowClick(detail)}
+                  >
                     <TableCell className="font-medium">
                       <div className="flex items-center gap-2">
                         <Badge 
@@ -217,9 +299,10 @@ export function FunctionDetailGrid({ selectedFunction, onClose }: FunctionDetail
                         >
                           {levelConfig.label}
                         </Badge>
-                        <span className={detail.level !== 'funcao' ? 'ml-4' : ''}>
-                          {detail.category}
-                        </span>
+                        <span>{detail.category}</span>
+                        {hasChildren && (
+                          <ChevronRight className="h-4 w-4 text-muted-foreground ml-auto" />
+                        )}
                       </div>
                     </TableCell>
                     <TableCell className="text-center font-mono">
