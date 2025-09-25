@@ -242,12 +242,31 @@ export function FunctionDetailGrid({ selectedFunction, onClose }: FunctionDetail
               Voltar
             </Button>
           )}
-          <Badge 
-            variant="default" 
-            className={`${getLevelBadge(navigation.level).color} text-white`}
-          >
-            {getCurrentLevelTitle()}
-          </Badge>
+          
+          {/* Breadcrumb completo */}
+          <div className="flex items-center gap-2">
+            <Badge variant="outline" className="text-xs">
+              Equipamentos Públicos
+            </Badge>
+            
+            {navigation.selectedEquipment && (
+              <>
+                <ChevronRight className="h-3 w-3 text-muted-foreground" />
+                <Badge variant="outline" className="text-xs">
+                  {allDetails.find(d => d.id === navigation.selectedEquipment)?.category}
+                </Badge>
+              </>
+            )}
+            
+            {navigation.selectedElement && (
+              <>
+                <ChevronRight className="h-3 w-3 text-muted-foreground" />
+                <Badge variant="outline" className="text-xs">
+                  {allDetails.find(d => d.id === navigation.selectedElement)?.category}
+                </Badge>
+              </>
+            )}
+          </div>
         </div>
       </CardHeader>
       <CardContent>
