@@ -10,9 +10,10 @@ import { useState } from "react";
 interface FilterSidebarTreeviewProps {
   isCollapsed?: boolean;
   onToggle?: () => void;
+  onSourcesChange?: (sources: string[]) => void;
 }
 
-export function FilterSidebarTreeview({ isCollapsed = false, onToggle }: FilterSidebarTreeviewProps) {
+export function FilterSidebarTreeview({ isCollapsed = false, onToggle, onSourcesChange }: FilterSidebarTreeviewProps) {
   const [selectedSources, setSelectedSources] = useState<string[]>([]);
 
   const sources = [
@@ -22,15 +23,18 @@ export function FilterSidebarTreeview({ isCollapsed = false, onToggle }: FilterS
   ];
 
   const handleSourceToggle = (sourceId: string) => {
-    setSelectedSources(prev => 
-      prev.includes(sourceId) 
-        ? prev.filter(id => id !== sourceId)
-        : [...prev, sourceId]
-    );
+    const newSources = selectedSources.includes(sourceId) 
+      ? selectedSources.filter(id => id !== sourceId)
+      : [...selectedSources, sourceId];
+    
+    setSelectedSources(newSources);
+    onSourcesChange?.(newSources);
   };
 
   const removeSource = (sourceId: string) => {
-    setSelectedSources(prev => prev.filter(id => id !== sourceId));
+    const newSources = selectedSources.filter(id => id !== sourceId);
+    setSelectedSources(newSources);
+    onSourcesChange?.(newSources);
   };
 
   if (isCollapsed) {

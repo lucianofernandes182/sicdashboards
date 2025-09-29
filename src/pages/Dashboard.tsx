@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { ArrowLeft, Menu } from "lucide-react";
 import { FilterSidebar } from "@/components/dashboard/FilterSidebar";
+import { FilterSidebarTreeview } from "@/components/dashboard/FilterSidebarTreeview";
 import { AnalyticalGrid } from "@/components/dashboard/AnalyticalGrid";
 import DetailBreakdownView from "@/components/dashboard/DetailBreakdownView";
 import { TreeViewComponent } from "@/components/dashboard/TreeViewComponent";
@@ -18,6 +19,7 @@ const Dashboard = () => {
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
   const [activeView, setActiveView] = useState("overview");
   const [selectedTreeNode, setSelectedTreeNode] = useState(null);
+  const [selectedDataSources, setSelectedDataSources] = useState<string[]>([]);
 
   const visionTypes = {
     orcamentaria: {
@@ -41,6 +43,10 @@ const Dashboard = () => {
 
   const handleTreeNodeSelect = (node: any) => {
     setSelectedTreeNode(node);
+  };
+
+  const handleDataSourcesChange = (sources: string[]) => {
+    setSelectedDataSources(sources);
   };
 
   return (
@@ -95,7 +101,15 @@ const Dashboard = () => {
       </header>
 
       <div className="flex h-[calc(100vh-73px)]">
-        <FilterSidebar isCollapsed={sidebarCollapsed} onViewChange={setActiveView} />
+        {activeView === "treeview" ? (
+          <FilterSidebarTreeview 
+            isCollapsed={sidebarCollapsed} 
+            onToggle={() => setSidebarCollapsed(!sidebarCollapsed)}
+            onSourcesChange={handleDataSourcesChange}
+          />
+        ) : (
+          <FilterSidebar isCollapsed={sidebarCollapsed} onViewChange={setActiveView} />
+        )}
         
         <main className="flex-1 overflow-auto">
           <div className="p-6">
@@ -127,7 +141,10 @@ const Dashboard = () => {
               </TabsContent>
 
               <TabsContent value="treeview" className="space-y-6">
-                <TreeViewComponent onNodeSelect={handleTreeNodeSelect} />
+                <TreeViewComponent 
+                  onNodeSelect={handleTreeNodeSelect} 
+                  selectedSources={selectedDataSources}
+                />
                 {selectedTreeNode && (
                   <div className="mt-6">
                     <h3 className="text-lg font-semibold mb-4">

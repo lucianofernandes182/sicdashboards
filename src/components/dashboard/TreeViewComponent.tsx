@@ -12,6 +12,7 @@ interface TreeNode {
   children?: TreeNode[];
   icon?: React.ReactNode;
   isEquipment?: boolean;
+  dataSources?: string[];
 }
 
 const treeData: TreeNode[] = [
@@ -22,6 +23,7 @@ const treeData: TreeNode[] = [
     value: 52000000,
     level: 1,
     icon: <Building2 className="h-4 w-4" />,
+    dataSources: ["contabilidade", "recursos-humanos", "materiais"],
     children: [
       {
         id: "1.2",
@@ -30,6 +32,7 @@ const treeData: TreeNode[] = [
         value: 52000000,
         level: 2,
         icon: <School className="h-4 w-4" />,
+        dataSources: ["contabilidade", "recursos-humanos"],
         children: [
           {
             id: "1.2.010",
@@ -38,6 +41,7 @@ const treeData: TreeNode[] = [
             value: 52000000,
             level: 3,
             icon: <Users className="h-4 w-4" />,
+            dataSources: ["contabilidade", "recursos-humanos"],
             children: [
               {
                 id: "1.2.010.001",
@@ -47,6 +51,7 @@ const treeData: TreeNode[] = [
                 level: 4,
                 icon: <MapPin className="h-4 w-4" />,
                 isEquipment: true,
+                dataSources: ["contabilidade", "recursos-humanos"],
                 children: [
                   {
                     id: "1.2.010.001.admin",
@@ -55,6 +60,7 @@ const treeData: TreeNode[] = [
                     value: 10000000,
                     level: 5,
                     icon: <FileText className="h-4 w-4" />,
+                    dataSources: ["contabilidade"],
                     children: [
                       {
                         id: "1.2.010.001.admin.rh",
@@ -62,7 +68,8 @@ const treeData: TreeNode[] = [
                         code: "001.01",
                         value: 10000000,
                         level: 6,
-                        icon: <DollarSign className="h-4 w-4" />
+                        icon: <DollarSign className="h-4 w-4" />,
+                        dataSources: ["recursos-humanos"]
                       }
                     ]
                   }
@@ -73,14 +80,47 @@ const treeData: TreeNode[] = [
         ]
       }
     ]
+  },
+  {
+    id: "2",
+    name: "MATERIAIS E SUPRIMENTOS",
+    code: "2",
+    value: 25000000,
+    level: 1,
+    icon: <Building2 className="h-4 w-4" />,
+    dataSources: ["materiais"],
+    children: [
+      {
+        id: "2.1",
+        name: "COMPRAS E LICITAÇÕES",
+        code: "21",
+        value: 25000000,
+        level: 2,
+        icon: <FileText className="h-4 w-4" />,
+        dataSources: ["materiais", "contabilidade"],
+        children: [
+          {
+            id: "2.1.001",
+            name: "Central de Compras",
+            code: "21.001",
+            value: 25000000,
+            level: 3,
+            icon: <Users className="h-4 w-4" />,
+            dataSources: ["materiais"],
+            isEquipment: true
+          }
+        ]
+      }
+    ]
   }
 ];
 
 interface TreeViewComponentProps {
   onNodeSelect?: (node: TreeNode) => void;
+  selectedSources?: string[];
 }
 
-export function TreeViewComponent({ onNodeSelect }: TreeViewComponentProps) {
+export function TreeViewComponent({ onNodeSelect, selectedSources = [] }: TreeViewComponentProps) {
   const [expandedNodes, setExpandedNodes] = useState<Set<string>>(new Set());
   const [selectedNode, setSelectedNode] = useState<string | null>(null);
 
@@ -107,6 +147,27 @@ export function TreeViewComponent({ onNodeSelect }: TreeViewComponentProps) {
       maximumFractionDigits: 0,
     }).format(value);
   };
+
+  const filterNodesByDataSources = (nodes: TreeNode[]): TreeNode[] => {
+    if (selectedSources.length === 0) return nodes;
+    
+    return nodes.filter(node => {
+      const hasMatchingDataSource = node.dataSources?.some(source => selectedSources.includes(source));
+      if (!hasMatchingDataSource) return false;
+      
+      if (node.children) {
+        const filteredChildren = filterNodesByDataSources(node.children);
+        return filteredChildren.length > 0 || hasMatchingDataSource;
+      }
+      
+      return hasMatchingDataSource;
+    }).map(node => ({
+      ...node,
+      children: node.children ? filterNodesByDataSources(node.children) : undefined
+    }));
+  };
+
+  const filteredTreeData = filterNodesByDataSources(treeData);
 
   const renderNode = (node: TreeNode) => {
     const hasChildren = node.children && node.children.length > 0;
@@ -184,8 +245,13 @@ export function TreeViewComponent({ onNodeSelect }: TreeViewComponentProps) {
       </CardHeader>
       <CardContent>
         <div className="space-y-1 max-h-96 overflow-y-auto">
-          {treeData.map(renderNode)}
+          {filteredTreeData.map(renderNode)}
         </div>
+        {selectedSources.length > 0 && filteredTreeData.length === 0 && (
+          <div className="text-center py-8 text-muted-foreground">
+            <p className="text-sm">Nenhum dado encontrado para as fontes selecionadas</p>
+          </div>
+        )}
       </CardContent>
     </Card>
   );
