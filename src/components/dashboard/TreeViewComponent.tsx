@@ -49,31 +49,108 @@ const treeData: TreeNode[] = [
                 code: "1.3.3205200.12.0001",
                 value: 42000000,
                 level: 4,
-                icon: <MapPin className="h-4 w-4" />,
-                isEquipment: true,
+                icon: <FileText className="h-4 w-4" />,
                 dataSources: ["contabilidade", "recursos-humanos"],
                 children: [
                   {
-                    id: "1.2.010.001.admin",
-                    name: "Administração e Gestão",
-                    code: "001",
-                    value: 10000000,
+                    id: "eq_001",
+                    name: "Equipamentos Públicos",
+                    value: 15000000,
                     level: 5,
-                    icon: <FileText className="h-4 w-4" />,
-                    dataSources: ["contabilidade"],
+                    icon: <Building2 className="h-4 w-4" />,
+                    isEquipment: true,
+                    dataSources: ["materiais"],
                     children: [
                       {
-                        id: "1.2.010.001.admin.rh",
-                        name: "Recursos Humanos",
-                        code: "001.01",
-                        value: 10000000,
+                        id: "eq_001_1",
+                        name: "Escola Municipal João Silva",
+                        value: 8000000,
                         level: 6,
-                        icon: <DollarSign className="h-4 w-4" />,
-                        dataSources: ["recursos-humanos"]
+                        icon: <School className="h-4 w-4" />,
+                        isEquipment: true,
+                        dataSources: ["materiais"],
+                        children: [
+                          {
+                            id: "eq_001_1_elem1",
+                            name: "Infraestrutura Básica",
+                            value: 3000000,
+                            level: 7,
+                            dataSources: ["materiais"]
+                          },
+                          {
+                            id: "eq_001_1_elem2",
+                            name: "Equipamentos de Ensino",
+                            value: 2500000,
+                            level: 7,
+                            dataSources: ["materiais"]
+                          },
+                          {
+                            id: "eq_001_1_elem3",
+                            name: "Mobiliário Escolar",
+                            value: 1500000,
+                            level: 7,
+                            dataSources: ["materiais"]
+                          },
+                          {
+                            id: "eq_001_1_elem4",
+                            name: "Sistemas de Segurança",
+                            value: 1000000,
+                            level: 7,
+                            dataSources: ["materiais"]
+                          }
+                        ]
+                      },
+                      {
+                        id: "eq_001_2",
+                        name: "Escola Municipal Maria Santos",
+                        value: 7000000,
+                        level: 6,
+                        icon: <School className="h-4 w-4" />,
+                        isEquipment: true,
+                        dataSources: ["materiais"],
+                        children: [
+                          {
+                            id: "eq_001_2_elem1",
+                            name: "Infraestrutura Básica",
+                            value: 2800000,
+                            level: 7,
+                            dataSources: ["materiais"]
+                          },
+                          {
+                            id: "eq_001_2_elem2",
+                            name: "Equipamentos de Ensino",
+                            value: 2200000,
+                            level: 7,
+                            dataSources: ["materiais"]
+                          },
+                          {
+                            id: "eq_001_2_elem3",
+                            name: "Mobiliário Escolar",
+                            value: 1200000,
+                            level: 7,
+                            dataSources: ["materiais"]
+                          },
+                          {
+                            id: "eq_001_2_elem4",
+                            name: "Laboratório de Informática",
+                            value: 800000,
+                            level: 7,
+                            dataSources: ["materiais"]
+                          }
+                        ]
                       }
                     ]
                   }
                 ]
+              },
+              {
+                id: "1.2.010.002",
+                name: "Coordenadoria de Ensino Fundamental",
+                code: "1.3.3205200.12.0002",
+                value: 10000000,
+                level: 4,
+                icon: <FileText className="h-4 w-4" />,
+                dataSources: ["contabilidade", "recursos-humanos"]
               }
             ]
           }
@@ -83,31 +160,63 @@ const treeData: TreeNode[] = [
   },
   {
     id: "2",
-    name: "MATERIAIS E SUPRIMENTOS",
-    code: "2",
-    value: 25000000,
+    name: "SAÚDE",
+    code: "10",
+    value: 35000000,
     level: 1,
     icon: <Building2 className="h-4 w-4" />,
-    dataSources: ["materiais"],
+    dataSources: ["contabilidade", "recursos-humanos", "materiais"],
     children: [
       {
         id: "2.1",
-        name: "COMPRAS E LICITAÇÕES",
-        code: "21",
-        value: 25000000,
+        name: "ATENÇÃO BÁSICA",
+        code: "301",
+        value: 20000000,
         level: 2,
-        icon: <FileText className="h-4 w-4" />,
-        dataSources: ["materiais", "contabilidade"],
+        icon: <Building2 className="h-4 w-4" />,
+        dataSources: ["contabilidade", "recursos-humanos", "materiais"],
         children: [
           {
             id: "2.1.001",
-            name: "Central de Compras",
-            code: "21.001",
-            value: 25000000,
+            name: "UBS Centro",
+            value: 8000000,
             level: 3,
-            icon: <Users className="h-4 w-4" />,
-            dataSources: ["materiais"],
-            isEquipment: true
+            icon: <Building2 className="h-4 w-4" />,
+            dataSources: ["contabilidade", "recursos-humanos", "materiais"],
+            children: [
+              {
+                id: "eq_002",
+                name: "Equipamentos Médicos",
+                value: 3000000,
+                level: 4,
+                icon: <Building2 className="h-4 w-4" />,
+                isEquipment: true,
+                dataSources: ["materiais"],
+                children: [
+                  {
+                    id: "eq_002_elem1",
+                    name: "Equipamentos de Diagnóstico",
+                    value: 1500000,
+                    level: 5,
+                    dataSources: ["materiais"]
+                  },
+                  {
+                    id: "eq_002_elem2",
+                    name: "Mobiliário Médico",
+                    value: 1000000,
+                    level: 5,
+                    dataSources: ["materiais"]
+                  },
+                  {
+                    id: "eq_002_elem3",
+                    name: "Sistemas de Informação",
+                    value: 500000,
+                    level: 5,
+                    dataSources: ["materiais"]
+                  }
+                ]
+              }
+            ]
           }
         ]
       }
