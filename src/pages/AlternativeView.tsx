@@ -16,6 +16,7 @@ import { CheckSquare, Scale, AlertTriangle, Activity, Zap, Home, Eye, GitBranch,
 import { ThemeToggle } from "@/components/ui/theme-toggle";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { useState } from "react";
 
@@ -27,6 +28,7 @@ const AlternativeView = () => {
   const [selectedTreeNode, setSelectedTreeNode] = useState<any>(null);
   const [sidebarCollapsed, setSidebarCollapsed] = useState(true);
   const [activeView, setActiveView] = useState("overview");
+  const [dataSource, setDataSource] = useState("contabilidade");
 
   const visionTypes = {
     orcamentaria: {
@@ -114,6 +116,32 @@ const AlternativeView = () => {
               </div>
               <Badge variant="secondary" className={`${currentVision.color} text-white`}>
                 {currentVision.title}
+              </Badge>
+            </div>
+          </div>
+
+          {/* Data Source Filter */}
+          <div className="mb-6 p-4 bg-card border rounded-lg">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-4">
+                <label htmlFor="data-source" className="text-sm font-medium text-foreground">
+                  Fonte de Dados:
+                </label>
+                <Select value={dataSource} onValueChange={setDataSource}>
+                  <SelectTrigger className="w-48">
+                    <SelectValue placeholder="Selecione a fonte" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="contabilidade">Contabilidade</SelectItem>
+                    <SelectItem value="recursos-humanos">Recursos Humanos</SelectItem>
+                    <SelectItem value="materiais">Materiais e Suprimentos</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+              <Badge variant="outline" className="text-xs">
+                {dataSource === "contabilidade" && "Contabilidade"}
+                {dataSource === "recursos-humanos" && "Recursos Humanos"}
+                {dataSource === "materiais" && "Materiais e Suprimentos"}
               </Badge>
             </div>
           </div>
