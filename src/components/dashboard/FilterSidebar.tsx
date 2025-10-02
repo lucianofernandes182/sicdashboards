@@ -114,6 +114,14 @@ export function FilterSidebar({ isCollapsed = false, onToggle, activeView = "ove
             >
               Projeções
             </Button>
+            <Button
+              variant={activeView === "comparativo" ? "default" : "outline"}
+              size="sm"
+              className="w-full justify-start text-xs h-7 glass border-border/50"
+              onClick={() => onViewChange?.("comparativo")}
+            >
+              Comparativo
+            </Button>
           </div>
         </div>
 

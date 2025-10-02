@@ -12,6 +12,7 @@ import { AnalyticalGrid } from "@/components/dashboard/AnalyticalGrid";
 import DetailBreakdownView from "@/components/dashboard/DetailBreakdownView";
 import ProjectionsView from "@/components/dashboard/ProjectionsView";
 import MapView from "@/components/dashboard/MapView";
+import ComparativeView from "@/components/dashboard/ComparativeView";
 import { CheckSquare, Scale, AlertTriangle, Activity, Zap, Home, Eye, GitBranch, ArrowLeft } from "lucide-react";
 import { ThemeToggle } from "@/components/ui/theme-toggle";
 import { Button } from "@/components/ui/button";
@@ -207,6 +208,10 @@ const AlternativeView = () => {
 
             {activeView === "projecoes" && (
               <ProjectionsView />
+            )}
+
+            {activeView === "comparativo" && (
+              <ComparativeView />
             )}
           </div>
         </div>
