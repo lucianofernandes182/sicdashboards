@@ -218,56 +218,59 @@ export function TreeViewComponent({ onNodeSelect, selectedSources = [] }: TreeVi
     const hasChildren = node.children && node.children.length > 0;
     const isExpanded = expandedNodes.has(node.id);
     const isSelected = selectedNode === node.id;
+    const mobilePadding = Math.min((node.level - 1) * 12, 24); // Limita padding em mobile
 
     return (
       <div key={node.id} className="w-full">
         <div 
           className={cn(
-            "flex items-center gap-2 p-2 rounded-lg cursor-pointer transition-all duration-200 hover:bg-muted/30",
+            "flex flex-col sm:flex-row sm:items-center gap-2 p-2 rounded-lg cursor-pointer transition-all duration-200 hover:bg-muted/30",
             isSelected && "bg-primary/10 border border-primary/20",
             node.isEquipment && "bg-blue-500/10 border border-blue-500/20"
           )}
-          style={{ paddingLeft: `${(node.level - 1) * 20 + 8}px` }}
+          style={{ paddingLeft: `${mobilePadding}px` }}
           onClick={() => handleNodeClick(node)}
         >
-          {hasChildren && (
-            <button
-              onClick={(e) => {
-                e.stopPropagation();
-                toggleExpanded(node.id);
-              }}
-              className="flex-shrink-0 p-1 hover:bg-muted/50 rounded"
-            >
-              {isExpanded ? (
-                <ChevronDown className="h-3 w-3" />
-              ) : (
-                <ChevronRight className="h-3 w-3" />
-              )}
-            </button>
-          )}
-          
-          {!hasChildren && <div className="w-5" />}
-          
-          <div className="flex items-center gap-2 flex-1 min-w-0">
-            {node.icon}
-            <div className="flex-1 min-w-0">
-              <div className="flex items-center gap-2">
-                {node.code && (
-                  <span className="text-xs font-mono text-muted-foreground bg-muted/20 px-2 py-1 rounded">
-                    {node.code}
-                  </span>
+          {/* Primeira linha: botão expand + ícone + código */}
+          <div className="flex items-center gap-2 w-full sm:w-auto sm:flex-1 min-w-0">
+            {hasChildren ? (
+              <button
+                onClick={(e) => {
+                  e.stopPropagation();
+                  toggleExpanded(node.id);
+                }}
+                className="flex-shrink-0 p-1 hover:bg-muted/50 rounded"
+              >
+                {isExpanded ? (
+                  <ChevronDown className="h-3 w-3" />
+                ) : (
+                  <ChevronRight className="h-3 w-3" />
                 )}
-                <span className={cn(
-                  "text-sm font-medium truncate",
-                  node.isEquipment && "text-blue-600 dark:text-blue-400"
-                )}>
-                  {node.name}
+              </button>
+            ) : (
+              <div className="w-5 flex-shrink-0" />
+            )}
+            
+            {node.icon && <div className="flex-shrink-0">{node.icon}</div>}
+            
+            <div className="flex-1 min-w-0 flex flex-col gap-1">
+              {node.code && (
+                <span className="text-xs font-mono text-muted-foreground bg-muted/20 px-2 py-0.5 rounded w-fit">
+                  {node.code}
                 </span>
-              </div>
+              )}
+              <span className={cn(
+                "text-xs sm:text-sm font-medium break-words",
+                node.isEquipment && "text-blue-600 dark:text-blue-400"
+              )}>
+                {node.name}
+              </span>
             </div>
-            <div className="text-sm font-semibold text-primary">
-              {formatCurrency(node.value)}
-            </div>
+          </div>
+          
+          {/* Valor - fica abaixo em mobile, à direita em desktop */}
+          <div className="text-xs sm:text-sm font-semibold text-primary flex-shrink-0 pl-7 sm:pl-0">
+            {formatCurrency(node.value)}
           </div>
         </div>
 
