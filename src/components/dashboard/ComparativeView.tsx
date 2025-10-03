@@ -461,6 +461,8 @@ const ComparativeView = () => {
                         outerRadius={70}
                         paddingAngle={2}
                         dataKey="value"
+                        label={({ value }) => `${value}%`}
+                        labelLine={false}
                       >
                         {school.pieData.map((entry, index) => (
                           <Cell key={`cell-${index}`} fill={PIE_COLORS[index % PIE_COLORS.length]} />
@@ -471,7 +473,8 @@ const ComparativeView = () => {
                           backgroundColor: 'hsl(var(--card))',
                           border: '1px solid hsl(var(--border))',
                           borderRadius: '8px',
-                          fontSize: '11px'
+                          fontSize: '11px',
+                          color: 'white'
                         }}
                         formatter={(value: number) => `${value}%`}
                       />
@@ -499,7 +502,8 @@ const ComparativeView = () => {
                           backgroundColor: 'hsl(var(--card))',
                           border: '1px solid hsl(var(--border))',
                           borderRadius: '8px',
-                          fontSize: '11px'
+                          fontSize: '11px',
+                          color: 'white'
                         }}
                       />
                       <Bar dataKey="value" fill={school.color} radius={[0, 4, 4, 0]} />
