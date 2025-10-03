@@ -218,64 +218,69 @@ export function TreeViewComponent({ onNodeSelect, selectedSources = [] }: TreeVi
     const hasChildren = node.children && node.children.length > 0;
     const isExpanded = expandedNodes.has(node.id);
     const isSelected = selectedNode === node.id;
-    const mobilePadding = Math.min((node.level - 1) * 12, 24); // Limita padding em mobile
 
     return (
       <div key={node.id} className="w-full">
         <div 
           className={cn(
-            "flex flex-col sm:flex-row sm:items-center gap-2 p-2 rounded-lg cursor-pointer transition-all duration-200 hover:bg-muted/30",
+            "flex items-start gap-1.5 sm:gap-2 p-2 sm:p-3 rounded-lg cursor-pointer transition-all duration-200 hover:bg-muted/30",
             isSelected && "bg-primary/10 border border-primary/20",
             node.isEquipment && "bg-blue-500/10 border border-blue-500/20"
           )}
-          style={{ paddingLeft: `${mobilePadding}px` }}
+          style={{ paddingLeft: `${Math.min((node.level - 1) * 12, 36)}px` }}
           onClick={() => handleNodeClick(node)}
         >
-          {/* Primeira linha: botão expand + ícone + código */}
-          <div className="flex items-center gap-2 w-full sm:w-auto sm:flex-1 min-w-0">
-            {hasChildren ? (
-              <button
-                onClick={(e) => {
-                  e.stopPropagation();
-                  toggleExpanded(node.id);
-                }}
-                className="flex-shrink-0 p-1 hover:bg-muted/50 rounded"
-              >
-                {isExpanded ? (
-                  <ChevronDown className="h-3 w-3" />
-                ) : (
-                  <ChevronRight className="h-3 w-3" />
-                )}
-              </button>
-            ) : (
-              <div className="w-5 flex-shrink-0" />
-            )}
-            
-            {node.icon && <div className="flex-shrink-0">{node.icon}</div>}
-            
-            <div className="flex-1 min-w-0 flex flex-col gap-1">
-              {node.code && (
-                <span className="text-xs font-mono text-muted-foreground bg-muted/20 px-2 py-0.5 rounded w-fit">
-                  {node.code}
-                </span>
+          {/* Botão expand/collapse */}
+          {hasChildren ? (
+            <button
+              onClick={(e) => {
+                e.stopPropagation();
+                toggleExpanded(node.id);
+              }}
+              className="flex-shrink-0 p-0.5 hover:bg-muted/50 rounded mt-0.5"
+            >
+              {isExpanded ? (
+                <ChevronDown className="h-3 w-3 sm:h-4 sm:w-4" />
+              ) : (
+                <ChevronRight className="h-3 w-3 sm:h-4 sm:w-4" />
               )}
-              <span className={cn(
-                "text-xs sm:text-sm font-medium break-words",
+            </button>
+          ) : (
+            <div className="w-4 sm:w-5 flex-shrink-0" />
+          )}
+          
+          {/* Ícone */}
+          {node.icon && (
+            <div className="flex-shrink-0 mt-0.5">
+              {node.icon}
+            </div>
+          )}
+          
+          {/* Conteúdo principal */}
+          <div className="flex-1 min-w-0 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-1 sm:gap-4">
+            <div className="flex-1 min-w-0">
+              {node.code && (
+                <div className="text-[10px] sm:text-xs font-mono text-muted-foreground bg-muted/20 px-1.5 py-0.5 rounded inline-block mb-1">
+                  {node.code}
+                </div>
+              )}
+              <div className={cn(
+                "text-xs sm:text-sm font-medium leading-snug",
                 node.isEquipment && "text-blue-600 dark:text-blue-400"
               )}>
                 {node.name}
-              </span>
+              </div>
             </div>
-          </div>
-          
-          {/* Valor - fica abaixo em mobile, à direita em desktop */}
-          <div className="text-xs sm:text-sm font-semibold text-primary flex-shrink-0 pl-7 sm:pl-0">
-            {formatCurrency(node.value)}
+            
+            {/* Valor */}
+            <div className="text-xs sm:text-sm font-bold text-primary whitespace-nowrap">
+              {formatCurrency(node.value)}
+            </div>
           </div>
         </div>
 
         {hasChildren && isExpanded && (
-          <div className="mt-1">
+          <div className="mt-0.5">
             {node.children?.map(renderNode)}
           </div>
         )}
