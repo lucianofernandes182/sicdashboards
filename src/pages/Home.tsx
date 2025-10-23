@@ -3,7 +3,7 @@ import { useState } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
-import { Menu, LayoutDashboard, GitBranch, FileText, BarChart3, TrendingUp } from "lucide-react";
+import { Menu, LayoutDashboard, GitBranch, FileText, BarChart3, TrendingUp, ArrowLeftRight } from "lucide-react";
 
 const Home = () => {
   const navigate = useNavigate();
@@ -103,6 +103,17 @@ const Home = () => {
                   >
                     <TrendingUp className="h-4 w-4" />
                     Projeções
+                  </Button>
+                  <Button 
+                    variant="ghost" 
+                    className="justify-start gap-3"
+                    onClick={() => {
+                      navigate("/de-para");
+                      setMenuOpen(false);
+                    }}
+                  >
+                    <ArrowLeftRight className="h-4 w-4" />
+                    De/Para
                   </Button>
                 </nav>
               </SheetContent>

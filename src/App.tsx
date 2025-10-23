@@ -7,6 +7,7 @@ import Home from "./pages/Home";
 import Dashboard from "./pages/Dashboard";
 import AlternativeView from "./pages/AlternativeView";
 import InconsistentRecords from "./pages/InconsistentRecords";
+import DeParaMapping from "./pages/DeParaMapping";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -22,6 +23,7 @@ const App = () => (
           <Route path="/dashboard/:type" element={<Dashboard />} />
           <Route path="/alternative" element={<AlternativeView />} />
           <Route path="/inconsistent-records" element={<InconsistentRecords />} />
+          <Route path="/de-para" element={<DeParaMapping />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>
