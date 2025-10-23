@@ -1,10 +1,13 @@
 import { useNavigate } from "react-router-dom";
+import { useState } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Menu } from "lucide-react";
+import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
+import { Menu, LayoutDashboard, GitBranch, FileText, BarChart3, TrendingUp } from "lucide-react";
 
 const Home = () => {
   const navigate = useNavigate();
+  const [menuOpen, setMenuOpen] = useState(false);
 
   const visionOptions = [
     {
@@ -35,9 +38,75 @@ const Home = () => {
       <header className="relative z-10 bg-card/80 backdrop-blur-md shadow-sm border-b border-border/50">
         <div className="flex items-center justify-between px-6 py-4">
           <div className="flex items-center gap-4">
-            <Button variant="ghost" size="icon">
-              <Menu className="h-6 w-6" />
-            </Button>
+            <Sheet open={menuOpen} onOpenChange={setMenuOpen}>
+              <SheetTrigger asChild>
+                <Button variant="ghost" size="icon">
+                  <Menu className="h-6 w-6" />
+                </Button>
+              </SheetTrigger>
+              <SheetContent side="left" className="w-[280px] sm:w-[320px]">
+                <SheetHeader>
+                  <SheetTitle>Menu</SheetTitle>
+                </SheetHeader>
+                <nav className="flex flex-col gap-2 mt-6">
+                  <Button 
+                    variant="ghost" 
+                    className="justify-start gap-3"
+                    onClick={() => {
+                      navigate("/dashboard/orcamentaria");
+                      setMenuOpen(false);
+                    }}
+                  >
+                    <LayoutDashboard className="h-4 w-4" />
+                    Dashboard
+                  </Button>
+                  <Button 
+                    variant="ghost" 
+                    className="justify-start gap-3"
+                    onClick={() => {
+                      navigate("/dashboard/orcamentaria");
+                      setMenuOpen(false);
+                    }}
+                  >
+                    <GitBranch className="h-4 w-4" />
+                    Análise de Custos
+                  </Button>
+                  <Button 
+                    variant="ghost" 
+                    className="justify-start gap-3"
+                    onClick={() => {
+                      navigate("/dashboard/orcamentaria");
+                      setMenuOpen(false);
+                    }}
+                  >
+                    <FileText className="h-4 w-4" />
+                    Detalhamento
+                  </Button>
+                  <Button 
+                    variant="ghost" 
+                    className="justify-start gap-3"
+                    onClick={() => {
+                      navigate("/dashboard/orcamentaria");
+                      setMenuOpen(false);
+                    }}
+                  >
+                    <BarChart3 className="h-4 w-4" />
+                    Comparativo
+                  </Button>
+                  <Button 
+                    variant="ghost" 
+                    className="justify-start gap-3"
+                    onClick={() => {
+                      navigate("/dashboard/orcamentaria");
+                      setMenuOpen(false);
+                    }}
+                  >
+                    <TrendingUp className="h-4 w-4" />
+                    Projeções
+                  </Button>
+                </nav>
+              </SheetContent>
+            </Sheet>
             <div className="flex items-center gap-3">
               <div className="w-12 h-12 rounded overflow-hidden">
                 <img 
