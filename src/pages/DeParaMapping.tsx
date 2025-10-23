@@ -13,6 +13,7 @@ const DeParaMapping = () => {
   const [selectedSystem, setSelectedSystem] = useState<string>("");
   const [selectedFile, setSelectedFile] = useState<string>("");
   const [fieldMappings, setFieldMappings] = useState<Record<string, string>>({});
+  const [fieldFormatting, setFieldFormatting] = useState<Record<string, string>>({});
 
   // Mock data - Replace with actual API calls to MongoDB
   const systems = [
@@ -21,16 +22,16 @@ const DeParaMapping = () => {
     { id: "sistema3", name: "Sistema 3" },
   ];
 
-  const filesBySystem: Record<string, Array<{ id: string; name: string }>> = {
+  const filesBySystem: Record<string, Array<{ id: string; name: string; version: string }>> = {
     smarcp: [
-      { id: "schema1", name: "Schema Orçamentário" },
-      { id: "schema2", name: "Schema Financeiro" },
+      { id: "schema1", name: "Schema Orçamentário", version: "v1.2.0" },
+      { id: "schema2", name: "Schema Financeiro", version: "v1.0.5" },
     ],
     sistema2: [
-      { id: "schema3", name: "Schema Receitas" },
+      { id: "schema3", name: "Schema Receitas", version: "v2.1.0" },
     ],
     sistema3: [
-      { id: "schema4", name: "Schema Despesas" },
+      { id: "schema4", name: "Schema Despesas", version: "v1.5.2" },
     ],
   };
 
@@ -62,11 +63,19 @@ const DeParaMapping = () => {
     }));
   };
 
+  const handleFormattingChange = (schemaField: string, formatting: string) => {
+    setFieldFormatting((prev) => ({
+      ...prev,
+      [schemaField]: formatting,
+    }));
+  };
+
   const handleSaveMappings = () => {
     console.log("Salvando mapeamentos:", {
       system: selectedSystem,
       file: selectedFile,
       mappings: fieldMappings,
+      formatting: fieldFormatting,
     });
     // TODO: Implement API call to save mappings to MongoDB
   };
@@ -86,8 +95,10 @@ const DeParaMapping = () => {
 
       <main className="container mx-auto px-4 py-8">
         <div className="grid gap-6">
-          {/* System Selection */}
-          <Card>
+          {/* System and Schema Selection - Side by Side */}
+          <div className="grid md:grid-cols-2 gap-6">
+            {/* System Selection */}
+            <Card>
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
                 <Database className="h-5 w-5" />
@@ -117,9 +128,9 @@ const DeParaMapping = () => {
             </CardContent>
           </Card>
 
-          {/* File Selection */}
-          {selectedSystem && (
-            <Card>
+            {/* File Selection */}
+            {selectedSystem && (
+              <Card>
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
                   <FileJson className="h-5 w-5" />
@@ -137,14 +148,18 @@ const DeParaMapping = () => {
                   <SelectContent>
                     {filesBySystem[selectedSystem]?.map((file) => (
                       <SelectItem key={file.id} value={file.id}>
-                        {file.name}
+                        <div className="flex flex-col">
+                          <span>{file.name}</span>
+                          <span className="text-xs text-muted-foreground">{file.version}</span>
+                        </div>
                       </SelectItem>
                     ))}
                   </SelectContent>
                 </Select>
               </CardContent>
             </Card>
-          )}
+            )}
+          </div>
 
           {/* Field Mapping */}
           {selectedFile && (
@@ -167,6 +182,7 @@ const DeParaMapping = () => {
                         <TableHead>Tipo</TableHead>
                         <TableHead>Descrição</TableHead>
                         <TableHead>Campo da API</TableHead>
+                        <TableHead>Formatação</TableHead>
                       </TableRow>
                     </TableHeader>
                     <TableBody>
@@ -193,6 +209,27 @@ const DeParaMapping = () => {
                                 className="max-w-xs"
                               />
                             </div>
+                          </TableCell>
+                          <TableCell>
+                            <Select
+                              value={fieldFormatting[field.field] || ""}
+                              onValueChange={(value) =>
+                                handleFormattingChange(field.field, value)
+                              }
+                            >
+                              <SelectTrigger className="max-w-xs">
+                                <SelectValue placeholder="Selecione formatação..." />
+                              </SelectTrigger>
+                              <SelectContent>
+                                <SelectItem value="none">Sem formatação</SelectItem>
+                                <SelectItem value="uppercase">MAIÚSCULAS</SelectItem>
+                                <SelectItem value="lowercase">minúsculas</SelectItem>
+                                <SelectItem value="trim">Remover espaços</SelectItem>
+                                <SelectItem value="number">Converter para número</SelectItem>
+                                <SelectItem value="date">Formatar como data</SelectItem>
+                                <SelectItem value="currency">Formatar como moeda</SelectItem>
+                              </SelectContent>
+                            </Select>
                           </TableCell>
                         </TableRow>
                       ))}
