@@ -3,7 +3,8 @@ import { useParams, useNavigate } from "react-router-dom";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { ArrowLeft, Menu } from "lucide-react";
+import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
+import { ArrowLeft, Menu, LayoutDashboard, GitBranch, FileText, BarChart3, TrendingUp } from "lucide-react";
 import { FilterSidebar } from "@/components/dashboard/FilterSidebar";
 import { FilterSidebarTreeview } from "@/components/dashboard/FilterSidebarTreeview";
 import { AnalyticalGrid } from "@/components/dashboard/AnalyticalGrid";
@@ -12,6 +13,7 @@ import { TreeViewComponent } from "@/components/dashboard/TreeViewComponent";
 import MapView from "@/components/dashboard/MapView";
 import { CostCompositionTreemap } from "@/components/dashboard/CostCompositionTreemap";
 import ProjectionsView from "@/components/dashboard/ProjectionsView";
+import ComparativeView from "@/components/dashboard/ComparativeView";
 
 const Dashboard = () => {
   const { type } = useParams();
@@ -20,6 +22,7 @@ const Dashboard = () => {
   const [activeView, setActiveView] = useState("overview");
   const [selectedTreeNode, setSelectedTreeNode] = useState(null);
   const [selectedDataSources, setSelectedDataSources] = useState<string[]>([]);
+  const [menuOpen, setMenuOpen] = useState(false);
 
   const visionTypes = {
     orcamentaria: {
@@ -68,13 +71,78 @@ const Dashboard = () => {
             >
               <ArrowLeft className="h-5 w-5" />
             </Button>
-            <Button 
-              variant="ghost" 
-              size="icon"
-              onClick={() => setSidebarCollapsed(!sidebarCollapsed)}
-            >
-              <Menu className="h-5 w-5" />
-            </Button>
+            <Sheet open={menuOpen} onOpenChange={setMenuOpen}>
+              <SheetTrigger asChild>
+                <Button 
+                  variant="ghost" 
+                  size="icon"
+                >
+                  <Menu className="h-5 w-5" />
+                </Button>
+              </SheetTrigger>
+              <SheetContent side="left" className="w-[280px] sm:w-[320px]">
+                <SheetHeader>
+                  <SheetTitle>Menu</SheetTitle>
+                </SheetHeader>
+                <nav className="flex flex-col gap-2 mt-6">
+                  <Button 
+                    variant={activeView === "overview" ? "default" : "ghost"} 
+                    className="justify-start gap-3"
+                    onClick={() => {
+                      setActiveView("overview");
+                      setMenuOpen(false);
+                    }}
+                  >
+                    <LayoutDashboard className="h-4 w-4" />
+                    Dashboard
+                  </Button>
+                  <Button 
+                    variant={activeView === "treeview" ? "default" : "ghost"} 
+                    className="justify-start gap-3"
+                    onClick={() => {
+                      setActiveView("treeview");
+                      setMenuOpen(false);
+                    }}
+                  >
+                    <GitBranch className="h-4 w-4" />
+                    Análise de Custos
+                  </Button>
+                  <Button 
+                    variant={activeView === "detalhamento" ? "default" : "ghost"} 
+                    className="justify-start gap-3"
+                    onClick={() => {
+                      setActiveView("detalhamento");
+                      setMenuOpen(false);
+                    }}
+                  >
+                    <FileText className="h-4 w-4" />
+                    Detalhamento
+                  </Button>
+                  <Button 
+                    variant={activeView === "comparativo" ? "default" : "ghost"} 
+                    className="justify-start gap-3"
+                    onClick={() => {
+                      setActiveView("comparativo");
+                      setMenuOpen(false);
+                    }}
+                  >
+                    <BarChart3 className="h-4 w-4" />
+                    Comparativo
+                  </Button>
+                  <Button 
+                    variant={activeView === "projecoes" ? "default" : "ghost"} 
+                    className="justify-start gap-3"
+                    onClick={() => {
+                      setActiveView("projecoes");
+                      setMenuOpen(false);
+                    }}
+                  >
+                    <TrendingUp className="h-4 w-4" />
+                    Projeções
+                  </Button>
+                </nav>
+              </SheetContent>
+            </Sheet>
             <div className="flex items-center gap-3">
               <div className="w-10 h-10 bg-blue-600 rounded flex items-center justify-center">
                 <span className="text-white font-bold text-xs">VV</span>
@@ -122,9 +190,9 @@ const Dashboard = () => {
             <Tabs value={activeView} onValueChange={setActiveView} className="space-y-6">
               <TabsList className="grid w-full grid-cols-5 bg-background/50 backdrop-blur-sm">
                 <TabsTrigger value="overview">Visão Geral</TabsTrigger>
-                <TabsTrigger value="analysis">Análise</TabsTrigger>
-                <TabsTrigger value="treeview">Visão Hierárquica</TabsTrigger>
+                <TabsTrigger value="treeview">Análise de Custos</TabsTrigger>
                 <TabsTrigger value="detalhamento">Detalhamento</TabsTrigger>
+                <TabsTrigger value="comparativo">Comparativo</TabsTrigger>
                 <TabsTrigger value="projecoes">Projeções</TabsTrigger>
               </TabsList>
 
@@ -134,10 +202,6 @@ const Dashboard = () => {
                   <MapView />
                   <CostCompositionTreemap />
                 </div>
-              </TabsContent>
-
-              <TabsContent value="analysis" className="space-y-6">
-                <AnalyticalGrid />
               </TabsContent>
 
               <TabsContent value="treeview" className="space-y-6">
@@ -157,6 +221,10 @@ const Dashboard = () => {
 
               <TabsContent value="detalhamento" className="space-y-6">
                 <DetailBreakdownView />
+              </TabsContent>
+
+              <TabsContent value="comparativo" className="space-y-6">
+                <ComparativeView />
               </TabsContent>
 
               <TabsContent value="projecoes" className="space-y-6">
