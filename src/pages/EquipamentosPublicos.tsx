@@ -67,6 +67,7 @@ const EquipamentosPublicos = () => {
   const [associationDialogOpen, setAssociationDialogOpen] = useState(false);
   const [associatingEquipamento, setAssociatingEquipamento] = useState<EquipamentoFormValues | null>(null);
   const [selectedAssociationSystem, setSelectedAssociationSystem] = useState<string>("");
+  const [searchEquipamento, setSearchEquipamento] = useState<string>("");
   const [associations, setAssociations] = useState<Record<string, EquipamentoAssociado[]>>({});
 
   // Mock data - Replace with actual API calls to MongoDB
@@ -229,7 +230,23 @@ const EquipamentosPublicos = () => {
   const handleOpenAssociations = (equipamento: EquipamentoFormValues) => {
     setAssociatingEquipamento(equipamento);
     setSelectedAssociationSystem("");
+    setSearchEquipamento("");
     setAssociationDialogOpen(true);
+  };
+
+  const getFilteredEquipamentos = () => {
+    if (!selectedAssociationSystem) return [];
+    
+    const equipamentos = equipamentosPorSistema[selectedAssociationSystem] || [];
+    
+    if (!searchEquipamento.trim()) return equipamentos;
+    
+    const searchLower = searchEquipamento.toLowerCase();
+    return equipamentos.filter(
+      (eq) =>
+        eq.id.toLowerCase().includes(searchLower) ||
+        eq.descricao.toLowerCase().includes(searchLower)
+    );
   };
 
   const handleToggleAssociation = (equipamentoId: string, sistema: string, descricao: string) => {
@@ -1028,12 +1045,31 @@ const EquipamentosPublicos = () => {
                     {sistemasIntegrados.find((s) => s.id === selectedAssociationSystem)?.name}
                   </CardTitle>
                   <CardDescription>
-                    Selecione os equipamentos que deseja associar ao equipamento principal
+                    Pesquise e selecione os equipamentos que deseja associar ao equipamento principal
                   </CardDescription>
                 </CardHeader>
                 <CardContent>
-                  <div className="space-y-3">
-                    {equipamentosPorSistema[selectedAssociationSystem]?.map((eq) => (
+                  <div className="space-y-4">
+                    {/* Search Field */}
+                    <div className="space-y-2">
+                      <Label>Pesquisar Equipamento</Label>
+                      <Input
+                        placeholder="Digite o ID ou descrição do equipamento..."
+                        value={searchEquipamento}
+                        onChange={(e) => setSearchEquipamento(e.target.value)}
+                      />
+                    </div>
+
+                    {/* Equipment List */}
+                    <div className="space-y-3 max-h-[400px] overflow-y-auto">
+                      {getFilteredEquipamentos().length === 0 ? (
+                        <div className="text-center text-muted-foreground py-8">
+                          {searchEquipamento
+                            ? "Nenhum equipamento encontrado com esse termo de busca."
+                            : "Nenhum equipamento disponível neste sistema."}
+                        </div>
+                      ) : (
+                        getFilteredEquipamentos().map((eq) => (
                       <div
                         key={eq.id}
                         className="flex items-center space-x-3 p-3 border rounded-lg hover:bg-accent/50 transition-colors"
@@ -1053,7 +1089,9 @@ const EquipamentosPublicos = () => {
                           <div className="text-muted-foreground">{eq.descricao}</div>
                         </label>
                       </div>
-                    ))}
+                        ))
+                      )}
+                    </div>
                   </div>
                 </CardContent>
               </Card>
