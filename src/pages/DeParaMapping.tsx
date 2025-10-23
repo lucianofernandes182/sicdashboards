@@ -14,6 +14,20 @@ const DeParaMapping = () => {
   const [selectedFile, setSelectedFile] = useState<string>("");
   const [fieldMappings, setFieldMappings] = useState<Record<string, string>>({});
   const [fieldFormatting, setFieldFormatting] = useState<Record<string, string>>({});
+  
+  // Campos padronizados do SIC (PARA)
+  const sicFields = [
+    { field: "modelo", description: "Modelo" },
+    { field: "funcao", description: "Função" },
+    { field: "objeto_custos_ep", description: "Objeto de Custos (EP)" },
+    { field: "unidade_custos", description: "Unidade de Custos" },
+    { field: "centro_custos", description: "Centro de Custos" },
+    { field: "poder_orgao", description: "Poder/Órgão" },
+    { field: "ente_federado", description: "Ente Federado" },
+    { field: "ibge", description: "IBGE" },
+    { field: "funcao_sic", description: "Função (SIC)" },
+    { field: "numero_controle", description: "Nº Controle" },
+  ];
 
   // Mock data - Replace with actual API calls to MongoDB
   const systems = [
@@ -35,31 +49,45 @@ const DeParaMapping = () => {
     ],
   };
 
+  // Campos dos sistemas de origem (DE)
   const schemaFields: Record<string, Array<{ field: string; type: string; description: string }>> = {
     schema1: [
-      { field: "codigo", type: "string", description: "Código do elemento" },
-      { field: "descricao", type: "string", description: "Descrição do item" },
-      { field: "valor", type: "number", description: "Valor orçado" },
-      { field: "data", type: "date", description: "Data de referência" },
+      { field: "entidade", type: "string", description: "Entidade" },
+      { field: "unio_orcamentaria_1nivel", type: "string", description: "Unidade Orçamentária (1º Nível)" },
+      { field: "unio_orcamentaria_2nivel", type: "string", description: "Unidade Orçamentária (2º Nível)" },
+      { field: "unidade_executora", type: "string", description: "Unidade Executora" },
+      { field: "ep_ligada_uoiue", type: "string", description: "EP ligada a UOIUE" },
+      { field: "unidade_custos_ep", type: "string", description: "Unidade de Custos EP" },
+      { field: "centro_custos_ep", type: "string", description: "Centro de Custos EP" },
+      { field: "funcao", type: "string", description: "Função" },
+      { field: "subfuncao", type: "string", description: "SubFunção" },
+      { field: "programa", type: "string", description: "Programa" },
+      { field: "acao", type: "string", description: "Ação" },
     ],
     schema2: [
-      { field: "id_transacao", type: "string", description: "ID da transação" },
-      { field: "valor_total", type: "number", description: "Valor total" },
+      { field: "codigo_unidade", type: "string", description: "Código da Unidade" },
+      { field: "descricao_unidade", type: "string", description: "Descrição da Unidade" },
+      { field: "codigo_funcao", type: "string", description: "Código da Função" },
+      { field: "valor_orcado", type: "number", description: "Valor Orçado" },
     ],
     schema3: [
-      { field: "receita_id", type: "string", description: "ID da receita" },
-      { field: "valor_receita", type: "number", description: "Valor da receita" },
+      { field: "orgao", type: "string", description: "Órgão" },
+      { field: "unidade_gestora", type: "string", description: "Unidade Gestora" },
+      { field: "funcao_governo", type: "string", description: "Função de Governo" },
+      { field: "acao_orcamentaria", type: "string", description: "Ação Orçamentária" },
     ],
     schema4: [
-      { field: "despesa_id", type: "string", description: "ID da despesa" },
-      { field: "valor_despesa", type: "number", description: "Valor da despesa" },
+      { field: "codigo_despesa", type: "string", description: "Código da Despesa" },
+      { field: "elemento_despesa", type: "string", description: "Elemento de Despesa" },
+      { field: "valor_empenhado", type: "number", description: "Valor Empenhado" },
+      { field: "data_empenho", type: "date", description: "Data do Empenho" },
     ],
   };
 
-  const handleMappingChange = (schemaField: string, apiField: string) => {
+  const handleMappingChange = (sourceField: string, sicField: string) => {
     setFieldMappings((prev) => ({
       ...prev,
-      [schemaField]: apiField,
+      [sourceField]: sicField,
     }));
   };
 
@@ -102,10 +130,10 @@ const DeParaMapping = () => {
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
                 <Database className="h-5 w-5" />
-                Selecionar Sistema Integrado
+                DE - Sistema Origem
               </CardTitle>
               <CardDescription>
-                Escolha o sistema fonte de dados para configurar o mapeamento
+                Escolha o sistema que fornece os dados a serem transformados
               </CardDescription>
             </CardHeader>
             <CardContent>
@@ -134,10 +162,10 @@ const DeParaMapping = () => {
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
                   <FileJson className="h-5 w-5" />
-                  Selecionar Schema JSON
+                  Schema de Dados
                 </CardTitle>
                 <CardDescription>
-                  Escolha o arquivo de schema para mapear os campos
+                  Escolha o schema com os campos de origem a serem mapeados
                 </CardDescription>
               </CardHeader>
               <CardContent>
@@ -167,10 +195,10 @@ const DeParaMapping = () => {
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
                   <ArrowLeftRight className="h-5 w-5" />
-                  Mapeamento de Campos
+                  Mapeamento DE/PARA
                 </CardTitle>
                 <CardDescription>
-                  Configure o mapeamento entre os campos do schema e os campos da API
+                  Configure como os campos do sistema de origem (DE) serão transformados nos campos padronizados do SIC (PARA)
                 </CardDescription>
               </CardHeader>
               <CardContent>
@@ -178,36 +206,47 @@ const DeParaMapping = () => {
                   <Table>
                     <TableHeader>
                       <TableRow>
-                        <TableHead>Campo do Schema</TableHead>
-                        <TableHead>Tipo</TableHead>
-                        <TableHead>Descrição</TableHead>
-                        <TableHead>Campo da API</TableHead>
-                        <TableHead>Formatação</TableHead>
+                        <TableHead className="bg-amber-50 dark:bg-amber-950/20">DE - Campo Origem</TableHead>
+                        <TableHead className="bg-amber-50 dark:bg-amber-950/20">Tipo</TableHead>
+                        <TableHead className="bg-amber-50 dark:bg-amber-950/20">Descrição</TableHead>
+                        <TableHead className="bg-green-50 dark:bg-green-950/20">PARA - Campo SIC</TableHead>
+                        <TableHead>Transformação</TableHead>
                       </TableRow>
                     </TableHeader>
                     <TableBody>
                       {schemaFields[selectedFile]?.map((field) => (
                         <TableRow key={field.field}>
-                          <TableCell className="font-medium">{field.field}</TableCell>
-                          <TableCell>
+                          <TableCell className="font-medium bg-amber-50/50 dark:bg-amber-950/10">
+                            {field.field}
+                          </TableCell>
+                          <TableCell className="bg-amber-50/50 dark:bg-amber-950/10">
                             <span className="text-xs bg-primary/10 px-2 py-1 rounded">
                               {field.type}
                             </span>
                           </TableCell>
-                          <TableCell className="text-muted-foreground text-sm">
+                          <TableCell className="text-muted-foreground text-sm bg-amber-50/50 dark:bg-amber-950/10">
                             {field.description}
                           </TableCell>
-                          <TableCell>
+                          <TableCell className="bg-green-50/50 dark:bg-green-950/10">
                             <div className="flex items-center gap-2">
                               <ArrowLeftRight className="h-4 w-4 text-muted-foreground" />
-                              <Input
-                                placeholder="Nome do campo da API"
+                              <Select
                                 value={fieldMappings[field.field] || ""}
-                                onChange={(e) =>
-                                  handleMappingChange(field.field, e.target.value)
+                                onValueChange={(value) =>
+                                  handleMappingChange(field.field, value)
                                 }
-                                className="max-w-xs"
-                              />
+                              >
+                                <SelectTrigger className="max-w-xs">
+                                  <SelectValue placeholder="Selecione campo SIC..." />
+                                </SelectTrigger>
+                                <SelectContent>
+                                  {sicFields.map((sicField) => (
+                                    <SelectItem key={sicField.field} value={sicField.field}>
+                                      {sicField.description}
+                                    </SelectItem>
+                                  ))}
+                                </SelectContent>
+                              </Select>
                             </div>
                           </TableCell>
                           <TableCell>
@@ -218,16 +257,17 @@ const DeParaMapping = () => {
                               }
                             >
                               <SelectTrigger className="max-w-xs">
-                                <SelectValue placeholder="Selecione formatação..." />
+                                <SelectValue placeholder="Transformação..." />
                               </SelectTrigger>
                               <SelectContent>
-                                <SelectItem value="none">Sem formatação</SelectItem>
+                                <SelectItem value="none">Sem transformação</SelectItem>
                                 <SelectItem value="uppercase">MAIÚSCULAS</SelectItem>
                                 <SelectItem value="lowercase">minúsculas</SelectItem>
                                 <SelectItem value="trim">Remover espaços</SelectItem>
                                 <SelectItem value="number">Converter para número</SelectItem>
                                 <SelectItem value="date">Formatar como data</SelectItem>
                                 <SelectItem value="currency">Formatar como moeda</SelectItem>
+                                <SelectItem value="zerofill">Preencher com zeros</SelectItem>
                               </SelectContent>
                             </Select>
                           </TableCell>
