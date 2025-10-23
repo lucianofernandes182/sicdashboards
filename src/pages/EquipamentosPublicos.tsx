@@ -8,8 +8,9 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { ArrowLeft, Building2, FileJson, Save } from "lucide-react";
+import { ArrowLeft, Building2, FileJson, Save, Plus, Edit, Trash2 } from "lucide-react";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { toast } from "sonner";
 
 const equipamentoSchema = z.object({
@@ -50,6 +51,8 @@ type EquipamentoFormValues = z.infer<typeof equipamentoSchema>;
 
 const EquipamentosPublicos = () => {
   const navigate = useNavigate();
+  const [view, setView] = useState<"list" | "form">("list");
+  const [editingEquipamento, setEditingEquipamento] = useState<EquipamentoFormValues | null>(null);
   const [selectedSchema, setSelectedSchema] = useState<string>("");
   const [selectedVersion, setSelectedVersion] = useState<string>("");
 
@@ -58,6 +61,43 @@ const EquipamentosPublicos = () => {
     { id: "equipamentos_v1", name: "Equipamentos Públicos", version: "v1.0.0" },
     { id: "equipamentos_v2", name: "Equipamentos Públicos", version: "v2.1.0" },
   ];
+
+  // Mock list of registered equipment - Replace with actual API calls
+  const [equipamentos, setEquipamentos] = useState<EquipamentoFormValues[]>([
+    {
+      Modelo: "1",
+      Funcao: "12",
+      ObjetoDeCustos: "010",
+      UnidadeDeCustos: "001",
+      CentroDeCustos: "113",
+      PoderOrgao: "1",
+      EnteFederado: "3",
+      IBGE: "3205200",
+      FuncaoOrcamentaria: "12",
+      NumeroControle: "0001",
+      Descricao: "SECR. MUN. DE EDUCAÇÃO",
+      UG: "076E0600009",
+      Tipo: "1.12.010",
+      CentroDeResponsabilidade: "SECRETARIA MUNICIPAL DE EDUCAÇÃO",
+      ResponsavelNome: "Fulano da Silva",
+      ResponsavelCPF: "09252966005",
+      CodNacionalSigla: "INEP",
+      CodNacionalNumero: "3205200",
+      PrincipalOuAnexo: "Principal",
+      Anexo: "000",
+      DescricaoImovel: "SECRETARIA MUNICIPAL DE EDUCAÇÃO",
+      CondicaoImovelPropriedade: "Próprio",
+      CondicaoImovelRestricao: "Sem restrições",
+      CondicaoServico: "Ativo",
+      EnderecoLogradouro: "RUA CASTELO BRANCO",
+      EnderecoNumero: "1803",
+      EnderecoComplemento: "",
+      EnderecoBairroLocalidade: "OLARIA",
+      EnderecoCEP: "29123570",
+      EnderecoLatitude: "-20.33191435",
+      EnderecoLongitude: "-4.02914232",
+    },
+  ]);
 
   const form = useForm<EquipamentoFormValues>({
     resolver: zodResolver(equipamentoSchema),
@@ -97,13 +137,52 @@ const EquipamentosPublicos = () => {
   });
 
   const onSubmit = (data: EquipamentoFormValues) => {
-    console.log("Salvando equipamento:", {
-      schema: selectedSchema,
-      version: selectedVersion,
-      data,
-    });
-    toast.success("Equipamento cadastrado com sucesso!");
+    if (editingEquipamento) {
+      // Update existing equipment
+      setEquipamentos((prev) =>
+        prev.map((eq) =>
+          eq.NumeroControle === editingEquipamento.NumeroControle ? data : eq
+        )
+      );
+      toast.success("Equipamento atualizado com sucesso!");
+    } else {
+      // Add new equipment
+      setEquipamentos((prev) => [...prev, data]);
+      toast.success("Equipamento cadastrado com sucesso!");
+    }
     // TODO: Implement API call to save to MongoDB
+    handleBackToList();
+  };
+
+  const handleAddNew = () => {
+    setEditingEquipamento(null);
+    setSelectedSchema("");
+    setSelectedVersion("");
+    form.reset();
+    setView("form");
+  };
+
+  const handleEdit = (equipamento: EquipamentoFormValues) => {
+    setEditingEquipamento(equipamento);
+    setSelectedSchema("equipamentos_v1");
+    setSelectedVersion("v1.0.0");
+    form.reset(equipamento);
+    setView("form");
+  };
+
+  const handleDelete = (numeroControle: string) => {
+    setEquipamentos((prev) =>
+      prev.filter((eq) => eq.NumeroControle !== numeroControle)
+    );
+    toast.success("Equipamento excluído com sucesso!");
+  };
+
+  const handleBackToList = () => {
+    setView("list");
+    setEditingEquipamento(null);
+    setSelectedSchema("");
+    setSelectedVersion("");
+    form.reset();
   };
 
   const handleSchemaChange = (value: string) => {
@@ -128,18 +207,117 @@ const EquipamentosPublicos = () => {
       </header>
 
       <main className="container mx-auto px-4 py-8">
-        <div className="grid gap-6">
-          {/* Schema Selection */}
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <FileJson className="h-5 w-5" />
-                Selecionar Schema e Versão
-              </CardTitle>
-              <CardDescription>
-                Escolha o schema do MongoDB para preencher o formulário
-              </CardDescription>
-            </CardHeader>
+        {view === "list" ? (
+          /* Listing View */
+          <div className="grid gap-6">
+            <Card>
+              <CardHeader>
+                <div className="flex items-center justify-between">
+                  <div>
+                    <CardTitle className="flex items-center gap-2">
+                      <Building2 className="h-5 w-5" />
+                      Equipamentos Públicos Cadastrados
+                    </CardTitle>
+                    <CardDescription>
+                      Visualize e gerencie os equipamentos públicos cadastrados
+                    </CardDescription>
+                  </div>
+                  <Button onClick={handleAddNew}>
+                    <Plus className="h-4 w-4 mr-2" />
+                    Incluir Novo
+                  </Button>
+                </div>
+              </CardHeader>
+              <CardContent>
+                <div className="rounded-md border">
+                  <Table>
+                    <TableHeader>
+                      <TableRow>
+                        <TableHead>Número Controle</TableHead>
+                        <TableHead>Descrição</TableHead>
+                        <TableHead>Tipo</TableHead>
+                        <TableHead>Centro de Responsabilidade</TableHead>
+                        <TableHead>Condição</TableHead>
+                        <TableHead className="text-right">Ações</TableHead>
+                      </TableRow>
+                    </TableHeader>
+                    <TableBody>
+                      {equipamentos.length === 0 ? (
+                        <TableRow>
+                          <TableCell colSpan={6} className="text-center text-muted-foreground py-8">
+                            Nenhum equipamento cadastrado. Clique em "Incluir Novo" para adicionar.
+                          </TableCell>
+                        </TableRow>
+                      ) : (
+                        equipamentos.map((equipamento, index) => (
+                          <TableRow key={index}>
+                            <TableCell className="font-medium">
+                              {equipamento.NumeroControle}
+                            </TableCell>
+                            <TableCell>{equipamento.Descricao}</TableCell>
+                            <TableCell>{equipamento.Tipo}</TableCell>
+                            <TableCell>{equipamento.CentroDeResponsabilidade}</TableCell>
+                            <TableCell>
+                              <span
+                                className={`text-xs px-2 py-1 rounded ${
+                                  equipamento.CondicaoServico === "Ativo"
+                                    ? "bg-green-500/20 text-green-600"
+                                    : "bg-red-500/20 text-red-600"
+                                }`}
+                              >
+                                {equipamento.CondicaoServico}
+                              </span>
+                            </TableCell>
+                            <TableCell className="text-right">
+                              <div className="flex justify-end gap-2">
+                                <Button
+                                  variant="ghost"
+                                  size="icon"
+                                  onClick={() => handleEdit(equipamento)}
+                                >
+                                  <Edit className="h-4 w-4" />
+                                </Button>
+                                <Button
+                                  variant="ghost"
+                                  size="icon"
+                                  onClick={() => handleDelete(equipamento.NumeroControle)}
+                                >
+                                  <Trash2 className="h-4 w-4" />
+                                </Button>
+                              </div>
+                            </TableCell>
+                          </TableRow>
+                        ))
+                      )}
+                    </TableBody>
+                  </Table>
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+        ) : (
+          /* Form View */
+          <div className="grid gap-6">
+            <div className="flex items-center gap-4 mb-4">
+              <Button variant="outline" onClick={handleBackToList}>
+                <ArrowLeft className="h-4 w-4 mr-2" />
+                Voltar para Listagem
+              </Button>
+            </div>
+
+            {/* Schema Selection */}
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <FileJson className="h-5 w-5" />
+                  {editingEquipamento ? "Editando Equipamento" : "Novo Equipamento"} - Selecionar Schema
+                </CardTitle>
+                <CardDescription>
+                  {editingEquipamento
+                    ? "Alterando dados do equipamento existente"
+                    : "Escolha o schema do MongoDB para preencher o formulário"}
+                </CardDescription>
+              </CardHeader>
             <CardContent>
               <div className="grid md:grid-cols-2 gap-4">
                 <div className="space-y-2">
@@ -169,18 +347,18 @@ const EquipamentosPublicos = () => {
             </CardContent>
           </Card>
 
-          {/* Form */}
-          {selectedSchema && (
-            <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <Building2 className="h-5 w-5" />
-                  Dados do Equipamento Público
-                </CardTitle>
-                <CardDescription>
-                  Preencha os campos abaixo com as informações do equipamento
-                </CardDescription>
-              </CardHeader>
+            {/* Form */}
+            {selectedSchema && (
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <Building2 className="h-5 w-5" />
+                    Dados do Equipamento Público
+                  </CardTitle>
+                  <CardDescription>
+                    Preencha os campos abaixo com as informações do equipamento
+                  </CardDescription>
+                </CardHeader>
               <CardContent>
                 <Form {...form}>
                   <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
@@ -667,21 +845,22 @@ const EquipamentosPublicos = () => {
                       </div>
                     </div>
 
-                    <div className="flex justify-end gap-4 pt-6">
-                      <Button type="button" variant="outline" onClick={() => form.reset()}>
-                        Limpar Formulário
-                      </Button>
-                      <Button type="submit">
-                        <Save className="h-4 w-4 mr-2" />
-                        Salvar Equipamento
-                      </Button>
-                    </div>
-                  </form>
-                </Form>
-              </CardContent>
-            </Card>
-          )}
-        </div>
+                      <div className="flex justify-end gap-4 pt-6">
+                        <Button type="button" variant="outline" onClick={handleBackToList}>
+                          Cancelar
+                        </Button>
+                        <Button type="submit">
+                          <Save className="h-4 w-4 mr-2" />
+                          {editingEquipamento ? "Atualizar" : "Salvar"} Equipamento
+                        </Button>
+                      </div>
+                    </form>
+                  </Form>
+                </CardContent>
+              </Card>
+            )}
+          </div>
+        )}
       </main>
     </div>
   );
