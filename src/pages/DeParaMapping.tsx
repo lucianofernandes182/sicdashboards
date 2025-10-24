@@ -1,5 +1,5 @@
-import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useState, useEffect } from "react";
+import { useNavigate, useParams } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
@@ -10,10 +10,12 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 
 const DeParaMapping = () => {
   const navigate = useNavigate();
+  const { id } = useParams<{ id: string }>();
   const [selectedSystem, setSelectedSystem] = useState<string>("");
   const [selectedFile, setSelectedFile] = useState<string>("");
   const [selectedVersion, setSelectedVersion] = useState<string>("");
   const [savedMappings, setSavedMappings] = useState<MappingRule[]>([]);
+  const isNewConfig = id === "new";
   
   // Estrutura de regras de mapeamento DE/PARA
   type SourceCondition = {
@@ -175,8 +177,34 @@ const DeParaMapping = () => {
     );
   };
 
+  // Load existing configuration if editing
+  useEffect(() => {
+    if (!isNewConfig && id) {
+      // Mock data - Replace with actual API call
+      // Simulate loading existing configuration
+      setSelectedSystem("smarcp");
+      setSelectedFile("schema1");
+      setSelectedVersion("v1.2.0");
+      
+      const mockRules: MappingRule[] = [
+        {
+          id: "rule-1",
+          sourceConditions: [
+            { id: "cond-1", field: "entidade", value: "214" },
+            { id: "cond-2", field: "funcao", value: "12" }
+          ],
+          targetField: "modelo",
+          targetValue: "1",
+          transformation: "none"
+        }
+      ];
+      setMappingRules(mockRules);
+    }
+  }, [id, isNewConfig]);
+
   const handleSaveMappings = () => {
     console.log("Salvando mapeamentos:", {
+      id: isNewConfig ? "novo" : id,
       system: selectedSystem,
       file: selectedFile,
       version: selectedVersion,
@@ -191,10 +219,17 @@ const DeParaMapping = () => {
       <header className="sticky top-0 z-10 bg-card/80 backdrop-blur-md shadow-sm border-b border-border/50">
         <div className="flex items-center justify-between px-6 py-4">
           <div className="flex items-center gap-4">
-            <Button variant="ghost" size="icon" onClick={() => navigate("/")}>
+            <Button variant="ghost" size="icon" onClick={() => navigate("/de-para")}>
               <ArrowLeft className="h-6 w-6" />
             </Button>
-            <h1 className="text-2xl font-bold">Mapeamento De/Para</h1>
+            <div>
+              <h1 className="text-2xl font-bold">
+                {isNewConfig ? "Nova Configuração De/Para" : "Editar Configuração De/Para"}
+              </h1>
+              {!isNewConfig && (
+                <p className="text-sm text-muted-foreground">ID: {id}</p>
+              )}
+            </div>
           </div>
         </div>
       </header>
