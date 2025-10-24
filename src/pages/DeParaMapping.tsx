@@ -12,6 +12,8 @@ const DeParaMapping = () => {
   const navigate = useNavigate();
   const [selectedSystem, setSelectedSystem] = useState<string>("");
   const [selectedFile, setSelectedFile] = useState<string>("");
+  const [selectedVersion, setSelectedVersion] = useState<string>("");
+  const [savedMappings, setSavedMappings] = useState<MappingRule[]>([]);
   
   // Estrutura de regras de mapeamento DE/PARA
   type MappingRule = {
@@ -46,16 +48,16 @@ const DeParaMapping = () => {
     { id: "sistema3", name: "Sistema 3" },
   ];
 
-  const filesBySystem: Record<string, Array<{ id: string; name: string; version: string }>> = {
+  const filesBySystem: Record<string, Array<{ id: string; name: string; versions: string[] }>> = {
     smarcp: [
-      { id: "schema1", name: "Schema Orçamentário", version: "v1.2.0" },
-      { id: "schema2", name: "Schema Financeiro", version: "v1.0.5" },
+      { id: "schema1", name: "Schema Orçamentário", versions: ["v1.2.0", "v1.1.5", "v1.0.0"] },
+      { id: "schema2", name: "Schema Financeiro", versions: ["v1.0.5", "v1.0.2"] },
     ],
     sistema2: [
-      { id: "schema3", name: "Schema Receitas", version: "v2.1.0" },
+      { id: "schema3", name: "Schema Receitas", versions: ["v2.1.0", "v2.0.8"] },
     ],
     sistema3: [
-      { id: "schema4", name: "Schema Despesas", version: "v1.5.2" },
+      { id: "schema4", name: "Schema Despesas", versions: ["v1.5.2", "v1.4.9", "v1.3.0"] },
     ],
   };
 
@@ -122,8 +124,10 @@ const DeParaMapping = () => {
     console.log("Salvando mapeamentos:", {
       system: selectedSystem,
       file: selectedFile,
+      version: selectedVersion,
       rules: mappingRules,
     });
+    setSavedMappings(mappingRules);
     // TODO: Implement API call to save mappings to MongoDB
   };
 
@@ -159,7 +163,9 @@ const DeParaMapping = () => {
               <Select value={selectedSystem} onValueChange={(value) => {
                 setSelectedSystem(value);
                 setSelectedFile("");
+                setSelectedVersion("");
                 setMappingRules([]);
+                setSavedMappings([]);
               }}>
                 <SelectTrigger>
                   <SelectValue placeholder="Selecione um sistema..." />
@@ -184,32 +190,57 @@ const DeParaMapping = () => {
                   Schema de Dados
                 </CardTitle>
                 <CardDescription>
-                  Escolha o schema com os campos de origem a serem mapeados
+                  Escolha o schema e a versão dos campos de origem a serem mapeados
                 </CardDescription>
               </CardHeader>
-              <CardContent>
-                <Select value={selectedFile} onValueChange={setSelectedFile}>
-                  <SelectTrigger>
-                    <SelectValue placeholder="Selecione um schema..." />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {filesBySystem[selectedSystem]?.map((file) => (
-                      <SelectItem key={file.id} value={file.id}>
-                        <div className="flex flex-col">
-                          <span>{file.name}</span>
-                          <span className="text-xs text-muted-foreground">{file.version}</span>
-                        </div>
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
+              <CardContent className="space-y-4">
+                <div className="space-y-2">
+                  <Label>Schema</Label>
+                  <Select value={selectedFile} onValueChange={(value) => {
+                    setSelectedFile(value);
+                    setSelectedVersion("");
+                    setMappingRules([]);
+                    setSavedMappings([]);
+                  }}>
+                    <SelectTrigger>
+                      <SelectValue placeholder="Selecione um schema..." />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {filesBySystem[selectedSystem]?.map((file) => (
+                        <SelectItem key={file.id} value={file.id}>
+                          {file.name}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+
+                {selectedFile && (
+                  <div className="space-y-2">
+                    <Label>Versão</Label>
+                    <Select value={selectedVersion} onValueChange={setSelectedVersion}>
+                      <SelectTrigger>
+                        <SelectValue placeholder="Selecione uma versão..." />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {filesBySystem[selectedSystem]
+                          ?.find((file) => file.id === selectedFile)
+                          ?.versions.map((version) => (
+                            <SelectItem key={version} value={version}>
+                              {version}
+                            </SelectItem>
+                          ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+                )}
               </CardContent>
             </Card>
             )}
           </div>
 
           {/* Field Mapping */}
-          {selectedFile && (
+          {selectedFile && selectedVersion && (
             <Card>
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
@@ -373,6 +404,70 @@ const DeParaMapping = () => {
                     Salvar Configuração
                   </Button>
                 </div>
+              </CardContent>
+            </Card>
+          )}
+
+          {/* Saved Mappings List */}
+          {savedMappings.length > 0 && (
+            <Card>
+              <CardHeader>
+                <CardTitle>Regras Salvas</CardTitle>
+                <CardDescription>
+                  Configuração de mapeamento DE/PARA salva para {selectedSystem} - {selectedFile} ({selectedVersion})
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                <Table>
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead>#</TableHead>
+                      <TableHead>Campo Origem (DE)</TableHead>
+                      <TableHead>Valor Origem</TableHead>
+                      <TableHead>Campo SIC (PARA)</TableHead>
+                      <TableHead>Valor SIC</TableHead>
+                      <TableHead>Transformação</TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {savedMappings.map((rule, index) => (
+                      <TableRow key={rule.id}>
+                        <TableCell className="font-medium">{index + 1}</TableCell>
+                        <TableCell>
+                          <div className="flex flex-col">
+                            <span className="font-medium">
+                              {schemaFields[selectedFile]?.find((f) => f.field === rule.sourceField)?.description || rule.sourceField}
+                            </span>
+                            <span className="text-xs text-muted-foreground">{rule.sourceField}</span>
+                          </div>
+                        </TableCell>
+                        <TableCell>
+                          <span className="px-2 py-1 bg-amber-100 dark:bg-amber-950 text-amber-900 dark:text-amber-100 rounded font-mono text-sm">
+                            {rule.sourceValue}
+                          </span>
+                        </TableCell>
+                        <TableCell>
+                          <div className="flex flex-col">
+                            <span className="font-medium">
+                              {sicFields.find((f) => f.field === rule.targetField)?.description || rule.targetField}
+                            </span>
+                            <span className="text-xs text-muted-foreground">{rule.targetField}</span>
+                          </div>
+                        </TableCell>
+                        <TableCell>
+                          <span className="px-2 py-1 bg-green-100 dark:bg-green-950 text-green-900 dark:text-green-100 rounded font-mono text-sm">
+                            {rule.targetValue}
+                          </span>
+                        </TableCell>
+                        <TableCell>
+                          <span className="text-sm text-muted-foreground">
+                            {rule.transformation === "none" ? "-" : rule.transformation}
+                          </span>
+                        </TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
               </CardContent>
             </Card>
           )}
