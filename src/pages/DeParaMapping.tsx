@@ -16,10 +16,15 @@ const DeParaMapping = () => {
   const [savedMappings, setSavedMappings] = useState<MappingRule[]>([]);
   
   // Estrutura de regras de mapeamento DE/PARA
+  type SourceCondition = {
+    id: string;
+    field: string;
+    value: string;
+  };
+
   type MappingRule = {
     id: string;
-    sourceField: string;
-    sourceValue: string;
+    sourceConditions: SourceCondition[];
     targetField: string;
     targetValue: string;
     transformation: string;
@@ -99,8 +104,7 @@ const DeParaMapping = () => {
   const handleAddRule = () => {
     const newRule: MappingRule = {
       id: `rule-${Date.now()}`,
-      sourceField: "",
-      sourceValue: "",
+      sourceConditions: [{ id: `cond-${Date.now()}`, field: "", value: "" }],
       targetField: "",
       targetValue: "",
       transformation: "none",
@@ -118,6 +122,57 @@ const DeParaMapping = () => {
 
   const handleDeleteRule = (ruleId: string) => {
     setMappingRules((prev) => prev.filter((rule) => rule.id !== ruleId));
+  };
+
+  const handleAddSourceCondition = (ruleId: string) => {
+    setMappingRules((prev) =>
+      prev.map((rule) =>
+        rule.id === ruleId
+          ? {
+              ...rule,
+              sourceConditions: [
+                ...rule.sourceConditions,
+                { id: `cond-${Date.now()}`, field: "", value: "" },
+              ],
+            }
+          : rule
+      )
+    );
+  };
+
+  const handleUpdateSourceCondition = (
+    ruleId: string,
+    conditionId: string,
+    field: keyof SourceCondition,
+    value: string
+  ) => {
+    setMappingRules((prev) =>
+      prev.map((rule) =>
+        rule.id === ruleId
+          ? {
+              ...rule,
+              sourceConditions: rule.sourceConditions.map((cond) =>
+                cond.id === conditionId ? { ...cond, [field]: value } : cond
+              ),
+            }
+          : rule
+      )
+    );
+  };
+
+  const handleDeleteSourceCondition = (ruleId: string, conditionId: string) => {
+    setMappingRules((prev) =>
+      prev.map((rule) =>
+        rule.id === ruleId
+          ? {
+              ...rule,
+              sourceConditions: rule.sourceConditions.filter(
+                (cond) => cond.id !== conditionId
+              ),
+            }
+          : rule
+      )
+    );
   };
 
   const handleSaveMappings = () => {
@@ -293,39 +348,84 @@ const DeParaMapping = () => {
                           <div className="grid md:grid-cols-2 gap-4">
                             {/* DE - Origem */}
                             <div className="space-y-3 p-4 rounded-lg bg-amber-50 dark:bg-amber-950/20">
-                              <Label className="text-base font-semibold">DE - Origem</Label>
-                              
-                              <div className="space-y-2">
-                                <Label className="text-sm">Campo</Label>
-                                <Select
-                                  value={rule.sourceField}
-                                  onValueChange={(value) =>
-                                    handleUpdateRule(rule.id, "sourceField", value)
-                                  }
+                              <div className="flex items-center justify-between">
+                                <Label className="text-base font-semibold">DE - Origem</Label>
+                                <Button
+                                  variant="outline"
+                                  size="sm"
+                                  onClick={() => handleAddSourceCondition(rule.id)}
                                 >
-                                  <SelectTrigger>
-                                    <SelectValue placeholder="Selecione campo de origem..." />
-                                  </SelectTrigger>
-                                  <SelectContent>
-                                    {schemaFields[selectedFile]?.map((field) => (
-                                      <SelectItem key={field.field} value={field.field}>
-                                        {field.description}
-                                      </SelectItem>
-                                    ))}
-                                  </SelectContent>
-                                </Select>
+                                  <Plus className="h-3 w-3 mr-1" />
+                                  Campo
+                                </Button>
                               </div>
+                              
+                              {rule.sourceConditions.map((condition, condIndex) => (
+                                <div
+                                  key={condition.id}
+                                  className="space-y-2 p-3 bg-background rounded border"
+                                >
+                                  <div className="flex items-center justify-between mb-2">
+                                    <span className="text-xs font-medium text-muted-foreground">
+                                      Condição {condIndex + 1}
+                                    </span>
+                                    {rule.sourceConditions.length > 1 && (
+                                      <Button
+                                        variant="ghost"
+                                        size="icon"
+                                        className="h-6 w-6"
+                                        onClick={() =>
+                                          handleDeleteSourceCondition(rule.id, condition.id)
+                                        }
+                                      >
+                                        <Trash2 className="h-3 w-3 text-destructive" />
+                                      </Button>
+                                    )}
+                                  </div>
 
-                              <div className="space-y-2">
-                                <Label className="text-sm">Valor</Label>
-                                <Input
-                                  placeholder="Ex: 214"
-                                  value={rule.sourceValue}
-                                  onChange={(e) =>
-                                    handleUpdateRule(rule.id, "sourceValue", e.target.value)
-                                  }
-                                />
-                              </div>
+                                  <div className="space-y-2">
+                                    <Label className="text-sm">Campo</Label>
+                                    <Select
+                                      value={condition.field}
+                                      onValueChange={(value) =>
+                                        handleUpdateSourceCondition(
+                                          rule.id,
+                                          condition.id,
+                                          "field",
+                                          value
+                                        )
+                                      }
+                                    >
+                                      <SelectTrigger>
+                                        <SelectValue placeholder="Selecione campo..." />
+                                      </SelectTrigger>
+                                      <SelectContent>
+                                        {schemaFields[selectedFile]?.map((field) => (
+                                          <SelectItem key={field.field} value={field.field}>
+                                            {field.description}
+                                          </SelectItem>
+                                        ))}
+                                      </SelectContent>
+                                    </Select>
+                                  </div>
+
+                                  <div className="space-y-2">
+                                    <Label className="text-sm">Valor</Label>
+                                    <Input
+                                      placeholder="Ex: 214"
+                                      value={condition.value}
+                                      onChange={(e) =>
+                                        handleUpdateSourceCondition(
+                                          rule.id,
+                                          condition.id,
+                                          "value",
+                                          e.target.value
+                                        )
+                                      }
+                                    />
+                                  </div>
+                                </div>
+                              ))}
                             </div>
 
                             {/* PARA - Destino */}
@@ -422,8 +522,7 @@ const DeParaMapping = () => {
                   <TableHeader>
                     <TableRow>
                       <TableHead>#</TableHead>
-                      <TableHead>Campo Origem (DE)</TableHead>
-                      <TableHead>Valor Origem</TableHead>
+                      <TableHead>Condições Origem (DE)</TableHead>
                       <TableHead>Campo SIC (PARA)</TableHead>
                       <TableHead>Valor SIC</TableHead>
                       <TableHead>Transformação</TableHead>
@@ -432,34 +531,54 @@ const DeParaMapping = () => {
                   <TableBody>
                     {savedMappings.map((rule, index) => (
                       <TableRow key={rule.id}>
-                        <TableCell className="font-medium">{index + 1}</TableCell>
+                        <TableCell className="font-medium align-top">{index + 1}</TableCell>
                         <TableCell>
-                          <div className="flex flex-col">
-                            <span className="font-medium">
-                              {schemaFields[selectedFile]?.find((f) => f.field === rule.sourceField)?.description || rule.sourceField}
-                            </span>
-                            <span className="text-xs text-muted-foreground">{rule.sourceField}</span>
+                          <div className="space-y-2">
+                            {rule.sourceConditions.map((condition, condIndex) => (
+                              <div
+                                key={condition.id}
+                                className="flex flex-col gap-1 p-2 bg-amber-50 dark:bg-amber-950/20 rounded"
+                              >
+                                <div className="flex items-center gap-2">
+                                  <span className="text-xs font-semibold text-muted-foreground">
+                                    {condIndex > 0 ? "E" : "SE"}
+                                  </span>
+                                  <div className="flex flex-col">
+                                    <span className="font-medium text-sm">
+                                      {schemaFields[selectedFile]?.find(
+                                        (f) => f.field === condition.field
+                                      )?.description || condition.field}
+                                    </span>
+                                    <span className="text-xs text-muted-foreground">
+                                      {condition.field}
+                                    </span>
+                                  </div>
+                                  <span className="text-xs font-semibold">=</span>
+                                  <span className="px-2 py-0.5 bg-amber-100 dark:bg-amber-900 text-amber-900 dark:text-amber-100 rounded font-mono text-xs">
+                                    {condition.value}
+                                  </span>
+                                </div>
+                              </div>
+                            ))}
                           </div>
                         </TableCell>
-                        <TableCell>
-                          <span className="px-2 py-1 bg-amber-100 dark:bg-amber-950 text-amber-900 dark:text-amber-100 rounded font-mono text-sm">
-                            {rule.sourceValue}
-                          </span>
-                        </TableCell>
-                        <TableCell>
+                        <TableCell className="align-top">
                           <div className="flex flex-col">
                             <span className="font-medium">
-                              {sicFields.find((f) => f.field === rule.targetField)?.description || rule.targetField}
+                              {sicFields.find((f) => f.field === rule.targetField)?.description ||
+                                rule.targetField}
                             </span>
-                            <span className="text-xs text-muted-foreground">{rule.targetField}</span>
+                            <span className="text-xs text-muted-foreground">
+                              {rule.targetField}
+                            </span>
                           </div>
                         </TableCell>
-                        <TableCell>
+                        <TableCell className="align-top">
                           <span className="px-2 py-1 bg-green-100 dark:bg-green-950 text-green-900 dark:text-green-100 rounded font-mono text-sm">
                             {rule.targetValue}
                           </span>
                         </TableCell>
-                        <TableCell>
+                        <TableCell className="align-top">
                           <span className="text-sm text-muted-foreground">
                             {rule.transformation === "none" ? "-" : rule.transformation}
                           </span>
