@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Plus, Edit, Trash2 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { ThemeToggle } from "@/components/ui/theme-toggle";
@@ -85,52 +86,61 @@ const DeParaMappingList = () => {
             </CardContent>
           </Card>
         ) : (
-          <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-            {configurations.map((config) => (
-              <Card key={config.id} className="hover:shadow-lg transition-shadow">
-                <CardHeader>
-                  <CardTitle className="flex items-start justify-between">
-                    <span>{config.sistema}</span>
-                    <div className="flex gap-2">
-                      <Button
-                        variant="ghost"
-                        size="icon"
-                        onClick={() => handleEditConfiguration(config.id)}
-                      >
-                        <Edit className="h-4 w-4" />
-                      </Button>
-                      <Button
-                        variant="ghost"
-                        size="icon"
-                        onClick={() => handleDeleteConfiguration(config.id)}
-                      >
-                        <Trash2 className="h-4 w-4" />
-                      </Button>
-                    </div>
-                  </CardTitle>
-                  <CardDescription>
-                    Criado em {new Date(config.createdAt).toLocaleDateString('pt-BR')}
-                  </CardDescription>
-                </CardHeader>
-                <CardContent>
-                  <div className="space-y-2">
-                    <div className="flex justify-between">
-                      <span className="text-sm text-muted-foreground">Schema:</span>
-                      <span className="text-sm font-medium">{config.schema}</span>
-                    </div>
-                    <div className="flex justify-between">
-                      <span className="text-sm text-muted-foreground">Versão:</span>
-                      <span className="text-sm font-medium">{config.version}</span>
-                    </div>
-                    <div className="flex justify-between">
-                      <span className="text-sm text-muted-foreground">Regras:</span>
-                      <span className="text-sm font-medium">{config.rulesCount}</span>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-            ))}
-          </div>
+          <Card>
+            <CardContent className="p-6">
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead>Sistema</TableHead>
+                    <TableHead>Schema</TableHead>
+                    <TableHead>Versão</TableHead>
+                    <TableHead className="text-center">Regras</TableHead>
+                    <TableHead>Criado em</TableHead>
+                    <TableHead className="text-right">Ações</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {configurations.map((config) => (
+                    <TableRow key={config.id} className="hover:bg-muted/50">
+                      <TableCell className="font-medium">{config.sistema}</TableCell>
+                      <TableCell>{config.schema}</TableCell>
+                      <TableCell>
+                        <span className="px-2 py-1 bg-primary/10 text-primary rounded text-sm">
+                          {config.version}
+                        </span>
+                      </TableCell>
+                      <TableCell className="text-center">
+                        <span className="px-2 py-1 bg-green-100 dark:bg-green-950 text-green-900 dark:text-green-100 rounded font-medium">
+                          {config.rulesCount}
+                        </span>
+                      </TableCell>
+                      <TableCell className="text-muted-foreground">
+                        {new Date(config.createdAt).toLocaleDateString('pt-BR')}
+                      </TableCell>
+                      <TableCell className="text-right">
+                        <div className="flex gap-2 justify-end">
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            onClick={() => handleEditConfiguration(config.id)}
+                          >
+                            <Edit className="h-4 w-4" />
+                          </Button>
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            onClick={() => handleDeleteConfiguration(config.id)}
+                          >
+                            <Trash2 className="h-4 w-4" />
+                          </Button>
+                        </div>
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </CardContent>
+          </Card>
         )}
       </main>
     </div>
