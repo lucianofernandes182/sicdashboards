@@ -228,24 +228,24 @@ const ComparativeView = () => {
         <div className="space-y-4">
           {/* Maior e Menor Custo Card */}
           <Card className="glass border-border/50">
-            <CardContent className="p-4">
-              <div className="flex items-start justify-between">
-                <div className="space-y-3">
-                  <div className="space-y-1">
-                    <p className="text-sm font-medium text-muted-foreground">Maior Custo</p>
-                    <p className="text-xs text-muted-foreground">1.3.3205200.12.0002</p>
-                    <p className="text-base font-bold text-foreground">UMEI Escola B</p>
+            <CardContent className="p-6">
+              <div className="flex items-center justify-between gap-4">
+                <div className="flex-1 space-y-4">
+                  <div>
+                    <p className="text-sm font-medium text-muted-foreground mb-1">Maior Custo</p>
+                    <p className="text-sm text-muted-foreground mb-1">1.3.3205200.12.0002</p>
+                    <p className="text-lg font-bold text-foreground">UMEI Escola B</p>
                   </div>
-                  <div className="space-y-1">
-                    <p className="text-sm font-medium text-muted-foreground">Menor Custo</p>
-                    <p className="text-xs text-muted-foreground">1.3.3205200.12.0001</p>
-                    <p className="text-base font-bold text-foreground">UMEI VEREADOR ARNALDO BORGO</p>
+                  <div>
+                    <p className="text-sm font-medium text-muted-foreground mb-1">Menor Custo</p>
+                    <p className="text-sm text-muted-foreground mb-1">1.3.3205200.12.0001</p>
+                    <p className="text-lg font-bold text-foreground">UMEI VEREADOR ARNALDO BORGO</p>
                   </div>
                 </div>
-                <div className="flex items-center gap-1 bg-green-500/20 text-green-600 dark:text-green-400 px-3 py-2 rounded-full">
-                  <div className="text-3xl font-black">12</div>
-                  <div className="text-xs flex flex-col items-center">
-                    <span className="font-medium">%</span>
+                <div className="flex items-center gap-1.5 bg-green-500/20 text-green-600 dark:text-green-400 px-5 py-4 rounded-full">
+                  <div className="text-5xl font-black">12</div>
+                  <div className="text-sm flex flex-col items-center">
+                    <span className="font-bold">%</span>
                     <span className="text-xs">variação</span>
                   </div>
                 </div>
@@ -255,27 +255,25 @@ const ComparativeView = () => {
 
           {/* Maior e Menor Custo por Indicador */}
           <Card className="glass border-border/50">
-            <CardContent className="p-4">
-              <div className="flex items-start justify-between">
-                <div className="flex items-center gap-3">
-                  <div className="flex items-center gap-1 bg-green-500/20 text-green-600 dark:text-green-400 px-4 py-3 rounded-full">
-                    <div className="text-4xl font-black">36</div>
-                    <div className="text-xs flex flex-col items-center">
-                      <span className="font-medium">%</span>
-                      <span className="text-xs">variação</span>
-                    </div>
+            <CardContent className="p-6">
+              <div className="flex items-center justify-between gap-4">
+                <div className="flex-1 space-y-4">
+                  <div>
+                    <p className="text-sm font-medium text-muted-foreground mb-1">Maior Custo por Indicador</p>
+                    <p className="text-sm text-muted-foreground mb-1">1.3.3205200.12.0003</p>
+                    <p className="text-lg font-bold text-foreground">UMEI Escola C</p>
                   </div>
-                  <div className="space-y-2">
-                    <div>
-                      <p className="text-xs font-medium text-muted-foreground">Maior Custo por Indicador</p>
-                      <p className="text-xs text-muted-foreground">1.3.3205200.12.0003</p>
-                      <p className="text-sm font-bold text-foreground">UMEI Escola C</p>
-                    </div>
-                    <div>
-                      <p className="text-xs font-medium text-muted-foreground">Menor Custo por Indicador</p>
-                      <p className="text-xs text-muted-foreground">1.3.3205200.12.0001</p>
-                      <p className="text-sm font-bold text-foreground">UMEI VEREADOR ARNALDO BORGO</p>
-                    </div>
+                  <div>
+                    <p className="text-sm font-medium text-muted-foreground mb-1">Menor Custo por Indicador</p>
+                    <p className="text-sm text-muted-foreground mb-1">1.3.3205200.12.0001</p>
+                    <p className="text-lg font-bold text-foreground">UMEI VEREADOR ARNALDO BORGO</p>
+                  </div>
+                </div>
+                <div className="flex items-center gap-1.5 bg-green-500/20 text-green-600 dark:text-green-400 px-5 py-4 rounded-full">
+                  <div className="text-5xl font-black">36</div>
+                  <div className="text-sm flex flex-col items-center">
+                    <span className="font-bold">%</span>
+                    <span className="text-xs">variação</span>
                   </div>
                 </div>
               </div>
