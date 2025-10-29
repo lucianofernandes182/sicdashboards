@@ -257,6 +257,13 @@ const ComparativeView = () => {
           <Card className="glass border-border/50">
             <CardContent className="p-6">
               <div className="flex items-center justify-between gap-4">
+                <div className="flex items-center gap-1.5 bg-green-500/20 text-green-600 dark:text-green-400 px-5 py-4 rounded-full">
+                  <div className="text-5xl font-black">36</div>
+                  <div className="text-sm flex flex-col items-center">
+                    <span className="font-bold">%</span>
+                    <span className="text-xs">variação</span>
+                  </div>
+                </div>
                 <div className="flex-1 space-y-4">
                   <div>
                     <p className="text-sm font-medium text-muted-foreground mb-1">Maior Custo por Indicador</p>
@@ -267,13 +274,6 @@ const ComparativeView = () => {
                     <p className="text-sm font-medium text-muted-foreground mb-1">Menor Custo por Indicador</p>
                     <p className="text-sm text-muted-foreground mb-1">1.3.3205200.12.0001</p>
                     <p className="text-lg font-bold text-foreground">UMEI VEREADOR ARNALDO BORGO</p>
-                  </div>
-                </div>
-                <div className="flex items-center gap-1.5 bg-green-500/20 text-green-600 dark:text-green-400 px-5 py-4 rounded-full">
-                  <div className="text-5xl font-black">36</div>
-                  <div className="text-sm flex flex-col items-center">
-                    <span className="font-bold">%</span>
-                    <span className="text-xs">variação</span>
                   </div>
                 </div>
               </div>
