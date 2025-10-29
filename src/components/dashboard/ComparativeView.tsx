@@ -226,14 +226,21 @@ const ComparativeView = () => {
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Left Column: Cost Cards */}
         <div className="space-y-4">
-          {/* Maior Custo Card */}
+          {/* Maior e Menor Custo Card */}
           <Card className="glass border-border/50">
             <CardContent className="p-4">
               <div className="flex items-start justify-between">
-                <div className="space-y-1">
-                  <p className="text-sm font-medium text-muted-foreground">Maior Custo</p>
-                  <p className="text-xs text-muted-foreground">1.3.3205200.12.0002</p>
-                  <p className="text-base font-bold text-foreground">UMEI Escola B</p>
+                <div className="space-y-3">
+                  <div className="space-y-1">
+                    <p className="text-sm font-medium text-muted-foreground">Maior Custo</p>
+                    <p className="text-xs text-muted-foreground">1.3.3205200.12.0002</p>
+                    <p className="text-base font-bold text-foreground">UMEI Escola B</p>
+                  </div>
+                  <div className="space-y-1">
+                    <p className="text-sm font-medium text-muted-foreground">Menor Custo</p>
+                    <p className="text-xs text-muted-foreground">1.3.3205200.12.0001</p>
+                    <p className="text-base font-bold text-foreground">UMEI VEREADOR ARNALDO BORGO</p>
+                  </div>
                 </div>
                 <div className="flex items-center gap-1 bg-green-500/20 text-green-600 dark:text-green-400 px-3 py-2 rounded-full">
                   <div className="text-3xl font-black">12</div>
@@ -242,17 +249,6 @@ const ComparativeView = () => {
                     <span className="text-xs">variação</span>
                   </div>
                 </div>
-              </div>
-            </CardContent>
-          </Card>
-
-          {/* Menor Custo Card */}
-          <Card className="glass border-border/50">
-            <CardContent className="p-4">
-              <div className="space-y-1">
-                <p className="text-sm font-medium text-muted-foreground">Menor Custo</p>
-                <p className="text-xs text-muted-foreground">1.3.3205200.12.0001</p>
-                <p className="text-base font-bold text-foreground">UMEI VEREADOR ARNALDO BORGO</p>
               </div>
             </CardContent>
           </Card>
