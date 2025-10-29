@@ -264,7 +264,7 @@ const ComparativeView = () => {
                     <span className="text-xs">variação</span>
                   </div>
                 </div>
-                <div className="flex-1 space-y-4">
+                <div className="flex-1 space-y-4 text-right">
                   <div>
                     <p className="text-sm font-medium text-muted-foreground mb-1">Maior Custo por Indicador</p>
                     <p className="text-sm text-muted-foreground mb-1">1.3.3205200.12.0003</p>
