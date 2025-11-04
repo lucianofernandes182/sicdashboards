@@ -10,6 +10,7 @@ import InconsistentRecords from "./pages/InconsistentRecords";
 import DeParaMapping from "./pages/DeParaMapping";
 import DeParaMappingList from "./pages/DeParaMappingList";
 import EquipamentosPublicos from "./pages/EquipamentosPublicos";
+import ComparacaoVPDs from "./pages/ComparacaoVPDs";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -28,6 +29,7 @@ const App = () => (
           <Route path="/de-para" element={<DeParaMappingList />} />
           <Route path="/de-para/:id" element={<DeParaMapping />} />
           <Route path="/equipamentos-publicos" element={<EquipamentosPublicos />} />
+          <Route path="/comparacao-vpds" element={<ComparacaoVPDs />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>

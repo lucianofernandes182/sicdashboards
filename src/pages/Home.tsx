@@ -3,7 +3,7 @@ import { useState } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
-import { Menu, LayoutDashboard, GitBranch, FileText, BarChart3, TrendingUp, ArrowLeftRight, Building2 } from "lucide-react";
+import { Menu, LayoutDashboard, GitBranch, FileText, BarChart3, TrendingUp, ArrowLeftRight, Building2, GitCompare } from "lucide-react";
 
 const Home = () => {
   const navigate = useNavigate();
@@ -125,6 +125,17 @@ const Home = () => {
                   >
                     <Building2 className="h-4 w-4" />
                     Cadastro de Equipamentos Públicos
+                  </Button>
+                  <Button 
+                    variant="ghost" 
+                    className="justify-start gap-3"
+                    onClick={() => {
+                      navigate("/comparacao-vpds");
+                      setMenuOpen(false);
+                    }}
+                  >
+                    <GitCompare className="h-4 w-4" />
+                    Comparação de VPDs
                   </Button>
                 </nav>
               </SheetContent>
