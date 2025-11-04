@@ -243,9 +243,45 @@ export default function ComparacaoVPDs() {
                         <p className="text-sm text-muted-foreground mb-2">Total do mês {selectedRecord.mes}/{selectedRecord.ano}</p>
                         <p className="text-3xl font-bold text-blue-700 dark:text-blue-300">{formatCurrency(selectedRecord.modeloOrganico.vpds)}</p>
                       </div>
-                      <div className="text-center py-8 text-muted-foreground">
-                        <p className="text-sm">Valor consolidado do CP</p>
-                      </div>
+
+                      <Table>
+                        <TableHeader>
+                          <TableRow>
+                            <TableHead>Origem CP</TableHead>
+                            <TableHead className="text-right">Valor</TableHead>
+                          </TableRow>
+                        </TableHeader>
+                        <TableBody>
+                          <TableRow>
+                            <TableCell className="text-sm">AM Patrimônio</TableCell>
+                            <TableCell className="text-right text-sm">{formatCurrency(2881469.10)}</TableCell>
+                          </TableRow>
+                          <TableRow>
+                            <TableCell className="text-sm">AM Almoxarifado</TableCell>
+                            <TableCell className="text-right text-sm">{formatCurrency(2409547.34)}</TableCell>
+                          </TableRow>
+                          <TableRow>
+                            <TableCell className="text-sm">AM CompasLiq</TableCell>
+                            <TableCell className="text-right text-sm">{formatCurrency(14001992.25)}</TableCell>
+                          </TableRow>
+                          <TableRow>
+                            <TableCell className="text-sm">RH Provisão</TableCell>
+                            <TableCell className="text-right text-sm">{formatCurrency(5240514.20)}</TableCell>
+                          </TableRow>
+                          <TableRow>
+                            <TableCell className="text-sm">RH Liquidação</TableCell>
+                            <TableCell className="text-right text-sm">{formatCurrency(35205989.39)}</TableCell>
+                          </TableRow>
+                          <TableRow>
+                            <TableCell className="text-sm">CP Transferência</TableCell>
+                            <TableCell className="text-right text-sm">{formatCurrency(163185.42)}</TableCell>
+                          </TableRow>
+                          <TableRow>
+                            <TableCell className="text-sm">CP Liquidação</TableCell>
+                            <TableCell className="text-right text-sm">{formatCurrency(10572422.93)}</TableCell>
+                          </TableRow>
+                        </TableBody>
+                      </Table>
                     </div>
 
                     {/* SIC - Sistemas */}
@@ -325,9 +361,45 @@ export default function ComparacaoVPDs() {
                         <p className="text-sm text-muted-foreground mb-2">Total do mês {selectedRecord.mes}/{selectedRecord.ano}</p>
                         <p className="text-3xl font-bold text-blue-700 dark:text-blue-300">{formatCurrency(selectedRecord.modeloProgramatico.vpds)}</p>
                       </div>
-                      <div className="text-center py-8 text-muted-foreground">
-                        <p className="text-sm">Valor consolidado do CP</p>
-                      </div>
+
+                      <Table>
+                        <TableHeader>
+                          <TableRow>
+                            <TableHead>Origem CP</TableHead>
+                            <TableHead className="text-right">Valor</TableHead>
+                          </TableRow>
+                        </TableHeader>
+                        <TableBody>
+                          <TableRow>
+                            <TableCell className="text-sm">AM Patrimônio</TableCell>
+                            <TableCell className="text-right text-sm">{formatCurrency(2881469.10)}</TableCell>
+                          </TableRow>
+                          <TableRow>
+                            <TableCell className="text-sm">AM Almoxarifado</TableCell>
+                            <TableCell className="text-right text-sm">{formatCurrency(2316011.74)}</TableCell>
+                          </TableRow>
+                          <TableRow>
+                            <TableCell className="text-sm">AM CompasLiq</TableCell>
+                            <TableCell className="text-right text-sm">{formatCurrency(14001992.25)}</TableCell>
+                          </TableRow>
+                          <TableRow>
+                            <TableCell className="text-sm">RH Provisão</TableCell>
+                            <TableCell className="text-right text-sm">{formatCurrency(5240514.20)}</TableCell>
+                          </TableRow>
+                          <TableRow>
+                            <TableCell className="text-sm">RH Liquidação</TableCell>
+                            <TableCell className="text-right text-sm">{formatCurrency(35205989.39)}</TableCell>
+                          </TableRow>
+                          <TableRow>
+                            <TableCell className="text-sm">CP Transferência</TableCell>
+                            <TableCell className="text-right text-sm">{formatCurrency(163185.42)}</TableCell>
+                          </TableRow>
+                          <TableRow>
+                            <TableCell className="text-sm">CP Liquidação</TableCell>
+                            <TableCell className="text-right text-sm">{formatCurrency(10572422.93)}</TableCell>
+                          </TableRow>
+                        </TableBody>
+                      </Table>
                     </div>
 
                     {/* SIC - Sistemas */}
