@@ -219,7 +219,7 @@ export default function ComparacaoVPDs() {
                   <div className="flex items-center justify-between">
                     <div>
                       <CardTitle>Modelo Orgânico - {selectedRecord.mes}/{selectedRecord.ano}</CardTitle>
-                      <CardDescription>Comparação entre VPD e totais dos sistemas</CardDescription>
+                      <CardDescription>Comparação entre CP (VPDs) e SIC (Sistemas)</CardDescription>
                     </div>
                     {temDivergencia(selectedRecord.modeloOrganico.vpds, selectedRecord.modeloOrganico.sistemas.total) ? (
                       <Badge variant="destructive" className="flex items-center gap-2">
@@ -235,57 +235,63 @@ export default function ComparacaoVPDs() {
                   </div>
                 </CardHeader>
                 <CardContent>
-                  <div className="space-y-4">
-                    <div className="grid grid-cols-2 gap-4 p-4 bg-muted rounded-lg">
-                      <div>
-                        <p className="text-sm text-muted-foreground">VPD Total (mês {selectedRecord.mes}/{selectedRecord.ano})</p>
-                        <p className="text-2xl font-bold">{formatCurrency(selectedRecord.modeloOrganico.vpds)}</p>
+                  <div className="grid grid-cols-2 gap-6">
+                    {/* CP - VPDs */}
+                    <div className="space-y-4 border-r pr-6">
+                      <div className="p-4 bg-blue-50 dark:bg-blue-950 border-2 border-blue-200 dark:border-blue-800 rounded-lg">
+                        <p className="text-xs font-semibold text-blue-700 dark:text-blue-300 mb-1">CP - VPDs</p>
+                        <p className="text-sm text-muted-foreground mb-2">Total do mês {selectedRecord.mes}/{selectedRecord.ano}</p>
+                        <p className="text-3xl font-bold text-blue-700 dark:text-blue-300">{formatCurrency(selectedRecord.modeloOrganico.vpds)}</p>
                       </div>
-                      <div>
-                        <p className="text-sm text-muted-foreground">Total Sistemas</p>
-                        <p className="text-2xl font-bold">{formatCurrency(selectedRecord.modeloOrganico.sistemas.total)}</p>
+                      <div className="text-center py-8 text-muted-foreground">
+                        <p className="text-sm">Valor consolidado do CP</p>
                       </div>
                     </div>
 
-                    <Table>
-                      <TableHeader>
-                        <TableRow>
-                          <TableHead>Sistema</TableHead>
-                          <TableHead className="text-right">Valor</TableHead>
-                        </TableRow>
-                      </TableHeader>
-                      <TableBody>
-                        <TableRow>
-                          <TableCell>SMARCP</TableCell>
-                          <TableCell className="text-right">{formatCurrency(selectedRecord.modeloOrganico.sistemas.smarcp)}</TableCell>
-                        </TableRow>
-                        <TableRow>
-                          <TableCell>SMARRH</TableCell>
-                          <TableCell className="text-right">{formatCurrency(selectedRecord.modeloOrganico.sistemas.smarrh)}</TableCell>
-                        </TableRow>
-                        <TableRow>
-                          <TableCell>SMARAM</TableCell>
-                          <TableCell className="text-right">{formatCurrency(selectedRecord.modeloOrganico.sistemas.smaram)}</TableCell>
-                        </TableRow>
-                        <TableRow>
-                          <TableCell>Contas de Consumo</TableCell>
-                          <TableCell className="text-right">{formatCurrency(selectedRecord.modeloOrganico.sistemas.contasConsumo)}</TableCell>
-                        </TableRow>
-                        <TableRow className="font-bold bg-muted">
-                          <TableCell>TOTAL</TableCell>
-                          <TableCell className="text-right">{formatCurrency(selectedRecord.modeloOrganico.sistemas.total)}</TableCell>
-                        </TableRow>
-                      </TableBody>
-                    </Table>
-
-                    {temDivergencia(selectedRecord.modeloOrganico.vpds, selectedRecord.modeloOrganico.sistemas.total) && (
-                      <div className="p-4 bg-yellow-50 dark:bg-yellow-950 border border-yellow-200 dark:border-yellow-800 rounded-lg">
-                        <p className="text-sm font-medium text-yellow-800 dark:text-yellow-200">
-                          Diferença: {formatCurrency(calcularDiferenca(selectedRecord.modeloOrganico.vpds, selectedRecord.modeloOrganico.sistemas.total).diferenca)}
-                        </p>
+                    {/* SIC - Sistemas */}
+                    <div className="space-y-4 pl-6">
+                      <div className="p-4 bg-green-50 dark:bg-green-950 border-2 border-green-200 dark:border-green-800 rounded-lg">
+                        <p className="text-xs font-semibold text-green-700 dark:text-green-300 mb-1">SIC - Sistemas</p>
+                        <p className="text-sm text-muted-foreground mb-2">Total dos sistemas</p>
+                        <p className="text-3xl font-bold text-green-700 dark:text-green-300">{formatCurrency(selectedRecord.modeloOrganico.sistemas.total)}</p>
                       </div>
-                    )}
+
+                      <Table>
+                        <TableHeader>
+                          <TableRow>
+                            <TableHead>Sistema</TableHead>
+                            <TableHead className="text-right">Valor</TableHead>
+                          </TableRow>
+                        </TableHeader>
+                        <TableBody>
+                          <TableRow>
+                            <TableCell className="text-sm">SMARCP</TableCell>
+                            <TableCell className="text-right text-sm">{formatCurrency(selectedRecord.modeloOrganico.sistemas.smarcp)}</TableCell>
+                          </TableRow>
+                          <TableRow>
+                            <TableCell className="text-sm">SMARRH</TableCell>
+                            <TableCell className="text-right text-sm">{formatCurrency(selectedRecord.modeloOrganico.sistemas.smarrh)}</TableCell>
+                          </TableRow>
+                          <TableRow>
+                            <TableCell className="text-sm">SMARAM</TableCell>
+                            <TableCell className="text-right text-sm">{formatCurrency(selectedRecord.modeloOrganico.sistemas.smaram)}</TableCell>
+                          </TableRow>
+                          <TableRow>
+                            <TableCell className="text-sm">Contas de Consumo</TableCell>
+                            <TableCell className="text-right text-sm">{formatCurrency(selectedRecord.modeloOrganico.sistemas.contasConsumo)}</TableCell>
+                          </TableRow>
+                        </TableBody>
+                      </Table>
+                    </div>
                   </div>
+
+                  {temDivergencia(selectedRecord.modeloOrganico.vpds, selectedRecord.modeloOrganico.sistemas.total) && (
+                    <div className="mt-4 p-4 bg-yellow-50 dark:bg-yellow-950 border border-yellow-200 dark:border-yellow-800 rounded-lg">
+                      <p className="text-sm font-medium text-yellow-800 dark:text-yellow-200">
+                        Diferença: {formatCurrency(calcularDiferenca(selectedRecord.modeloOrganico.vpds, selectedRecord.modeloOrganico.sistemas.total).diferenca)}
+                      </p>
+                    </div>
+                  )}
                 </CardContent>
               </Card>
 
@@ -295,7 +301,7 @@ export default function ComparacaoVPDs() {
                   <div className="flex items-center justify-between">
                     <div>
                       <CardTitle>Modelo Programático - {selectedRecord.mes}/{selectedRecord.ano}</CardTitle>
-                      <CardDescription>Comparação entre VPD e totais dos sistemas</CardDescription>
+                      <CardDescription>Comparação entre CP (VPDs) e SIC (Sistemas)</CardDescription>
                     </div>
                     {temDivergencia(selectedRecord.modeloProgramatico.vpds, selectedRecord.modeloProgramatico.sistemas.total) ? (
                       <Badge variant="destructive" className="flex items-center gap-2">
@@ -311,57 +317,63 @@ export default function ComparacaoVPDs() {
                   </div>
                 </CardHeader>
                 <CardContent>
-                  <div className="space-y-4">
-                    <div className="grid grid-cols-2 gap-4 p-4 bg-muted rounded-lg">
-                      <div>
-                        <p className="text-sm text-muted-foreground">VPD Total (mês {selectedRecord.mes}/{selectedRecord.ano})</p>
-                        <p className="text-2xl font-bold">{formatCurrency(selectedRecord.modeloProgramatico.vpds)}</p>
+                  <div className="grid grid-cols-2 gap-6">
+                    {/* CP - VPDs */}
+                    <div className="space-y-4 border-r pr-6">
+                      <div className="p-4 bg-blue-50 dark:bg-blue-950 border-2 border-blue-200 dark:border-blue-800 rounded-lg">
+                        <p className="text-xs font-semibold text-blue-700 dark:text-blue-300 mb-1">CP - VPDs</p>
+                        <p className="text-sm text-muted-foreground mb-2">Total do mês {selectedRecord.mes}/{selectedRecord.ano}</p>
+                        <p className="text-3xl font-bold text-blue-700 dark:text-blue-300">{formatCurrency(selectedRecord.modeloProgramatico.vpds)}</p>
                       </div>
-                      <div>
-                        <p className="text-sm text-muted-foreground">Total Sistemas</p>
-                        <p className="text-2xl font-bold">{formatCurrency(selectedRecord.modeloProgramatico.sistemas.total)}</p>
+                      <div className="text-center py-8 text-muted-foreground">
+                        <p className="text-sm">Valor consolidado do CP</p>
                       </div>
                     </div>
 
-                    <Table>
-                      <TableHeader>
-                        <TableRow>
-                          <TableHead>Sistema</TableHead>
-                          <TableHead className="text-right">Valor</TableHead>
-                        </TableRow>
-                      </TableHeader>
-                      <TableBody>
-                        <TableRow>
-                          <TableCell>SMARCP</TableCell>
-                          <TableCell className="text-right">{formatCurrency(selectedRecord.modeloProgramatico.sistemas.smarcp)}</TableCell>
-                        </TableRow>
-                        <TableRow>
-                          <TableCell>SMARRH</TableCell>
-                          <TableCell className="text-right">{formatCurrency(selectedRecord.modeloProgramatico.sistemas.smarrh)}</TableCell>
-                        </TableRow>
-                        <TableRow>
-                          <TableCell>SMARAM</TableCell>
-                          <TableCell className="text-right">{formatCurrency(selectedRecord.modeloProgramatico.sistemas.smaram)}</TableCell>
-                        </TableRow>
-                        <TableRow>
-                          <TableCell>Contas de Consumo</TableCell>
-                          <TableCell className="text-right">{formatCurrency(selectedRecord.modeloProgramatico.sistemas.contasConsumo)}</TableCell>
-                        </TableRow>
-                        <TableRow className="font-bold bg-muted">
-                          <TableCell>TOTAL</TableCell>
-                          <TableCell className="text-right">{formatCurrency(selectedRecord.modeloProgramatico.sistemas.total)}</TableCell>
-                        </TableRow>
-                      </TableBody>
-                    </Table>
-
-                    {temDivergencia(selectedRecord.modeloProgramatico.vpds, selectedRecord.modeloProgramatico.sistemas.total) && (
-                      <div className="p-4 bg-yellow-50 dark:bg-yellow-950 border border-yellow-200 dark:border-yellow-800 rounded-lg">
-                        <p className="text-sm font-medium text-yellow-800 dark:text-yellow-200">
-                          Diferença: {formatCurrency(calcularDiferenca(selectedRecord.modeloProgramatico.vpds, selectedRecord.modeloProgramatico.sistemas.total).diferenca)}
-                        </p>
+                    {/* SIC - Sistemas */}
+                    <div className="space-y-4 pl-6">
+                      <div className="p-4 bg-green-50 dark:bg-green-950 border-2 border-green-200 dark:border-green-800 rounded-lg">
+                        <p className="text-xs font-semibold text-green-700 dark:text-green-300 mb-1">SIC - Sistemas</p>
+                        <p className="text-sm text-muted-foreground mb-2">Total dos sistemas</p>
+                        <p className="text-3xl font-bold text-green-700 dark:text-green-300">{formatCurrency(selectedRecord.modeloProgramatico.sistemas.total)}</p>
                       </div>
-                    )}
+
+                      <Table>
+                        <TableHeader>
+                          <TableRow>
+                            <TableHead>Sistema</TableHead>
+                            <TableHead className="text-right">Valor</TableHead>
+                          </TableRow>
+                        </TableHeader>
+                        <TableBody>
+                          <TableRow>
+                            <TableCell className="text-sm">SMARCP</TableCell>
+                            <TableCell className="text-right text-sm">{formatCurrency(selectedRecord.modeloProgramatico.sistemas.smarcp)}</TableCell>
+                          </TableRow>
+                          <TableRow>
+                            <TableCell className="text-sm">SMARRH</TableCell>
+                            <TableCell className="text-right text-sm">{formatCurrency(selectedRecord.modeloProgramatico.sistemas.smarrh)}</TableCell>
+                          </TableRow>
+                          <TableRow>
+                            <TableCell className="text-sm">SMARAM</TableCell>
+                            <TableCell className="text-right text-sm">{formatCurrency(selectedRecord.modeloProgramatico.sistemas.smaram)}</TableCell>
+                          </TableRow>
+                          <TableRow>
+                            <TableCell className="text-sm">Contas de Consumo</TableCell>
+                            <TableCell className="text-right text-sm">{formatCurrency(selectedRecord.modeloProgramatico.sistemas.contasConsumo)}</TableCell>
+                          </TableRow>
+                        </TableBody>
+                      </Table>
+                    </div>
                   </div>
+
+                  {temDivergencia(selectedRecord.modeloProgramatico.vpds, selectedRecord.modeloProgramatico.sistemas.total) && (
+                    <div className="mt-4 p-4 bg-yellow-50 dark:bg-yellow-950 border border-yellow-200 dark:border-yellow-800 rounded-lg">
+                      <p className="text-sm font-medium text-yellow-800 dark:text-yellow-200">
+                        Diferença: {formatCurrency(calcularDiferenca(selectedRecord.modeloProgramatico.vpds, selectedRecord.modeloProgramatico.sistemas.total).diferenca)}
+                      </p>
+                    </div>
+                  )}
                 </CardContent>
               </Card>
             </div>
