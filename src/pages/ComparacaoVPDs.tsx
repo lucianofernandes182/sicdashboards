@@ -3,9 +3,22 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { ArrowLeft, CheckCircle, XCircle, AlertTriangle } from "lucide-react";
+import { ArrowLeft, CheckCircle, XCircle, AlertTriangle, ChevronDown, ChevronRight } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
+
+interface VPDDetail {
+  codigo: string;
+  valorCP: number;
+  valorSIC: number;
+}
+
+interface OrigemCP {
+  nome: string;
+  valor: number;
+  vpds: VPDDetail[];
+}
 
 interface VPDRecord {
   id: string;
@@ -14,22 +27,26 @@ interface VPDRecord {
   status: "aprovado" | "pendente";
   modeloOrganico: {
     vpds: number;
+    origensCP: OrigemCP[];
     sistemas: {
       smarcp: number;
       smarrh: number;
       smaram: number;
       contasConsumo: number;
       total: number;
+      detalhes: VPDDetail[];
     };
   };
   modeloProgramatico: {
     vpds: number;
+    origensCP: OrigemCP[];
     sistemas: {
       smarcp: number;
       smarrh: number;
       smaram: number;
       contasConsumo: number;
       total: number;
+      detalhes: VPDDetail[];
     };
   };
 }
@@ -43,22 +60,161 @@ const mockRecords: VPDRecord[] = [
     status: "pendente",
     modeloOrganico: {
       vpds: 70475120.53,
+      origensCP: [
+        {
+          nome: "AM Patrimônio",
+          valor: 2881469.10,
+          vpds: [
+            { codigo: "3.3.2.3.1.08.00", valorCP: 1200000.00, valorSIC: 1200000.00 },
+            { codigo: "3.3.2.3.1.09.00", valorCP: 980000.00, valorSIC: 980000.00 },
+            { codigo: "3.3.2.3.1.10.00", valorCP: 701469.10, valorSIC: 701469.10 }
+          ]
+        },
+        {
+          nome: "AM Almoxarifado",
+          valor: 2409547.34,
+          vpds: [
+            { codigo: "3.3.2.3.1.11.00", valorCP: 1500000.00, valorSIC: 1500000.00 },
+            { codigo: "3.3.2.3.1.12.00", valorCP: 909547.34, valorSIC: 909547.34 }
+          ]
+        },
+        {
+          nome: "AM CompasLiq",
+          valor: 14001992.25,
+          vpds: [
+            { codigo: "3.3.2.3.1.13.00", valorCP: 8000000.00, valorSIC: 8000000.00 },
+            { codigo: "3.3.2.3.1.14.00", valorCP: 6001992.25, valorSIC: 6001992.25 }
+          ]
+        },
+        {
+          nome: "RH Provisão",
+          valor: 5240514.20,
+          vpds: [
+            { codigo: "3.3.1.1.1.01.00", valorCP: 3000000.00, valorSIC: 3000000.00 },
+            { codigo: "3.3.1.1.1.02.00", valorCP: 2240514.20, valorSIC: 2240514.20 }
+          ]
+        },
+        {
+          nome: "RH Liquidação",
+          valor: 35205989.39,
+          vpds: [
+            { codigo: "3.3.1.1.1.03.00", valorCP: 20000000.00, valorSIC: 20000000.00 },
+            { codigo: "3.3.1.1.1.04.00", valorCP: 15205989.39, valorSIC: 15205989.39 }
+          ]
+        },
+        {
+          nome: "CP Transferência",
+          valor: 163185.42,
+          vpds: [
+            { codigo: "3.3.2.3.1.15.00", valorCP: 163185.42, valorSIC: 163185.42 }
+          ]
+        },
+        {
+          nome: "CP Liquidação",
+          valor: 10572422.93,
+          vpds: [
+            { codigo: "3.3.2.3.1.16.00", valorCP: 6000000.00, valorSIC: 6000000.00 },
+            { codigo: "3.3.2.3.1.17.00", valorCP: 4572422.93, valorSIC: 4572422.93 }
+          ]
+        }
+      ],
       sistemas: {
         smarcp: 9905743.87,
         smarrh: 40444503.59,
         smaram: 19293008.69,
         contasConsumo: 666679.06,
-        total: 70311935.21
+        total: 70311935.21,
+        detalhes: [
+          { codigo: "3.3.2.3.1.08.00", valorCP: 1200000.00, valorSIC: 1200000.00 },
+          { codigo: "3.3.2.3.1.09.00", valorCP: 980000.00, valorSIC: 980000.00 },
+          { codigo: "3.3.2.3.1.10.00", valorCP: 701469.10, valorSIC: 701469.10 },
+          { codigo: "3.3.2.3.1.11.00", valorCP: 1500000.00, valorSIC: 1500000.00 },
+          { codigo: "3.3.2.3.1.12.00", valorCP: 909547.34, valorSIC: 909547.34 },
+          { codigo: "3.3.2.3.1.13.00", valorCP: 8000000.00, valorSIC: 8000000.00 },
+          { codigo: "3.3.2.3.1.14.00", valorCP: 6001992.25, valorSIC: 6001992.25 },
+          { codigo: "3.3.1.1.1.01.00", valorCP: 3000000.00, valorSIC: 3000000.00 },
+          { codigo: "3.3.1.1.1.02.00", valorCP: 2240514.20, valorSIC: 2240514.20 },
+          { codigo: "3.3.1.1.1.03.00", valorCP: 20000000.00, valorSIC: 20000000.00 },
+          { codigo: "3.3.1.1.1.04.00", valorCP: 15205989.39, valorSIC: 15205989.39 },
+          { codigo: "3.3.2.3.1.15.00", valorCP: 163185.42, valorSIC: 163185.42 },
+          { codigo: "3.3.2.3.1.16.00", valorCP: 6000000.00, valorSIC: 6000000.00 },
+          { codigo: "3.3.2.3.1.17.00", valorCP: 4572422.93, valorSIC: 4572422.93 }
+        ]
       }
     },
     modeloProgramatico: {
       vpds: 70475120.53,
+      origensCP: [
+        {
+          nome: "AM Patrimônio",
+          valor: 2881469.10,
+          vpds: [
+            { codigo: "3.3.2.3.1.08.00", valorCP: 1200000.00, valorSIC: 1200000.00 },
+            { codigo: "3.3.2.3.1.09.00", valorCP: 980000.00, valorSIC: 980000.00 },
+            { codigo: "3.3.2.3.1.10.00", valorCP: 701469.10, valorSIC: 701469.10 }
+          ]
+        },
+        {
+          nome: "AM Almoxarifado",
+          valor: 2316011.74,
+          vpds: [
+            { codigo: "3.3.2.3.1.11.00", valorCP: 1400000.00, valorSIC: 1400000.00 },
+            { codigo: "3.3.2.3.1.12.00", valorCP: 916011.74, valorSIC: 916011.74 }
+          ]
+        },
+        {
+          nome: "AM CompasLiq",
+          valor: 14001992.25,
+          vpds: [
+            { codigo: "3.3.2.3.1.13.00", valorCP: 8000000.00, valorSIC: 8000000.00 },
+            { codigo: "3.3.2.3.1.14.00", valorCP: 6001992.25, valorSIC: 6001992.25 }
+          ]
+        },
+        {
+          nome: "RH Provisão",
+          valor: 5240514.20,
+          vpds: [
+            { codigo: "3.3.1.1.1.01.00", valorCP: 3000000.00, valorSIC: 3000000.00 },
+            { codigo: "3.3.1.1.1.02.00", valorCP: 2240514.20, valorSIC: 2240514.20 }
+          ]
+        },
+        {
+          nome: "RH Liquidação",
+          valor: 35205989.39,
+          vpds: [
+            { codigo: "3.3.1.1.1.03.00", valorCP: 20000000.00, valorSIC: 20000000.00 },
+            { codigo: "3.3.1.1.1.04.00", valorCP: 15205989.39, valorSIC: 15205989.39 }
+          ]
+        },
+        {
+          nome: "CP Transferência",
+          valor: 163185.42,
+          vpds: [
+            { codigo: "3.3.2.3.1.15.00", valorCP: 163185.42, valorSIC: 163185.42 }
+          ]
+        },
+        {
+          nome: "CP Liquidação",
+          valor: 10572422.93,
+          vpds: [
+            { codigo: "3.3.2.3.1.16.00", valorCP: 6000000.00, valorSIC: 6000000.00 },
+            { codigo: "3.3.2.3.1.17.00", valorCP: 4572422.93, valorSIC: 4572422.93 }
+          ]
+        }
+      ],
       sistemas: {
         smarcp: 52005416.31,
         smarrh: 0,
         smaram: 0,
         contasConsumo: 0,
-        total: 62096416.31
+        total: 62096416.31,
+        detalhes: [
+          { codigo: "3.3.2.3.1.08.00", valorCP: 1200000.00, valorSIC: 1200000.00 },
+          { codigo: "3.3.2.3.1.09.00", valorCP: 980000.00, valorSIC: 980000.00 },
+          { codigo: "3.3.2.3.1.10.00", valorCP: 701469.10, valorSIC: 701469.10 },
+          { codigo: "3.3.2.3.1.11.00", valorCP: 1400000.00, valorSIC: 1400000.00 },
+          { codigo: "3.3.2.3.1.12.00", valorCP: 916011.74, valorSIC: 916011.74 }
+        ]
       }
     }
   },
@@ -69,22 +225,141 @@ const mockRecords: VPDRecord[] = [
     status: "aprovado",
     modeloOrganico: {
       vpds: 68500000.00,
+      origensCP: [
+        {
+          nome: "AM Patrimônio",
+          valor: 2700000.00,
+          vpds: [
+            { codigo: "3.3.2.3.1.08.00", valorCP: 1500000.00, valorSIC: 1500000.00 },
+            { codigo: "3.3.2.3.1.09.00", valorCP: 1200000.00, valorSIC: 1200000.00 }
+          ]
+        },
+        {
+          nome: "AM Almoxarifado",
+          valor: 2300000.00,
+          vpds: [
+            { codigo: "3.3.2.3.1.11.00", valorCP: 2300000.00, valorSIC: 2300000.00 }
+          ]
+        },
+        {
+          nome: "AM CompasLiq",
+          valor: 13500000.00,
+          vpds: [
+            { codigo: "3.3.2.3.1.13.00", valorCP: 13500000.00, valorSIC: 13500000.00 }
+          ]
+        },
+        {
+          nome: "RH Provisão",
+          valor: 5000000.00,
+          vpds: [
+            { codigo: "3.3.1.1.1.01.00", valorCP: 5000000.00, valorSIC: 5000000.00 }
+          ]
+        },
+        {
+          nome: "RH Liquidação",
+          valor: 34000000.00,
+          vpds: [
+            { codigo: "3.3.1.1.1.03.00", valorCP: 34000000.00, valorSIC: 34000000.00 }
+          ]
+        },
+        {
+          nome: "CP Transferência",
+          valor: 150000.00,
+          vpds: [
+            { codigo: "3.3.2.3.1.15.00", valorCP: 150000.00, valorSIC: 150000.00 }
+          ]
+        },
+        {
+          nome: "CP Liquidação",
+          valor: 10000000.00,
+          vpds: [
+            { codigo: "3.3.2.3.1.16.00", valorCP: 10000000.00, valorSIC: 10000000.00 }
+          ]
+        }
+      ],
       sistemas: {
         smarcp: 9500000.00,
         smarrh: 39000000.00,
         smaram: 18500000.00,
         contasConsumo: 650000.00,
-        total: 67650000.00
+        total: 67650000.00,
+        detalhes: [
+          { codigo: "3.3.2.3.1.08.00", valorCP: 1500000.00, valorSIC: 1500000.00 },
+          { codigo: "3.3.2.3.1.09.00", valorCP: 1200000.00, valorSIC: 1200000.00 },
+          { codigo: "3.3.2.3.1.11.00", valorCP: 2300000.00, valorSIC: 2300000.00 },
+          { codigo: "3.3.2.3.1.13.00", valorCP: 13500000.00, valorSIC: 13500000.00 },
+          { codigo: "3.3.1.1.1.01.00", valorCP: 5000000.00, valorSIC: 5000000.00 },
+          { codigo: "3.3.1.1.1.03.00", valorCP: 34000000.00, valorSIC: 34000000.00 },
+          { codigo: "3.3.2.3.1.15.00", valorCP: 150000.00, valorSIC: 150000.00 },
+          { codigo: "3.3.2.3.1.16.00", valorCP: 10000000.00, valorSIC: 10000000.00 }
+        ]
       }
     },
     modeloProgramatico: {
       vpds: 68500000.00,
+      origensCP: [
+        {
+          nome: "AM Patrimônio",
+          valor: 2700000.00,
+          vpds: [
+            { codigo: "3.3.2.3.1.08.00", valorCP: 1500000.00, valorSIC: 1500000.00 },
+            { codigo: "3.3.2.3.1.09.00", valorCP: 1200000.00, valorSIC: 1200000.00 }
+          ]
+        },
+        {
+          nome: "AM Almoxarifado",
+          valor: 2300000.00,
+          vpds: [
+            { codigo: "3.3.2.3.1.11.00", valorCP: 2300000.00, valorSIC: 2300000.00 }
+          ]
+        },
+        {
+          nome: "AM CompasLiq",
+          valor: 13500000.00,
+          vpds: [
+            { codigo: "3.3.2.3.1.13.00", valorCP: 13500000.00, valorSIC: 13500000.00 }
+          ]
+        },
+        {
+          nome: "RH Provisão",
+          valor: 5000000.00,
+          vpds: [
+            { codigo: "3.3.1.1.1.01.00", valorCP: 5000000.00, valorSIC: 5000000.00 }
+          ]
+        },
+        {
+          nome: "RH Liquidação",
+          valor: 34000000.00,
+          vpds: [
+            { codigo: "3.3.1.1.1.03.00", valorCP: 34000000.00, valorSIC: 34000000.00 }
+          ]
+        },
+        {
+          nome: "CP Transferência",
+          valor: 150000.00,
+          vpds: [
+            { codigo: "3.3.2.3.1.15.00", valorCP: 150000.00, valorSIC: 150000.00 }
+          ]
+        },
+        {
+          nome: "CP Liquidação",
+          valor: 10000000.00,
+          vpds: [
+            { codigo: "3.3.2.3.1.16.00", valorCP: 10000000.00, valorSIC: 10000000.00 }
+          ]
+        }
+      ],
       sistemas: {
         smarcp: 50000000.00,
         smarrh: 0,
         smaram: 0,
         contasConsumo: 0,
-        total: 60000000.00
+        total: 60000000.00,
+        detalhes: [
+          { codigo: "3.3.2.3.1.08.00", valorCP: 1500000.00, valorSIC: 1500000.00 },
+          { codigo: "3.3.2.3.1.09.00", valorCP: 1200000.00, valorSIC: 1200000.00 },
+          { codigo: "3.3.2.3.1.11.00", valorCP: 2300000.00, valorSIC: 2300000.00 }
+        ]
       }
     }
   }
@@ -94,6 +369,19 @@ export default function ComparacaoVPDs() {
   const navigate = useNavigate();
   const [selectedRecord, setSelectedRecord] = useState<VPDRecord | null>(null);
   const [records, setRecords] = useState<VPDRecord[]>(mockRecords);
+  const [expandedOrigens, setExpandedOrigens] = useState<Set<string>>(new Set());
+
+  const toggleOrigem = (origemNome: string) => {
+    setExpandedOrigens(prev => {
+      const next = new Set(prev);
+      if (next.has(origemNome)) {
+        next.delete(origemNome);
+      } else {
+        next.add(origemNome);
+      }
+      return next;
+    });
+  };
 
   const formatCurrency = (value: number) => {
     return new Intl.NumberFormat('pt-BR', {
@@ -244,44 +532,48 @@ export default function ComparacaoVPDs() {
                         <p className="text-3xl font-bold text-blue-700 dark:text-blue-300">{formatCurrency(selectedRecord.modeloOrganico.vpds)}</p>
                       </div>
 
-                      <Table>
-                        <TableHeader>
-                          <TableRow>
-                            <TableHead>Origem CP</TableHead>
-                            <TableHead className="text-right">Valor</TableHead>
-                          </TableRow>
-                        </TableHeader>
-                        <TableBody>
-                          <TableRow>
-                            <TableCell className="text-sm">AM Patrimônio</TableCell>
-                            <TableCell className="text-right text-sm">{formatCurrency(2881469.10)}</TableCell>
-                          </TableRow>
-                          <TableRow>
-                            <TableCell className="text-sm">AM Almoxarifado</TableCell>
-                            <TableCell className="text-right text-sm">{formatCurrency(2409547.34)}</TableCell>
-                          </TableRow>
-                          <TableRow>
-                            <TableCell className="text-sm">AM CompasLiq</TableCell>
-                            <TableCell className="text-right text-sm">{formatCurrency(14001992.25)}</TableCell>
-                          </TableRow>
-                          <TableRow>
-                            <TableCell className="text-sm">RH Provisão</TableCell>
-                            <TableCell className="text-right text-sm">{formatCurrency(5240514.20)}</TableCell>
-                          </TableRow>
-                          <TableRow>
-                            <TableCell className="text-sm">RH Liquidação</TableCell>
-                            <TableCell className="text-right text-sm">{formatCurrency(35205989.39)}</TableCell>
-                          </TableRow>
-                          <TableRow>
-                            <TableCell className="text-sm">CP Transferência</TableCell>
-                            <TableCell className="text-right text-sm">{formatCurrency(163185.42)}</TableCell>
-                          </TableRow>
-                          <TableRow>
-                            <TableCell className="text-sm">CP Liquidação</TableCell>
-                            <TableCell className="text-right text-sm">{formatCurrency(10572422.93)}</TableCell>
-                          </TableRow>
-                        </TableBody>
-                      </Table>
+                      <div className="space-y-2">
+                        {selectedRecord.modeloOrganico.origensCP.map((origem) => (
+                          <Collapsible key={origem.nome} open={expandedOrigens.has(`organico-${origem.nome}`)}>
+                            <div className="border rounded-lg">
+                              <CollapsibleTrigger
+                                onClick={() => toggleOrigem(`organico-${origem.nome}`)}
+                                className="w-full p-3 flex items-center justify-between hover:bg-muted/50 transition-colors"
+                              >
+                                <span className="text-sm font-medium">{origem.nome}</span>
+                                <div className="flex items-center gap-2">
+                                  <span className="text-sm text-muted-foreground">{formatCurrency(origem.valor)}</span>
+                                  {expandedOrigens.has(`organico-${origem.nome}`) ? (
+                                    <ChevronDown className="h-4 w-4" />
+                                  ) : (
+                                    <ChevronRight className="h-4 w-4" />
+                                  )}
+                                </div>
+                              </CollapsibleTrigger>
+                              <CollapsibleContent>
+                                <div className="px-3 pb-3 pt-1">
+                                  <Table>
+                                    <TableHeader>
+                                      <TableRow>
+                                        <TableHead className="text-xs">Código VPD</TableHead>
+                                        <TableHead className="text-right text-xs">Valor CP</TableHead>
+                                      </TableRow>
+                                    </TableHeader>
+                                    <TableBody>
+                                      {origem.vpds.map((vpd) => (
+                                        <TableRow key={vpd.codigo}>
+                                          <TableCell className="text-xs py-2">{vpd.codigo}</TableCell>
+                                          <TableCell className="text-right text-xs py-2">{formatCurrency(vpd.valorCP)}</TableCell>
+                                        </TableRow>
+                                      ))}
+                                    </TableBody>
+                                  </Table>
+                                </div>
+                              </CollapsibleContent>
+                            </div>
+                          </Collapsible>
+                        ))}
+                      </div>
                     </div>
 
                     {/* SIC - Sistemas */}
@@ -292,32 +584,91 @@ export default function ComparacaoVPDs() {
                         <p className="text-3xl font-bold text-green-700 dark:text-green-300">{formatCurrency(selectedRecord.modeloOrganico.sistemas.total)}</p>
                       </div>
 
-                      <Table>
-                        <TableHeader>
-                          <TableRow>
-                            <TableHead>Sistema</TableHead>
-                            <TableHead className="text-right">Valor</TableHead>
-                          </TableRow>
-                        </TableHeader>
-                        <TableBody>
-                          <TableRow>
-                            <TableCell className="text-sm">SMARCP</TableCell>
-                            <TableCell className="text-right text-sm">{formatCurrency(selectedRecord.modeloOrganico.sistemas.smarcp)}</TableCell>
-                          </TableRow>
-                          <TableRow>
-                            <TableCell className="text-sm">SMARRH</TableCell>
-                            <TableCell className="text-right text-sm">{formatCurrency(selectedRecord.modeloOrganico.sistemas.smarrh)}</TableCell>
-                          </TableRow>
-                          <TableRow>
-                            <TableCell className="text-sm">SMARAM</TableCell>
-                            <TableCell className="text-right text-sm">{formatCurrency(selectedRecord.modeloOrganico.sistemas.smaram)}</TableCell>
-                          </TableRow>
-                          <TableRow>
-                            <TableCell className="text-sm">Contas de Consumo</TableCell>
-                            <TableCell className="text-right text-sm">{formatCurrency(selectedRecord.modeloOrganico.sistemas.contasConsumo)}</TableCell>
-                          </TableRow>
-                        </TableBody>
-                      </Table>
+                      <Collapsible open={expandedOrigens.has('organico-sic-detalhes')}>
+                        <div className="border rounded-lg">
+                          <CollapsibleTrigger
+                            onClick={() => toggleOrigem('organico-sic-detalhes')}
+                            className="w-full p-3 flex items-center justify-between hover:bg-muted/50 transition-colors"
+                          >
+                            <span className="text-sm font-medium">Detalhamento por Sistema</span>
+                            <div className="flex items-center gap-2">
+                              {expandedOrigens.has('organico-sic-detalhes') ? (
+                                <ChevronDown className="h-4 w-4" />
+                              ) : (
+                                <ChevronRight className="h-4 w-4" />
+                              )}
+                            </div>
+                          </CollapsibleTrigger>
+                          <CollapsibleContent>
+                            <div className="px-3 pb-3 pt-1">
+                              <Table>
+                                <TableHeader>
+                                  <TableRow>
+                                    <TableHead className="text-xs">Sistema</TableHead>
+                                    <TableHead className="text-right text-xs">Valor</TableHead>
+                                  </TableRow>
+                                </TableHeader>
+                                <TableBody>
+                                  <TableRow>
+                                    <TableCell className="text-xs py-2">SMARCP</TableCell>
+                                    <TableCell className="text-right text-xs py-2">{formatCurrency(selectedRecord.modeloOrganico.sistemas.smarcp)}</TableCell>
+                                  </TableRow>
+                                  <TableRow>
+                                    <TableCell className="text-xs py-2">SMARRH</TableCell>
+                                    <TableCell className="text-right text-xs py-2">{formatCurrency(selectedRecord.modeloOrganico.sistemas.smarrh)}</TableCell>
+                                  </TableRow>
+                                  <TableRow>
+                                    <TableCell className="text-xs py-2">SMARAM</TableCell>
+                                    <TableCell className="text-right text-xs py-2">{formatCurrency(selectedRecord.modeloOrganico.sistemas.smaram)}</TableCell>
+                                  </TableRow>
+                                  <TableRow>
+                                    <TableCell className="text-xs py-2">Contas de Consumo</TableCell>
+                                    <TableCell className="text-right text-xs py-2">{formatCurrency(selectedRecord.modeloOrganico.sistemas.contasConsumo)}</TableCell>
+                                  </TableRow>
+                                </TableBody>
+                              </Table>
+                            </div>
+                          </CollapsibleContent>
+                        </div>
+                      </Collapsible>
+
+                      <Collapsible open={expandedOrigens.has('organico-sic-vpds')}>
+                        <div className="border rounded-lg">
+                          <CollapsibleTrigger
+                            onClick={() => toggleOrigem('organico-sic-vpds')}
+                            className="w-full p-3 flex items-center justify-between hover:bg-muted/50 transition-colors"
+                          >
+                            <span className="text-sm font-medium">Detalhamento por VPD</span>
+                            <div className="flex items-center gap-2">
+                              {expandedOrigens.has('organico-sic-vpds') ? (
+                                <ChevronDown className="h-4 w-4" />
+                              ) : (
+                                <ChevronRight className="h-4 w-4" />
+                              )}
+                            </div>
+                          </CollapsibleTrigger>
+                          <CollapsibleContent>
+                            <div className="px-3 pb-3 pt-1">
+                              <Table>
+                                <TableHeader>
+                                  <TableRow>
+                                    <TableHead className="text-xs">Código VPD</TableHead>
+                                    <TableHead className="text-right text-xs">Valor SIC</TableHead>
+                                  </TableRow>
+                                </TableHeader>
+                                <TableBody>
+                                  {selectedRecord.modeloOrganico.sistemas.detalhes.map((vpd) => (
+                                    <TableRow key={vpd.codigo}>
+                                      <TableCell className="text-xs py-2">{vpd.codigo}</TableCell>
+                                      <TableCell className="text-right text-xs py-2">{formatCurrency(vpd.valorSIC)}</TableCell>
+                                    </TableRow>
+                                  ))}
+                                </TableBody>
+                              </Table>
+                            </div>
+                          </CollapsibleContent>
+                        </div>
+                      </Collapsible>
                     </div>
                   </div>
 
@@ -362,44 +713,48 @@ export default function ComparacaoVPDs() {
                         <p className="text-3xl font-bold text-blue-700 dark:text-blue-300">{formatCurrency(selectedRecord.modeloProgramatico.vpds)}</p>
                       </div>
 
-                      <Table>
-                        <TableHeader>
-                          <TableRow>
-                            <TableHead>Origem CP</TableHead>
-                            <TableHead className="text-right">Valor</TableHead>
-                          </TableRow>
-                        </TableHeader>
-                        <TableBody>
-                          <TableRow>
-                            <TableCell className="text-sm">AM Patrimônio</TableCell>
-                            <TableCell className="text-right text-sm">{formatCurrency(2881469.10)}</TableCell>
-                          </TableRow>
-                          <TableRow>
-                            <TableCell className="text-sm">AM Almoxarifado</TableCell>
-                            <TableCell className="text-right text-sm">{formatCurrency(2316011.74)}</TableCell>
-                          </TableRow>
-                          <TableRow>
-                            <TableCell className="text-sm">AM CompasLiq</TableCell>
-                            <TableCell className="text-right text-sm">{formatCurrency(14001992.25)}</TableCell>
-                          </TableRow>
-                          <TableRow>
-                            <TableCell className="text-sm">RH Provisão</TableCell>
-                            <TableCell className="text-right text-sm">{formatCurrency(5240514.20)}</TableCell>
-                          </TableRow>
-                          <TableRow>
-                            <TableCell className="text-sm">RH Liquidação</TableCell>
-                            <TableCell className="text-right text-sm">{formatCurrency(35205989.39)}</TableCell>
-                          </TableRow>
-                          <TableRow>
-                            <TableCell className="text-sm">CP Transferência</TableCell>
-                            <TableCell className="text-right text-sm">{formatCurrency(163185.42)}</TableCell>
-                          </TableRow>
-                          <TableRow>
-                            <TableCell className="text-sm">CP Liquidação</TableCell>
-                            <TableCell className="text-right text-sm">{formatCurrency(10572422.93)}</TableCell>
-                          </TableRow>
-                        </TableBody>
-                      </Table>
+                      <div className="space-y-2">
+                        {selectedRecord.modeloProgramatico.origensCP.map((origem) => (
+                          <Collapsible key={origem.nome} open={expandedOrigens.has(`programatico-${origem.nome}`)}>
+                            <div className="border rounded-lg">
+                              <CollapsibleTrigger
+                                onClick={() => toggleOrigem(`programatico-${origem.nome}`)}
+                                className="w-full p-3 flex items-center justify-between hover:bg-muted/50 transition-colors"
+                              >
+                                <span className="text-sm font-medium">{origem.nome}</span>
+                                <div className="flex items-center gap-2">
+                                  <span className="text-sm text-muted-foreground">{formatCurrency(origem.valor)}</span>
+                                  {expandedOrigens.has(`programatico-${origem.nome}`) ? (
+                                    <ChevronDown className="h-4 w-4" />
+                                  ) : (
+                                    <ChevronRight className="h-4 w-4" />
+                                  )}
+                                </div>
+                              </CollapsibleTrigger>
+                              <CollapsibleContent>
+                                <div className="px-3 pb-3 pt-1">
+                                  <Table>
+                                    <TableHeader>
+                                      <TableRow>
+                                        <TableHead className="text-xs">Código VPD</TableHead>
+                                        <TableHead className="text-right text-xs">Valor CP</TableHead>
+                                      </TableRow>
+                                    </TableHeader>
+                                    <TableBody>
+                                      {origem.vpds.map((vpd) => (
+                                        <TableRow key={vpd.codigo}>
+                                          <TableCell className="text-xs py-2">{vpd.codigo}</TableCell>
+                                          <TableCell className="text-right text-xs py-2">{formatCurrency(vpd.valorCP)}</TableCell>
+                                        </TableRow>
+                                      ))}
+                                    </TableBody>
+                                  </Table>
+                                </div>
+                              </CollapsibleContent>
+                            </div>
+                          </Collapsible>
+                        ))}
+                      </div>
                     </div>
 
                     {/* SIC - Sistemas */}
@@ -410,32 +765,91 @@ export default function ComparacaoVPDs() {
                         <p className="text-3xl font-bold text-green-700 dark:text-green-300">{formatCurrency(selectedRecord.modeloProgramatico.sistemas.total)}</p>
                       </div>
 
-                      <Table>
-                        <TableHeader>
-                          <TableRow>
-                            <TableHead>Sistema</TableHead>
-                            <TableHead className="text-right">Valor</TableHead>
-                          </TableRow>
-                        </TableHeader>
-                        <TableBody>
-                          <TableRow>
-                            <TableCell className="text-sm">SMARCP</TableCell>
-                            <TableCell className="text-right text-sm">{formatCurrency(selectedRecord.modeloProgramatico.sistemas.smarcp)}</TableCell>
-                          </TableRow>
-                          <TableRow>
-                            <TableCell className="text-sm">SMARRH</TableCell>
-                            <TableCell className="text-right text-sm">{formatCurrency(selectedRecord.modeloProgramatico.sistemas.smarrh)}</TableCell>
-                          </TableRow>
-                          <TableRow>
-                            <TableCell className="text-sm">SMARAM</TableCell>
-                            <TableCell className="text-right text-sm">{formatCurrency(selectedRecord.modeloProgramatico.sistemas.smaram)}</TableCell>
-                          </TableRow>
-                          <TableRow>
-                            <TableCell className="text-sm">Contas de Consumo</TableCell>
-                            <TableCell className="text-right text-sm">{formatCurrency(selectedRecord.modeloProgramatico.sistemas.contasConsumo)}</TableCell>
-                          </TableRow>
-                        </TableBody>
-                      </Table>
+                      <Collapsible open={expandedOrigens.has('programatico-sic-detalhes')}>
+                        <div className="border rounded-lg">
+                          <CollapsibleTrigger
+                            onClick={() => toggleOrigem('programatico-sic-detalhes')}
+                            className="w-full p-3 flex items-center justify-between hover:bg-muted/50 transition-colors"
+                          >
+                            <span className="text-sm font-medium">Detalhamento por Sistema</span>
+                            <div className="flex items-center gap-2">
+                              {expandedOrigens.has('programatico-sic-detalhes') ? (
+                                <ChevronDown className="h-4 w-4" />
+                              ) : (
+                                <ChevronRight className="h-4 w-4" />
+                              )}
+                            </div>
+                          </CollapsibleTrigger>
+                          <CollapsibleContent>
+                            <div className="px-3 pb-3 pt-1">
+                              <Table>
+                                <TableHeader>
+                                  <TableRow>
+                                    <TableHead className="text-xs">Sistema</TableHead>
+                                    <TableHead className="text-right text-xs">Valor</TableHead>
+                                  </TableRow>
+                                </TableHeader>
+                                <TableBody>
+                                  <TableRow>
+                                    <TableCell className="text-xs py-2">SMARCP</TableCell>
+                                    <TableCell className="text-right text-xs py-2">{formatCurrency(selectedRecord.modeloProgramatico.sistemas.smarcp)}</TableCell>
+                                  </TableRow>
+                                  <TableRow>
+                                    <TableCell className="text-xs py-2">SMARRH</TableCell>
+                                    <TableCell className="text-right text-xs py-2">{formatCurrency(selectedRecord.modeloProgramatico.sistemas.smarrh)}</TableCell>
+                                  </TableRow>
+                                  <TableRow>
+                                    <TableCell className="text-xs py-2">SMARAM</TableCell>
+                                    <TableCell className="text-right text-xs py-2">{formatCurrency(selectedRecord.modeloProgramatico.sistemas.smaram)}</TableCell>
+                                  </TableRow>
+                                  <TableRow>
+                                    <TableCell className="text-xs py-2">Contas de Consumo</TableCell>
+                                    <TableCell className="text-right text-xs py-2">{formatCurrency(selectedRecord.modeloProgramatico.sistemas.contasConsumo)}</TableCell>
+                                  </TableRow>
+                                </TableBody>
+                              </Table>
+                            </div>
+                          </CollapsibleContent>
+                        </div>
+                      </Collapsible>
+
+                      <Collapsible open={expandedOrigens.has('programatico-sic-vpds')}>
+                        <div className="border rounded-lg">
+                          <CollapsibleTrigger
+                            onClick={() => toggleOrigem('programatico-sic-vpds')}
+                            className="w-full p-3 flex items-center justify-between hover:bg-muted/50 transition-colors"
+                          >
+                            <span className="text-sm font-medium">Detalhamento por VPD</span>
+                            <div className="flex items-center gap-2">
+                              {expandedOrigens.has('programatico-sic-vpds') ? (
+                                <ChevronDown className="h-4 w-4" />
+                              ) : (
+                                <ChevronRight className="h-4 w-4" />
+                              )}
+                            </div>
+                          </CollapsibleTrigger>
+                          <CollapsibleContent>
+                            <div className="px-3 pb-3 pt-1">
+                              <Table>
+                                <TableHeader>
+                                  <TableRow>
+                                    <TableHead className="text-xs">Código VPD</TableHead>
+                                    <TableHead className="text-right text-xs">Valor SIC</TableHead>
+                                  </TableRow>
+                                </TableHeader>
+                                <TableBody>
+                                  {selectedRecord.modeloProgramatico.sistemas.detalhes.map((vpd) => (
+                                    <TableRow key={vpd.codigo}>
+                                      <TableCell className="text-xs py-2">{vpd.codigo}</TableCell>
+                                      <TableCell className="text-right text-xs py-2">{formatCurrency(vpd.valorSIC)}</TableCell>
+                                    </TableRow>
+                                  ))}
+                                </TableBody>
+                              </Table>
+                            </div>
+                          </CollapsibleContent>
+                        </div>
+                      </Collapsible>
                     </div>
                   </div>
 
