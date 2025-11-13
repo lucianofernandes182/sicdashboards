@@ -253,7 +253,7 @@ const DetailBreakdownView = () => {
                     outerRadius={80}
                     paddingAngle={2}
                     dataKey="value"
-                    label={({ name }) => name}
+                    label={false}
                     labelLine={false}
                   >
                     {costUnitsTotal.map((entry, index) => (
@@ -284,7 +284,22 @@ const DetailBreakdownView = () => {
                   
                   <Tooltip 
                     formatter={(value, name) => [value.toLocaleString('pt-BR'), name]} 
-                    contentStyle={{ backgroundColor: 'rgba(0,0,0,0.8)', border: '1px solid #333', borderRadius: '8px' }}
+                    contentStyle={{ 
+                      backgroundColor: 'hsl(var(--background))', 
+                      border: '1px solid hsl(var(--border))', 
+                      borderRadius: '8px',
+                      padding: '12px',
+                      boxShadow: '0 4px 12px rgba(0,0,0,0.15)',
+                      zIndex: 1000
+                    }}
+                    labelStyle={{ 
+                      color: 'hsl(var(--foreground))',
+                      fontWeight: 600,
+                      marginBottom: '4px'
+                    }}
+                    itemStyle={{ 
+                      color: 'hsl(var(--foreground))'
+                    }}
                   />
                 </PieChart>
               </ResponsiveContainer>
