@@ -253,7 +253,30 @@ const DetailBreakdownView = () => {
                     outerRadius={80}
                     paddingAngle={2}
                     dataKey="value"
-                    label={false}
+                    label={({ cx, cy, midAngle, innerRadius, outerRadius, name }) => {
+                      const RADIAN = Math.PI / 180;
+                      const radius = innerRadius + (outerRadius - innerRadius) * 0.5;
+                      const x = cx + radius * Math.cos(-midAngle * RADIAN);
+                      const y = cy + radius * Math.sin(-midAngle * RADIAN);
+                      
+                      // Abbreviate long names
+                      const shortName = name.length > 12 ? name.substring(0, 10) + '...' : name;
+                      
+                      return (
+                        <text 
+                          x={x} 
+                          y={y} 
+                          fill="white" 
+                          textAnchor="middle"
+                          dominantBaseline="central"
+                          fontSize="10"
+                          fontWeight="600"
+                          className="drop-shadow-lg"
+                        >
+                          {shortName}
+                        </text>
+                      );
+                    }}
                     labelLine={false}
                   >
                     {costUnitsTotal.map((entry, index) => (
@@ -270,7 +293,27 @@ const DetailBreakdownView = () => {
                     outerRadius={160}
                     paddingAngle={1}
                     dataKey="value"
-                    label={({ year }) => year}
+                    label={({ cx, cy, midAngle, innerRadius, outerRadius, year }) => {
+                      const RADIAN = Math.PI / 180;
+                      const radius = innerRadius + (outerRadius - innerRadius) * 0.5;
+                      const x = cx + radius * Math.cos(-midAngle * RADIAN);
+                      const y = cy + radius * Math.sin(-midAngle * RADIAN);
+                      
+                      return (
+                        <text 
+                          x={x} 
+                          y={y} 
+                          fill="white" 
+                          textAnchor="middle"
+                          dominantBaseline="central"
+                          fontSize="12"
+                          fontWeight="700"
+                          className="drop-shadow-lg"
+                        >
+                          {year}
+                        </text>
+                      );
+                    }}
                     labelLine={false}
                   >
                     {costUnitsYearBreakdown.map((entry, index) => (
