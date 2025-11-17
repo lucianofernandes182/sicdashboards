@@ -207,10 +207,35 @@ const mockRecords: VPDRecord[] = [
           descricao: "TRIBUTÁRIAS",
           totalCP: 1800000.00,
           totalSIC: 1800000.00,
-          detalhes: [
-            { codigo: "3.7.1.0.00.00.00", descricao: "IMPOSTOS, TAXAS E CONTRIBUIÇÕES DE MELHORIA", valorCP: 1000000.00, valorSIC: 1000000.00 },
-            { codigo: "3.7.2.0.00.00.00", descricao: "CONTRIBUIÇÕES", valorCP: 500000.00, valorSIC: 500000.00 },
-            { codigo: "3.7.8.0.00.00.00", descricao: "CUSTO COM TRIBUTOS", valorCP: 300000.00, valorSIC: 300000.00 }
+          subgrupos: [
+            {
+              codigo: "3.7.1.0.00.00.00",
+              descricao: "IMPOSTOS, TAXAS E CONTRIBUIÇÕES DE MELHORIA",
+              totalCP: 1000000.00,
+              totalSIC: 1000000.00,
+              vpds: [
+                { codigo: "3.7.1.1.00.00.00", descricao: "IPTU", valorCP: 600000.00, valorSIC: 600000.00 },
+                { codigo: "3.7.1.2.00.00.00", descricao: "Outras Taxas", valorCP: 400000.00, valorSIC: 400000.00 }
+              ]
+            },
+            {
+              codigo: "3.7.2.0.00.00.00",
+              descricao: "CONTRIBUIÇÕES",
+              totalCP: 500000.00,
+              totalSIC: 500000.00,
+              vpds: [
+                { codigo: "3.7.2.1.00.00.00", descricao: "Contribuições Sociais", valorCP: 500000.00, valorSIC: 500000.00 }
+              ]
+            },
+            {
+              codigo: "3.7.8.0.00.00.00",
+              descricao: "CUSTO COM TRIBUTOS",
+              totalCP: 300000.00,
+              totalSIC: 300000.00,
+              vpds: [
+                { codigo: "3.7.8.1.00.00.00", descricao: "Outros Custos Tributários", valorCP: 300000.00, valorSIC: 300000.00 }
+              ]
+            }
           ]
         },
         {
@@ -218,11 +243,43 @@ const mockRecords: VPDRecord[] = [
           descricao: "OUTRAS VARIAÇÕES PATRIMONIAIS DIMINUTIVAS",
           totalCP: 2300000.00,
           totalSIC: 2300000.00,
-          detalhes: [
-            { codigo: "3.9.1.0.00.00.00", descricao: "PREMIAÇÕES", valorCP: 400000.00, valorSIC: 400000.00 },
-            { codigo: "3.9.4.0.00.00.00", descricao: "INCENTIVOS", valorCP: 600000.00, valorSIC: 600000.00 },
-            { codigo: "3.9.7.0.00.00.00", descricao: "VPD DE CONSTITUIÇÃO DE PROVISÕES", valorCP: 800000.00, valorSIC: 800000.00 },
-            { codigo: "3.9.8.0.00.00.00", descricao: "CUSTO DE OUTRAS VPD", valorCP: 500000.00, valorSIC: 500000.00 }
+          subgrupos: [
+            {
+              codigo: "3.9.1.0.00.00.00",
+              descricao: "PREMIAÇÕES",
+              totalCP: 400000.00,
+              totalSIC: 400000.00,
+              vpds: [
+                { codigo: "3.9.1.1.00.00.00", descricao: "Prêmios Diversos", valorCP: 400000.00, valorSIC: 400000.00 }
+              ]
+            },
+            {
+              codigo: "3.9.4.0.00.00.00",
+              descricao: "INCENTIVOS",
+              totalCP: 600000.00,
+              totalSIC: 600000.00,
+              vpds: [
+                { codigo: "3.9.4.1.00.00.00", descricao: "Incentivos Fiscais", valorCP: 600000.00, valorSIC: 600000.00 }
+              ]
+            },
+            {
+              codigo: "3.9.7.0.00.00.00",
+              descricao: "VPD DE CONSTITUIÇÃO DE PROVISÕES",
+              totalCP: 800000.00,
+              totalSIC: 800000.00,
+              vpds: [
+                { codigo: "3.9.7.1.00.00.00", descricao: "Provisões Diversas", valorCP: 800000.00, valorSIC: 800000.00 }
+              ]
+            },
+            {
+              codigo: "3.9.8.0.00.00.00",
+              descricao: "CUSTO DE OUTRAS VPD",
+              totalCP: 500000.00,
+              totalSIC: 500000.00,
+              vpds: [
+                { codigo: "3.9.8.1.00.00.00", descricao: "Outros Custos", valorCP: 500000.00, valorSIC: 500000.00 }
+              ]
+            }
           ]
         }
       ]
@@ -236,11 +293,47 @@ const mockRecords: VPDRecord[] = [
           descricao: "PESSOAL E ENCARGOS",
           totalCP: 45450503.59,
           totalSIC: 45450503.59,
-          detalhes: [
-            { codigo: "3.1.1.0.00.00.00", descricao: "REMUNERAÇÃO A PESSOAL", valorCP: 35205989.39, valorSIC: 35205989.39 },
-            { codigo: "3.1.2.0.00.00.00", descricao: "ENCARGOS PATRONAIS", valorCP: 5240514.20, valorSIC: 5240514.20 },
-            { codigo: "3.1.3.0.00.00.00", descricao: "BENEFÍCIOS A PESSOAL", valorCP: 2500000.00, valorSIC: 2500000.00 },
-            { codigo: "3.1.8.0.00.00.00", descricao: "CUSTO DE PESSOAL E ENCARGOS", valorCP: 2504000.00, valorSIC: 2504000.00 }
+          subgrupos: [
+            {
+              codigo: "3.1.1.0.00.00.00",
+              descricao: "REMUNERAÇÃO A PESSOAL",
+              totalCP: 35205989.39,
+              totalSIC: 35205989.39,
+              vpds: [
+                { codigo: "3.1.1.1.00.00.00", descricao: "Vencimentos e Salários", valorCP: 25000000.00, valorSIC: 25000000.00 },
+                { codigo: "3.1.1.2.00.00.00", descricao: "Gratificações", valorCP: 8000000.00, valorSIC: 8000000.00 },
+                { codigo: "3.1.1.3.00.00.00", descricao: "Adicionais", valorCP: 2205989.39, valorSIC: 2205989.39 }
+              ]
+            },
+            {
+              codigo: "3.1.2.0.00.00.00",
+              descricao: "ENCARGOS PATRONAIS",
+              totalCP: 5240514.20,
+              totalSIC: 5240514.20,
+              vpds: [
+                { codigo: "3.1.2.1.00.00.00", descricao: "INSS Patronal", valorCP: 3500000.00, valorSIC: 3500000.00 },
+                { codigo: "3.1.2.2.00.00.00", descricao: "FGTS", valorCP: 1740514.20, valorSIC: 1740514.20 }
+              ]
+            },
+            {
+              codigo: "3.1.3.0.00.00.00",
+              descricao: "BENEFÍCIOS A PESSOAL",
+              totalCP: 2500000.00,
+              totalSIC: 2500000.00,
+              vpds: [
+                { codigo: "3.1.3.1.00.00.00", descricao: "Vale Alimentação", valorCP: 1500000.00, valorSIC: 1500000.00 },
+                { codigo: "3.1.3.2.00.00.00", descricao: "Vale Transporte", valorCP: 1000000.00, valorSIC: 1000000.00 }
+              ]
+            },
+            {
+              codigo: "3.1.8.0.00.00.00",
+              descricao: "CUSTO DE PESSOAL E ENCARGOS",
+              totalCP: 2504000.00,
+              totalSIC: 2504000.00,
+              vpds: [
+                { codigo: "3.1.8.1.00.00.00", descricao: "Outros Custos de Pessoal", valorCP: 2504000.00, valorSIC: 2504000.00 }
+              ]
+            }
           ]
         },
         {
@@ -248,11 +341,45 @@ const mockRecords: VPDRecord[] = [
           descricao: "BENEFÍCIOS PREVIDENCIÁRIOS E ASSISTENCIAIS",
           totalCP: 2800000.00,
           totalSIC: 2800000.00,
-          detalhes: [
-            { codigo: "3.2.1.0.00.00.00", descricao: "APOSENTADORIAS E REFORMAS", valorCP: 1500000.00, valorSIC: 1500000.00 },
-            { codigo: "3.2.2.0.00.00.00", descricao: "PENSÕES", valorCP: 800000.00, valorSIC: 800000.00 },
-            { codigo: "3.2.3.0.00.00.00", descricao: "BENEFÍCIOS DE PRESTAÇÃO CONTINUADA", valorCP: 300000.00, valorSIC: 300000.00 },
-            { codigo: "3.2.5.0.00.00.00", descricao: "POLÍTICAS PÚBLICAS DE TRANSFERÊNCIA DE RENDA", valorCP: 200000.00, valorSIC: 200000.00 }
+          subgrupos: [
+            {
+              codigo: "3.2.1.0.00.00.00",
+              descricao: "APOSENTADORIAS E REFORMAS",
+              totalCP: 1500000.00,
+              totalSIC: 1500000.00,
+              vpds: [
+                { codigo: "3.2.1.1.00.00.00", descricao: "Aposentadorias", valorCP: 1200000.00, valorSIC: 1200000.00 },
+                { codigo: "3.2.1.2.00.00.00", descricao: "Reformas", valorCP: 300000.00, valorSIC: 300000.00 }
+              ]
+            },
+            {
+              codigo: "3.2.2.0.00.00.00",
+              descricao: "PENSÕES",
+              totalCP: 800000.00,
+              totalSIC: 800000.00,
+              vpds: [
+                { codigo: "3.2.2.1.00.00.00", descricao: "Pensões por Morte", valorCP: 800000.00, valorSIC: 800000.00 }
+              ]
+            },
+            {
+              codigo: "3.2.3.0.00.00.00",
+              descricao: "BENEFÍCIOS DE PRESTAÇÃO CONTINUADA",
+              totalCP: 300000.00,
+              totalSIC: 300000.00,
+              vpds: [
+                { codigo: "3.2.3.1.00.00.00", descricao: "BPC Idoso", valorCP: 200000.00, valorSIC: 200000.00 },
+                { codigo: "3.2.3.2.00.00.00", descricao: "BPC Deficiente", valorCP: 100000.00, valorSIC: 100000.00 }
+              ]
+            },
+            {
+              codigo: "3.2.5.0.00.00.00",
+              descricao: "POLÍTICAS PÚBLICAS DE TRANSFERÊNCIA DE RENDA",
+              totalCP: 200000.00,
+              totalSIC: 200000.00,
+              vpds: [
+                { codigo: "3.2.5.1.00.00.00", descricao: "Bolsa Família", valorCP: 200000.00, valorSIC: 200000.00 }
+              ]
+            }
           ]
         },
         {
@@ -260,11 +387,48 @@ const mockRecords: VPDRecord[] = [
           descricao: "MANUTENÇÃO E OPERAÇÃO DA MÁQUINA PÚBLICA",
           totalCP: 18124617.94,
           totalSIC: 18124617.94,
-          detalhes: [
-            { codigo: "3.3.1.0.00.00.00", descricao: "USO DE MATERIAL DE CONSUMO", valorCP: 2500000.00, valorSIC: 2500000.00 },
-            { codigo: "3.3.2.0.00.00.00", descricao: "SERVIÇOS", valorCP: 8000000.00, valorSIC: 8000000.00 },
-            { codigo: "3.3.3.0.00.00.00", descricao: "DEPRECIAÇÃO, AMORTIZAÇÃO E EXAUSTÃO", valorCP: 3124617.94, valorSIC: 3124617.94 },
-            { codigo: "3.3.8.0.00.00.00", descricao: "CUSTO DE MATERIAIS, SERVIÇOS E CONSUMO DE CAPITAL FIXO", valorCP: 4500000.00, valorSIC: 4500000.00 }
+          subgrupos: [
+            {
+              codigo: "3.3.1.0.00.00.00",
+              descricao: "USO DE MATERIAL DE CONSUMO",
+              totalCP: 2500000.00,
+              totalSIC: 2500000.00,
+              vpds: [
+                { codigo: "3.3.1.1.00.00.00", descricao: "Material de Escritório", valorCP: 500000.00, valorSIC: 500000.00 },
+                { codigo: "3.3.1.2.00.00.00", descricao: "Material de Limpeza", valorCP: 800000.00, valorSIC: 800000.00 },
+                { codigo: "3.3.1.3.00.00.00", descricao: "Material de Informática", valorCP: 1200000.00, valorSIC: 1200000.00 }
+              ]
+            },
+            {
+              codigo: "3.3.2.0.00.00.00",
+              descricao: "SERVIÇOS",
+              totalCP: 8000000.00,
+              totalSIC: 8000000.00,
+              vpds: [
+                { codigo: "3.3.2.1.00.00.00", descricao: "Serviços de Terceiros - PJ", valorCP: 5000000.00, valorSIC: 5000000.00 },
+                { codigo: "3.3.2.2.00.00.00", descricao: "Serviços de Terceiros - PF", valorCP: 2000000.00, valorSIC: 2000000.00 },
+                { codigo: "3.3.2.3.00.00.00", descricao: "Serviços de Utilidade Pública", valorCP: 1000000.00, valorSIC: 1000000.00 }
+              ]
+            },
+            {
+              codigo: "3.3.3.0.00.00.00",
+              descricao: "DEPRECIAÇÃO, AMORTIZAÇÃO E EXAUSTÃO",
+              totalCP: 3124617.94,
+              totalSIC: 3124617.94,
+              vpds: [
+                { codigo: "3.3.3.1.00.00.00", descricao: "Depreciação de Bens Móveis", valorCP: 2000000.00, valorSIC: 2000000.00 },
+                { codigo: "3.3.3.2.00.00.00", descricao: "Depreciação de Bens Imóveis", valorCP: 1124617.94, valorSIC: 1124617.94 }
+              ]
+            },
+            {
+              codigo: "3.3.8.0.00.00.00",
+              descricao: "CUSTO DE MATERIAIS, SERVIÇOS E CONSUMO DE CAPITAL FIXO",
+              totalCP: 4500000.00,
+              totalSIC: 4500000.00,
+              vpds: [
+                { codigo: "3.3.8.1.00.00.00", descricao: "Outros Custos Operacionais", valorCP: 4500000.00, valorSIC: 4500000.00 }
+              ]
+            }
           ]
         },
         {
@@ -272,10 +436,35 @@ const mockRecords: VPDRecord[] = [
           descricao: "TRIBUTÁRIAS",
           totalCP: 1800000.00,
           totalSIC: 1800000.00,
-          detalhes: [
-            { codigo: "3.7.1.0.00.00.00", descricao: "IMPOSTOS, TAXAS E CONTRIBUIÇÕES DE MELHORIA", valorCP: 1000000.00, valorSIC: 1000000.00 },
-            { codigo: "3.7.2.0.00.00.00", descricao: "CONTRIBUIÇÕES", valorCP: 500000.00, valorSIC: 500000.00 },
-            { codigo: "3.7.8.0.00.00.00", descricao: "CUSTO COM TRIBUTOS", valorCP: 300000.00, valorSIC: 300000.00 }
+          subgrupos: [
+            {
+              codigo: "3.7.1.0.00.00.00",
+              descricao: "IMPOSTOS, TAXAS E CONTRIBUIÇÕES DE MELHORIA",
+              totalCP: 1000000.00,
+              totalSIC: 1000000.00,
+              vpds: [
+                { codigo: "3.7.1.1.00.00.00", descricao: "IPTU", valorCP: 600000.00, valorSIC: 600000.00 },
+                { codigo: "3.7.1.2.00.00.00", descricao: "Outras Taxas", valorCP: 400000.00, valorSIC: 400000.00 }
+              ]
+            },
+            {
+              codigo: "3.7.2.0.00.00.00",
+              descricao: "CONTRIBUIÇÕES",
+              totalCP: 500000.00,
+              totalSIC: 500000.00,
+              vpds: [
+                { codigo: "3.7.2.1.00.00.00", descricao: "Contribuições Sociais", valorCP: 500000.00, valorSIC: 500000.00 }
+              ]
+            },
+            {
+              codigo: "3.7.8.0.00.00.00",
+              descricao: "CUSTO COM TRIBUTOS",
+              totalCP: 300000.00,
+              totalSIC: 300000.00,
+              vpds: [
+                { codigo: "3.7.8.1.00.00.00", descricao: "Outros Custos Tributários", valorCP: 300000.00, valorSIC: 300000.00 }
+              ]
+            }
           ]
         },
         {
@@ -283,11 +472,43 @@ const mockRecords: VPDRecord[] = [
           descricao: "OUTRAS VARIAÇÕES PATRIMONIAIS DIMINUTIVAS",
           totalCP: 2300000.00,
           totalSIC: 2300000.00,
-          detalhes: [
-            { codigo: "3.9.1.0.00.00.00", descricao: "PREMIAÇÕES", valorCP: 400000.00, valorSIC: 400000.00 },
-            { codigo: "3.9.4.0.00.00.00", descricao: "INCENTIVOS", valorCP: 600000.00, valorSIC: 600000.00 },
-            { codigo: "3.9.7.0.00.00.00", descricao: "VPD DE CONSTITUIÇÃO DE PROVISÕES", valorCP: 800000.00, valorSIC: 800000.00 },
-            { codigo: "3.9.8.0.00.00.00", descricao: "CUSTO DE OUTRAS VPD", valorCP: 500000.00, valorSIC: 500000.00 }
+          subgrupos: [
+            {
+              codigo: "3.9.1.0.00.00.00",
+              descricao: "PREMIAÇÕES",
+              totalCP: 400000.00,
+              totalSIC: 400000.00,
+              vpds: [
+                { codigo: "3.9.1.1.00.00.00", descricao: "Prêmios Diversos", valorCP: 400000.00, valorSIC: 400000.00 }
+              ]
+            },
+            {
+              codigo: "3.9.4.0.00.00.00",
+              descricao: "INCENTIVOS",
+              totalCP: 600000.00,
+              totalSIC: 600000.00,
+              vpds: [
+                { codigo: "3.9.4.1.00.00.00", descricao: "Incentivos Fiscais", valorCP: 600000.00, valorSIC: 600000.00 }
+              ]
+            },
+            {
+              codigo: "3.9.7.0.00.00.00",
+              descricao: "VPD DE CONSTITUIÇÃO DE PROVISÕES",
+              totalCP: 800000.00,
+              totalSIC: 800000.00,
+              vpds: [
+                { codigo: "3.9.7.1.00.00.00", descricao: "Provisões Diversas", valorCP: 800000.00, valorSIC: 800000.00 }
+              ]
+            },
+            {
+              codigo: "3.9.8.0.00.00.00",
+              descricao: "CUSTO DE OUTRAS VPD",
+              totalCP: 500000.00,
+              totalSIC: 500000.00,
+              vpds: [
+                { codigo: "3.9.8.1.00.00.00", descricao: "Outros Custos", valorCP: 500000.00, valorSIC: 500000.00 }
+              ]
+            }
           ]
         }
       ]
@@ -300,6 +521,7 @@ export default function ComparacaoVPDs() {
   const [selectedRecord, setSelectedRecord] = useState<VPDRecord | null>(null);
   const [records, setRecords] = useState<VPDRecord[]>(mockRecords);
   const [expandedGroups, setExpandedGroups] = useState<Set<string>>(new Set());
+  const [expandedSubGroups, setExpandedSubGroups] = useState<Set<string>>(new Set());
 
   const toggleGroup = (groupKey: string) => {
     setExpandedGroups(prev => {
@@ -313,11 +535,31 @@ export default function ComparacaoVPDs() {
     });
   };
 
+  const toggleSubGroup = (subGroupKey: string) => {
+    setExpandedSubGroups(prev => {
+      const next = new Set(prev);
+      if (next.has(subGroupKey)) {
+        next.delete(subGroupKey);
+      } else {
+        next.add(subGroupKey);
+      }
+      return next;
+    });
+  };
+
   const formatCurrency = (value: number) => {
     return new Intl.NumberFormat('pt-BR', {
       style: 'currency',
       currency: 'BRL'
     }).format(value);
+  };
+
+  const hasDivergence = (valorCP: number, valorSIC: number) => {
+    return Math.abs(valorCP - valorSIC) > 0.01;
+  };
+
+  const getDivergenceAmount = (valorCP: number, valorSIC: number) => {
+    return valorCP - valorSIC;
   };
 
   const calcularDiferenca = (vpd: number, total: number) => {
@@ -485,25 +727,62 @@ export default function ComparacaoVPDs() {
                                 </div>
                               </CollapsibleTrigger>
                               <CollapsibleContent>
-                                <div className="px-3 pb-3 pt-1">
-                                  <Table>
-                                    <TableHeader>
-                                      <TableRow>
-                                        <TableHead className="text-xs">Código</TableHead>
-                                        <TableHead className="text-xs">Descrição</TableHead>
-                                        <TableHead className="text-right text-xs">Valor CP</TableHead>
-                                      </TableRow>
-                                    </TableHeader>
-                                    <TableBody>
-                                      {grupo.detalhes.map((detalhe) => (
-                                        <TableRow key={detalhe.codigo} className="bg-orange-50 dark:bg-orange-950/20">
-                                          <TableCell className="text-xs py-2 font-mono">{detalhe.codigo}</TableCell>
-                                          <TableCell className="text-xs py-2">{detalhe.descricao}</TableCell>
-                                          <TableCell className="text-right text-xs py-2 font-semibold">{formatCurrency(detalhe.valorCP)}</TableCell>
-                                        </TableRow>
-                                      ))}
-                                    </TableBody>
-                                  </Table>
+                                <div className="px-3 pb-3 pt-1 space-y-2">
+                                  {grupo.subgrupos.map((subgrupo) => (
+                                    <Collapsible key={`organico-cp-sub-${subgrupo.codigo}`} open={expandedSubGroups.has(`organico-cp-sub-${subgrupo.codigo}`)}>
+                                      <div className="border rounded-lg overflow-hidden">
+                                        <CollapsibleTrigger
+                                          onClick={() => toggleSubGroup(`organico-cp-sub-${subgrupo.codigo}`)}
+                                          className="w-full p-2 flex items-center justify-between hover:bg-accent/50 transition-colors bg-orange-50 dark:bg-orange-950/20"
+                                        >
+                                          <div className="flex flex-col items-start flex-1">
+                                            <span className="text-xs font-mono text-muted-foreground">{subgrupo.codigo}</span>
+                                            <span className="text-xs font-medium">{subgrupo.descricao}</span>
+                                          </div>
+                                          <div className="flex items-center gap-2">
+                                            <span className="text-xs font-semibold">{formatCurrency(subgrupo.totalCP)}</span>
+                                            {expandedSubGroups.has(`organico-cp-sub-${subgrupo.codigo}`) ? (
+                                              <ChevronDown className="h-3 w-3" />
+                                            ) : (
+                                              <ChevronRight className="h-3 w-3" />
+                                            )}
+                                          </div>
+                                        </CollapsibleTrigger>
+                                        <CollapsibleContent>
+                                          <div className="px-2 pb-2 pt-1">
+                                            <Table>
+                                              <TableHeader>
+                                                <TableRow>
+                                                  <TableHead className="text-xs">Código</TableHead>
+                                                  <TableHead className="text-xs">Descrição</TableHead>
+                                                  <TableHead className="text-right text-xs">Valor CP</TableHead>
+                                                </TableRow>
+                                              </TableHeader>
+                                              <TableBody>
+                                                {subgrupo.vpds.map((vpd) => (
+                                                  <TableRow 
+                                                    key={vpd.codigo} 
+                                                    className={`${hasDivergence(vpd.valorCP, vpd.valorSIC) ? 'bg-red-50 dark:bg-red-950/20' : 'bg-background'}`}
+                                                  >
+                                                    <TableCell className="text-xs py-2 font-mono">
+                                                      <div className="flex items-center gap-1">
+                                                        {vpd.codigo}
+                                                        {hasDivergence(vpd.valorCP, vpd.valorSIC) && (
+                                                          <AlertTriangle className="h-3 w-3 text-destructive" />
+                                                        )}
+                                                      </div>
+                                                    </TableCell>
+                                                    <TableCell className="text-xs py-2">{vpd.descricao}</TableCell>
+                                                    <TableCell className="text-right text-xs py-2 font-semibold">{formatCurrency(vpd.valorCP)}</TableCell>
+                                                  </TableRow>
+                                                ))}
+                                              </TableBody>
+                                            </Table>
+                                          </div>
+                                        </CollapsibleContent>
+                                      </div>
+                                    </Collapsible>
+                                  ))}
                                 </div>
                               </CollapsibleContent>
                             </div>
@@ -543,25 +822,71 @@ export default function ComparacaoVPDs() {
                                 </div>
                               </CollapsibleTrigger>
                               <CollapsibleContent>
-                                <div className="px-3 pb-3 pt-1">
-                                  <Table>
-                                    <TableHeader>
-                                      <TableRow>
-                                        <TableHead className="text-xs">Código</TableHead>
-                                        <TableHead className="text-xs">Descrição</TableHead>
-                                        <TableHead className="text-right text-xs">Valor SIC</TableHead>
-                                      </TableRow>
-                                    </TableHeader>
-                                    <TableBody>
-                                      {grupo.detalhes.map((detalhe) => (
-                                        <TableRow key={detalhe.codigo} className="bg-orange-50 dark:bg-orange-950/20">
-                                          <TableCell className="text-xs py-2 font-mono">{detalhe.codigo}</TableCell>
-                                          <TableCell className="text-xs py-2">{detalhe.descricao}</TableCell>
-                                          <TableCell className="text-right text-xs py-2 font-semibold">{formatCurrency(detalhe.valorSIC)}</TableCell>
-                                        </TableRow>
-                                      ))}
-                                    </TableBody>
-                                  </Table>
+                                <div className="px-3 pb-3 pt-1 space-y-2">
+                                  {grupo.subgrupos.map((subgrupo) => (
+                                    <Collapsible key={`organico-sic-sub-${subgrupo.codigo}`} open={expandedSubGroups.has(`organico-sic-sub-${subgrupo.codigo}`)}>
+                                      <div className="border rounded-lg overflow-hidden">
+                                        <CollapsibleTrigger
+                                          onClick={() => toggleSubGroup(`organico-sic-sub-${subgrupo.codigo}`)}
+                                          className="w-full p-2 flex items-center justify-between hover:bg-accent/50 transition-colors bg-orange-50 dark:bg-orange-950/20"
+                                        >
+                                          <div className="flex flex-col items-start flex-1">
+                                            <span className="text-xs font-mono text-muted-foreground">{subgrupo.codigo}</span>
+                                            <span className="text-xs font-medium">{subgrupo.descricao}</span>
+                                          </div>
+                                          <div className="flex items-center gap-2">
+                                            <span className="text-xs font-semibold">{formatCurrency(subgrupo.totalSIC)}</span>
+                                            {expandedSubGroups.has(`organico-sic-sub-${subgrupo.codigo}`) ? (
+                                              <ChevronDown className="h-3 w-3" />
+                                            ) : (
+                                              <ChevronRight className="h-3 w-3" />
+                                            )}
+                                          </div>
+                                        </CollapsibleTrigger>
+                                        <CollapsibleContent>
+                                          <div className="px-2 pb-2 pt-1">
+                                            <Table>
+                                              <TableHeader>
+                                                <TableRow>
+                                                  <TableHead className="text-xs">Código</TableHead>
+                                                  <TableHead className="text-xs">Descrição</TableHead>
+                                                  <TableHead className="text-right text-xs">Valor SIC</TableHead>
+                                                </TableRow>
+                                              </TableHeader>
+                                              <TableBody>
+                                                {subgrupo.vpds.map((vpd) => (
+                                                  <TableRow 
+                                                    key={vpd.codigo} 
+                                                    className={`${hasDivergence(vpd.valorCP, vpd.valorSIC) ? 'bg-red-50 dark:bg-red-950/20' : 'bg-background'}`}
+                                                  >
+                                                    <TableCell className="text-xs py-2 font-mono">
+                                                      <div className="flex items-center gap-1">
+                                                        {vpd.codigo}
+                                                        {hasDivergence(vpd.valorCP, vpd.valorSIC) && (
+                                                          <AlertTriangle className="h-3 w-3 text-destructive" />
+                                                        )}
+                                                      </div>
+                                                    </TableCell>
+                                                    <TableCell className="text-xs py-2">{vpd.descricao}</TableCell>
+                                                    <TableCell className="text-right text-xs py-2 font-semibold">
+                                                      <div className="flex flex-col items-end">
+                                                        <span>{formatCurrency(vpd.valorSIC)}</span>
+                                                        {hasDivergence(vpd.valorCP, vpd.valorSIC) && (
+                                                          <span className="text-[10px] text-destructive font-normal">
+                                                            Dif: {formatCurrency(getDivergenceAmount(vpd.valorCP, vpd.valorSIC))}
+                                                          </span>
+                                                        )}
+                                                      </div>
+                                                    </TableCell>
+                                                  </TableRow>
+                                                ))}
+                                              </TableBody>
+                                            </Table>
+                                          </div>
+                                        </CollapsibleContent>
+                                      </div>
+                                    </Collapsible>
+                                  ))}
                                 </div>
                               </CollapsibleContent>
                             </div>
@@ -647,25 +972,62 @@ export default function ComparacaoVPDs() {
                                 </div>
                               </CollapsibleTrigger>
                               <CollapsibleContent>
-                                <div className="px-3 pb-3 pt-1">
-                                  <Table>
-                                    <TableHeader>
-                                      <TableRow>
-                                        <TableHead className="text-xs">Código</TableHead>
-                                        <TableHead className="text-xs">Descrição</TableHead>
-                                        <TableHead className="text-right text-xs">Valor CP</TableHead>
-                                      </TableRow>
-                                    </TableHeader>
-                                    <TableBody>
-                                      {grupo.detalhes.map((detalhe) => (
-                                        <TableRow key={detalhe.codigo} className="bg-orange-50 dark:bg-orange-950/20">
-                                          <TableCell className="text-xs py-2 font-mono">{detalhe.codigo}</TableCell>
-                                          <TableCell className="text-xs py-2">{detalhe.descricao}</TableCell>
-                                          <TableCell className="text-right text-xs py-2 font-semibold">{formatCurrency(detalhe.valorCP)}</TableCell>
-                                        </TableRow>
-                                      ))}
-                                    </TableBody>
-                                  </Table>
+                                <div className="px-3 pb-3 pt-1 space-y-2">
+                                  {grupo.subgrupos.map((subgrupo) => (
+                                    <Collapsible key={`programatico-cp-sub-${subgrupo.codigo}`} open={expandedSubGroups.has(`programatico-cp-sub-${subgrupo.codigo}`)}>
+                                      <div className="border rounded-lg overflow-hidden">
+                                        <CollapsibleTrigger
+                                          onClick={() => toggleSubGroup(`programatico-cp-sub-${subgrupo.codigo}`)}
+                                          className="w-full p-2 flex items-center justify-between hover:bg-accent/50 transition-colors bg-orange-50 dark:bg-orange-950/20"
+                                        >
+                                          <div className="flex flex-col items-start flex-1">
+                                            <span className="text-xs font-mono text-muted-foreground">{subgrupo.codigo}</span>
+                                            <span className="text-xs font-medium">{subgrupo.descricao}</span>
+                                          </div>
+                                          <div className="flex items-center gap-2">
+                                            <span className="text-xs font-semibold">{formatCurrency(subgrupo.totalCP)}</span>
+                                            {expandedSubGroups.has(`programatico-cp-sub-${subgrupo.codigo}`) ? (
+                                              <ChevronDown className="h-3 w-3" />
+                                            ) : (
+                                              <ChevronRight className="h-3 w-3" />
+                                            )}
+                                          </div>
+                                        </CollapsibleTrigger>
+                                        <CollapsibleContent>
+                                          <div className="px-2 pb-2 pt-1">
+                                            <Table>
+                                              <TableHeader>
+                                                <TableRow>
+                                                  <TableHead className="text-xs">Código</TableHead>
+                                                  <TableHead className="text-xs">Descrição</TableHead>
+                                                  <TableHead className="text-right text-xs">Valor CP</TableHead>
+                                                </TableRow>
+                                              </TableHeader>
+                                              <TableBody>
+                                                {subgrupo.vpds.map((vpd) => (
+                                                  <TableRow 
+                                                    key={vpd.codigo} 
+                                                    className={`${hasDivergence(vpd.valorCP, vpd.valorSIC) ? 'bg-red-50 dark:bg-red-950/20' : 'bg-background'}`}
+                                                  >
+                                                    <TableCell className="text-xs py-2 font-mono">
+                                                      <div className="flex items-center gap-1">
+                                                        {vpd.codigo}
+                                                        {hasDivergence(vpd.valorCP, vpd.valorSIC) && (
+                                                          <AlertTriangle className="h-3 w-3 text-destructive" />
+                                                        )}
+                                                      </div>
+                                                    </TableCell>
+                                                    <TableCell className="text-xs py-2">{vpd.descricao}</TableCell>
+                                                    <TableCell className="text-right text-xs py-2 font-semibold">{formatCurrency(vpd.valorCP)}</TableCell>
+                                                  </TableRow>
+                                                ))}
+                                              </TableBody>
+                                            </Table>
+                                          </div>
+                                        </CollapsibleContent>
+                                      </div>
+                                    </Collapsible>
+                                  ))}
                                 </div>
                               </CollapsibleContent>
                             </div>
@@ -705,25 +1067,71 @@ export default function ComparacaoVPDs() {
                                 </div>
                               </CollapsibleTrigger>
                               <CollapsibleContent>
-                                <div className="px-3 pb-3 pt-1">
-                                  <Table>
-                                    <TableHeader>
-                                      <TableRow>
-                                        <TableHead className="text-xs">Código</TableHead>
-                                        <TableHead className="text-xs">Descrição</TableHead>
-                                        <TableHead className="text-right text-xs">Valor SIC</TableHead>
-                                      </TableRow>
-                                    </TableHeader>
-                                    <TableBody>
-                                      {grupo.detalhes.map((detalhe) => (
-                                        <TableRow key={detalhe.codigo} className="bg-orange-50 dark:bg-orange-950/20">
-                                          <TableCell className="text-xs py-2 font-mono">{detalhe.codigo}</TableCell>
-                                          <TableCell className="text-xs py-2">{detalhe.descricao}</TableCell>
-                                          <TableCell className="text-right text-xs py-2 font-semibold">{formatCurrency(detalhe.valorSIC)}</TableCell>
-                                        </TableRow>
-                                      ))}
-                                    </TableBody>
-                                  </Table>
+                                <div className="px-3 pb-3 pt-1 space-y-2">
+                                  {grupo.subgrupos.map((subgrupo) => (
+                                    <Collapsible key={`programatico-sic-sub-${subgrupo.codigo}`} open={expandedSubGroups.has(`programatico-sic-sub-${subgrupo.codigo}`)}>
+                                      <div className="border rounded-lg overflow-hidden">
+                                        <CollapsibleTrigger
+                                          onClick={() => toggleSubGroup(`programatico-sic-sub-${subgrupo.codigo}`)}
+                                          className="w-full p-2 flex items-center justify-between hover:bg-accent/50 transition-colors bg-orange-50 dark:bg-orange-950/20"
+                                        >
+                                          <div className="flex flex-col items-start flex-1">
+                                            <span className="text-xs font-mono text-muted-foreground">{subgrupo.codigo}</span>
+                                            <span className="text-xs font-medium">{subgrupo.descricao}</span>
+                                          </div>
+                                          <div className="flex items-center gap-2">
+                                            <span className="text-xs font-semibold">{formatCurrency(subgrupo.totalSIC)}</span>
+                                            {expandedSubGroups.has(`programatico-sic-sub-${subgrupo.codigo}`) ? (
+                                              <ChevronDown className="h-3 w-3" />
+                                            ) : (
+                                              <ChevronRight className="h-3 w-3" />
+                                            )}
+                                          </div>
+                                        </CollapsibleTrigger>
+                                        <CollapsibleContent>
+                                          <div className="px-2 pb-2 pt-1">
+                                            <Table>
+                                              <TableHeader>
+                                                <TableRow>
+                                                  <TableHead className="text-xs">Código</TableHead>
+                                                  <TableHead className="text-xs">Descrição</TableHead>
+                                                  <TableHead className="text-right text-xs">Valor SIC</TableHead>
+                                                </TableRow>
+                                              </TableHeader>
+                                              <TableBody>
+                                                {subgrupo.vpds.map((vpd) => (
+                                                  <TableRow 
+                                                    key={vpd.codigo} 
+                                                    className={`${hasDivergence(vpd.valorCP, vpd.valorSIC) ? 'bg-red-50 dark:bg-red-950/20' : 'bg-background'}`}
+                                                  >
+                                                    <TableCell className="text-xs py-2 font-mono">
+                                                      <div className="flex items-center gap-1">
+                                                        {vpd.codigo}
+                                                        {hasDivergence(vpd.valorCP, vpd.valorSIC) && (
+                                                          <AlertTriangle className="h-3 w-3 text-destructive" />
+                                                        )}
+                                                      </div>
+                                                    </TableCell>
+                                                    <TableCell className="text-xs py-2">{vpd.descricao}</TableCell>
+                                                    <TableCell className="text-right text-xs py-2 font-semibold">
+                                                      <div className="flex flex-col items-end">
+                                                        <span>{formatCurrency(vpd.valorSIC)}</span>
+                                                        {hasDivergence(vpd.valorCP, vpd.valorSIC) && (
+                                                          <span className="text-[10px] text-destructive font-normal">
+                                                            Dif: {formatCurrency(getDivergenceAmount(vpd.valorCP, vpd.valorSIC))}
+                                                          </span>
+                                                        )}
+                                                      </div>
+                                                    </TableCell>
+                                                  </TableRow>
+                                                ))}
+                                              </TableBody>
+                                            </Table>
+                                          </div>
+                                        </CollapsibleContent>
+                                      </div>
+                                    </Collapsible>
+                                  ))}
                                 </div>
                               </CollapsibleContent>
                             </div>
