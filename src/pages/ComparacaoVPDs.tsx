@@ -15,12 +15,20 @@ interface VPDDetail {
   valorSIC: number;
 }
 
+interface VPDSubGroup {
+  codigo: string;
+  descricao: string;
+  totalCP: number;
+  totalSIC: number;
+  vpds: VPDDetail[];
+}
+
 interface VPDGroup {
   codigoPrincipal: string;
   descricao: string;
   totalCP: number;
   totalSIC: number;
-  detalhes: VPDDetail[];
+  subgrupos: VPDSubGroup[];
 }
 
 interface VPDRecord {
@@ -56,11 +64,47 @@ const mockRecords: VPDRecord[] = [
           descricao: "PESSOAL E ENCARGOS",
           totalCP: 45450503.59,
           totalSIC: 45450503.59,
-          detalhes: [
-            { codigo: "3.1.1.0.00.00.00", descricao: "REMUNERAÇÃO A PESSOAL", valorCP: 35205989.39, valorSIC: 35205989.39 },
-            { codigo: "3.1.2.0.00.00.00", descricao: "ENCARGOS PATRONAIS", valorCP: 5240514.20, valorSIC: 5240514.20 },
-            { codigo: "3.1.3.0.00.00.00", descricao: "BENEFÍCIOS A PESSOAL", valorCP: 2500000.00, valorSIC: 2500000.00 },
-            { codigo: "3.1.8.0.00.00.00", descricao: "CUSTO DE PESSOAL E ENCARGOS", valorCP: 2504000.00, valorSIC: 2504000.00 }
+          subgrupos: [
+            {
+              codigo: "3.1.1.0.00.00.00",
+              descricao: "REMUNERAÇÃO A PESSOAL",
+              totalCP: 35205989.39,
+              totalSIC: 35205989.39,
+              vpds: [
+                { codigo: "3.1.1.1.00.00.00", descricao: "Vencimentos e Salários", valorCP: 25000000.00, valorSIC: 25000000.00 },
+                { codigo: "3.1.1.2.00.00.00", descricao: "Gratificações", valorCP: 8000000.00, valorSIC: 7950000.00 },
+                { codigo: "3.1.1.3.00.00.00", descricao: "Adicionais", valorCP: 2205989.39, valorSIC: 2255989.39 }
+              ]
+            },
+            {
+              codigo: "3.1.2.0.00.00.00",
+              descricao: "ENCARGOS PATRONAIS",
+              totalCP: 5240514.20,
+              totalSIC: 5240514.20,
+              vpds: [
+                { codigo: "3.1.2.1.00.00.00", descricao: "INSS Patronal", valorCP: 3500000.00, valorSIC: 3500000.00 },
+                { codigo: "3.1.2.2.00.00.00", descricao: "FGTS", valorCP: 1740514.20, valorSIC: 1740514.20 }
+              ]
+            },
+            {
+              codigo: "3.1.3.0.00.00.00",
+              descricao: "BENEFÍCIOS A PESSOAL",
+              totalCP: 2500000.00,
+              totalSIC: 2500000.00,
+              vpds: [
+                { codigo: "3.1.3.1.00.00.00", descricao: "Vale Alimentação", valorCP: 1500000.00, valorSIC: 1500000.00 },
+                { codigo: "3.1.3.2.00.00.00", descricao: "Vale Transporte", valorCP: 1000000.00, valorSIC: 1000000.00 }
+              ]
+            },
+            {
+              codigo: "3.1.8.0.00.00.00",
+              descricao: "CUSTO DE PESSOAL E ENCARGOS",
+              totalCP: 2504000.00,
+              totalSIC: 2504000.00,
+              vpds: [
+                { codigo: "3.1.8.1.00.00.00", descricao: "Outros Custos de Pessoal", valorCP: 2504000.00, valorSIC: 2504000.00 }
+              ]
+            }
           ]
         },
         {
@@ -68,23 +112,94 @@ const mockRecords: VPDRecord[] = [
           descricao: "BENEFÍCIOS PREVIDENCIÁRIOS E ASSISTENCIAIS",
           totalCP: 2800000.00,
           totalSIC: 2800000.00,
-          detalhes: [
-            { codigo: "3.2.1.0.00.00.00", descricao: "APOSENTADORIAS E REFORMAS", valorCP: 1500000.00, valorSIC: 1500000.00 },
-            { codigo: "3.2.2.0.00.00.00", descricao: "PENSÕES", valorCP: 800000.00, valorSIC: 800000.00 },
-            { codigo: "3.2.3.0.00.00.00", descricao: "BENEFÍCIOS DE PRESTAÇÃO CONTINUADA", valorCP: 300000.00, valorSIC: 300000.00 },
-            { codigo: "3.2.5.0.00.00.00", descricao: "POLÍTICAS PÚBLICAS DE TRANSFERÊNCIA DE RENDA", valorCP: 200000.00, valorSIC: 200000.00 }
+          subgrupos: [
+            {
+              codigo: "3.2.1.0.00.00.00",
+              descricao: "APOSENTADORIAS E REFORMAS",
+              totalCP: 1500000.00,
+              totalSIC: 1500000.00,
+              vpds: [
+                { codigo: "3.2.1.1.00.00.00", descricao: "Aposentadorias", valorCP: 1200000.00, valorSIC: 1200000.00 },
+                { codigo: "3.2.1.2.00.00.00", descricao: "Reformas", valorCP: 300000.00, valorSIC: 300000.00 }
+              ]
+            },
+            {
+              codigo: "3.2.2.0.00.00.00",
+              descricao: "PENSÕES",
+              totalCP: 800000.00,
+              totalSIC: 800000.00,
+              vpds: [
+                { codigo: "3.2.2.1.00.00.00", descricao: "Pensões por Morte", valorCP: 800000.00, valorSIC: 800000.00 }
+              ]
+            },
+            {
+              codigo: "3.2.3.0.00.00.00",
+              descricao: "BENEFÍCIOS DE PRESTAÇÃO CONTINUADA",
+              totalCP: 300000.00,
+              totalSIC: 300000.00,
+              vpds: [
+                { codigo: "3.2.3.1.00.00.00", descricao: "BPC Idoso", valorCP: 200000.00, valorSIC: 200000.00 },
+                { codigo: "3.2.3.2.00.00.00", descricao: "BPC Deficiente", valorCP: 100000.00, valorSIC: 100000.00 }
+              ]
+            },
+            {
+              codigo: "3.2.5.0.00.00.00",
+              descricao: "POLÍTICAS PÚBLICAS DE TRANSFERÊNCIA DE RENDA",
+              totalCP: 200000.00,
+              totalSIC: 200000.00,
+              vpds: [
+                { codigo: "3.2.5.1.00.00.00", descricao: "Bolsa Família", valorCP: 200000.00, valorSIC: 200000.00 }
+              ]
+            }
           ]
         },
         {
           codigoPrincipal: "3.3.0.0.00.00.00",
           descricao: "MANUTENÇÃO E OPERAÇÃO DA MÁQUINA PÚBLICA",
           totalCP: 18124617.94,
-          totalSIC: 18124617.94,
-          detalhes: [
-            { codigo: "3.3.1.0.00.00.00", descricao: "USO DE MATERIAL DE CONSUMO", valorCP: 2500000.00, valorSIC: 2500000.00 },
-            { codigo: "3.3.2.0.00.00.00", descricao: "SERVIÇOS", valorCP: 8000000.00, valorSIC: 8000000.00 },
-            { codigo: "3.3.3.0.00.00.00", descricao: "DEPRECIAÇÃO, AMORTIZAÇÃO E EXAUSTÃO", valorCP: 3124617.94, valorSIC: 3124617.94 },
-            { codigo: "3.3.8.0.00.00.00", descricao: "CUSTO DE MATERIAIS, SERVIÇOS E CONSUMO DE CAPITAL FIXO", valorCP: 4500000.00, valorSIC: 4500000.00 }
+          totalSIC: 18174617.94,
+          subgrupos: [
+            {
+              codigo: "3.3.1.0.00.00.00",
+              descricao: "USO DE MATERIAL DE CONSUMO",
+              totalCP: 2500000.00,
+              totalSIC: 2500000.00,
+              vpds: [
+                { codigo: "3.3.1.1.00.00.00", descricao: "Material de Escritório", valorCP: 500000.00, valorSIC: 500000.00 },
+                { codigo: "3.3.1.2.00.00.00", descricao: "Material de Limpeza", valorCP: 800000.00, valorSIC: 800000.00 },
+                { codigo: "3.3.1.3.00.00.00", descricao: "Material de Informática", valorCP: 1200000.00, valorSIC: 1200000.00 }
+              ]
+            },
+            {
+              codigo: "3.3.2.0.00.00.00",
+              descricao: "SERVIÇOS",
+              totalCP: 8000000.00,
+              totalSIC: 8050000.00,
+              vpds: [
+                { codigo: "3.3.2.1.00.00.00", descricao: "Serviços de Terceiros - PJ", valorCP: 5000000.00, valorSIC: 5000000.00 },
+                { codigo: "3.3.2.2.00.00.00", descricao: "Serviços de Terceiros - PF", valorCP: 2000000.00, valorSIC: 2050000.00 },
+                { codigo: "3.3.2.3.00.00.00", descricao: "Serviços de Utilidade Pública", valorCP: 1000000.00, valorSIC: 1000000.00 }
+              ]
+            },
+            {
+              codigo: "3.3.3.0.00.00.00",
+              descricao: "DEPRECIAÇÃO, AMORTIZAÇÃO E EXAUSTÃO",
+              totalCP: 3124617.94,
+              totalSIC: 3124617.94,
+              vpds: [
+                { codigo: "3.3.3.1.00.00.00", descricao: "Depreciação de Bens Móveis", valorCP: 2000000.00, valorSIC: 2000000.00 },
+                { codigo: "3.3.3.2.00.00.00", descricao: "Depreciação de Bens Imóveis", valorCP: 1124617.94, valorSIC: 1124617.94 }
+              ]
+            },
+            {
+              codigo: "3.3.8.0.00.00.00",
+              descricao: "CUSTO DE MATERIAIS, SERVIÇOS E CONSUMO DE CAPITAL FIXO",
+              totalCP: 4500000.00,
+              totalSIC: 4500000.00,
+              vpds: [
+                { codigo: "3.3.8.1.00.00.00", descricao: "Outros Custos Operacionais", valorCP: 4500000.00, valorSIC: 4500000.00 }
+              ]
+            }
           ]
         },
         {
