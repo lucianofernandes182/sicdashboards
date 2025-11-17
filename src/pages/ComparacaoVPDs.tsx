@@ -10,8 +10,17 @@ import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/component
 
 interface VPDDetail {
   codigo: string;
+  descricao: string;
   valorCP: number;
   valorSIC: number;
+}
+
+interface VPDGroup {
+  codigoPrincipal: string;
+  descricao: string;
+  totalCP: number;
+  totalSIC: number;
+  detalhes: VPDDetail[];
 }
 
 interface OrigemCP {
