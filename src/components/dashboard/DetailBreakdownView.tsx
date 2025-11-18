@@ -3,8 +3,10 @@ import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
 import { TrendingUp, TrendingDown, Users, DollarSign } from "lucide-react";
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell, LineChart, Line, ComposedChart } from 'recharts';
+import { useState } from 'react';
 
 const DetailBreakdownView = () => {
+  const [selectedCostUnit, setSelectedCostUnit] = useState<string | null>(null);
   // Sample data based on the image
   const costData = [
     { month: 'Jan', '2024Accumulated': 5, '2025Accumulated': 8, '2024Monthly': 5, '2025Monthly': 8 },
@@ -22,43 +24,52 @@ const DetailBreakdownView = () => {
   ];
 
   // Data for two-ring donut chart
-  // Inner ring: Cost Units (each with unique color)
+  // Inner ring: Cost Units (shades of gray)
   const costUnitsInner = [
-    { name: 'Administração E Gestão', value: 5200, color: '#5EAAA8' },
-    { name: 'Almoxarifado', value: 3800, color: '#A78BA8' },
-    { name: 'Arquivo', value: 2900, color: '#8B7AA8' },
-    { name: 'Base De Vigilância', value: 2400, color: '#6B9AA1' },
-    { name: 'Auditórios E Similares', value: 2600, color: '#7BA9C5' },
+    { name: 'Administração E Gestão', value: 5200, color: '#4B5563' },
+    { name: 'Almoxarifado', value: 3800, color: '#6B7280' },
+    { name: 'Arquivo', value: 2900, color: '#9CA3AF' },
+    { name: 'Base De Vigilância', value: 2400, color: '#D1D5DB' },
+    { name: 'Auditórios E Similares', value: 2600, color: '#E5E7EB' },
   ];
 
   // Outer ring: Year breakdown per Cost Unit (2023, 2024, 2025, 2026 for each unit)
   const costUnitsOuter = [
     // Administração E Gestão
-    { name: 'Administração E Gestão', value: 2000, year: '2023', color: '#DC2626', parentColor: '#5EAAA8' },
-    { name: 'Administração E Gestão', value: 2500, year: '2024', color: '#F59E0B', parentColor: '#5EAAA8' },
-    { name: 'Administração E Gestão', value: 2700, year: '2025', color: '#3B82F6', parentColor: '#5EAAA8' },
-    { name: 'Administração E Gestão', value: 2900, year: '2026', color: '#10B981', parentColor: '#5EAAA8' },
+    { name: 'Administração E Gestão', value: 2000, year: '2023', color: '#DC2626', parentColor: '#4B5563' },
+    { name: 'Administração E Gestão', value: 2500, year: '2024', color: '#F59E0B', parentColor: '#4B5563' },
+    { name: 'Administração E Gestão', value: 2700, year: '2025', color: '#3B82F6', parentColor: '#4B5563' },
+    { name: 'Administração E Gestão', value: 2900, year: '2026', color: '#10B981', parentColor: '#4B5563' },
     // Almoxarifado
-    { name: 'Almoxarifado', value: 1500, year: '2023', color: '#DC2626', parentColor: '#A78BA8' },
-    { name: 'Almoxarifado', value: 1800, year: '2024', color: '#F59E0B', parentColor: '#A78BA8' },
-    { name: 'Almoxarifado', value: 2000, year: '2025', color: '#3B82F6', parentColor: '#A78BA8' },
-    { name: 'Almoxarifado', value: 2200, year: '2026', color: '#10B981', parentColor: '#A78BA8' },
+    { name: 'Almoxarifado', value: 1500, year: '2023', color: '#DC2626', parentColor: '#6B7280' },
+    { name: 'Almoxarifado', value: 1800, year: '2024', color: '#F59E0B', parentColor: '#6B7280' },
+    { name: 'Almoxarifado', value: 2000, year: '2025', color: '#3B82F6', parentColor: '#6B7280' },
+    { name: 'Almoxarifado', value: 2200, year: '2026', color: '#10B981', parentColor: '#6B7280' },
     // Arquivo
-    { name: 'Arquivo', value: 1200, year: '2023', color: '#DC2626', parentColor: '#8B7AA8' },
-    { name: 'Arquivo', value: 1400, year: '2024', color: '#F59E0B', parentColor: '#8B7AA8' },
-    { name: 'Arquivo', value: 1500, year: '2025', color: '#3B82F6', parentColor: '#8B7AA8' },
-    { name: 'Arquivo', value: 1700, year: '2026', color: '#10B981', parentColor: '#8B7AA8' },
+    { name: 'Arquivo', value: 1200, year: '2023', color: '#DC2626', parentColor: '#9CA3AF' },
+    { name: 'Arquivo', value: 1400, year: '2024', color: '#F59E0B', parentColor: '#9CA3AF' },
+    { name: 'Arquivo', value: 1500, year: '2025', color: '#3B82F6', parentColor: '#9CA3AF' },
+    { name: 'Arquivo', value: 1700, year: '2026', color: '#10B981', parentColor: '#9CA3AF' },
     // Base De Vigilância
-    { name: 'Base De Vigilância', value: 900, year: '2023', color: '#DC2626', parentColor: '#6B9AA1' },
-    { name: 'Base De Vigilância', value: 1100, year: '2024', color: '#F59E0B', parentColor: '#6B9AA1' },
-    { name: 'Base De Vigilância', value: 1300, year: '2025', color: '#3B82F6', parentColor: '#6B9AA1' },
-    { name: 'Base De Vigilância', value: 1500, year: '2026', color: '#10B981', parentColor: '#6B9AA1' },
+    { name: 'Base De Vigilância', value: 900, year: '2023', color: '#DC2626', parentColor: '#D1D5DB' },
+    { name: 'Base De Vigilância', value: 1100, year: '2024', color: '#F59E0B', parentColor: '#D1D5DB' },
+    { name: 'Base De Vigilância', value: 1300, year: '2025', color: '#3B82F6', parentColor: '#D1D5DB' },
+    { name: 'Base De Vigilância', value: 1500, year: '2026', color: '#10B981', parentColor: '#D1D5DB' },
     // Auditórios E Similares
-    { name: 'Auditórios E Similares', value: 1000, year: '2023', color: '#DC2626', parentColor: '#7BA9C5' },
-    { name: 'Auditórios E Similares', value: 1200, year: '2024', color: '#F59E0B', parentColor: '#7BA9C5' },
-    { name: 'Auditórios E Similares', value: 1400, year: '2025', color: '#3B82F6', parentColor: '#7BA9C5' },
-    { name: 'Auditórios E Similares', value: 1600, year: '2026', color: '#10B981', parentColor: '#7BA9C5' },
+    { name: 'Auditórios E Similares', value: 1000, year: '2023', color: '#DC2626', parentColor: '#E5E7EB' },
+    { name: 'Auditórios E Similares', value: 1200, year: '2024', color: '#F59E0B', parentColor: '#E5E7EB' },
+    { name: 'Auditórios E Similares', value: 1400, year: '2025', color: '#3B82F6', parentColor: '#E5E7EB' },
+    { name: 'Auditórios E Similares', value: 1600, year: '2026', color: '#10B981', parentColor: '#E5E7EB' },
   ];
+
+  // Filter data based on selection
+  const filteredInnerData = selectedCostUnit 
+    ? costUnitsInner.filter(item => item.name === selectedCostUnit)
+    : costUnitsInner;
+  
+  const filteredOuterData = selectedCostUnit
+    ? costUnitsOuter.filter(item => item.name === selectedCostUnit)
+    : costUnitsOuter;
 
   const legendData = [
     { name: 'Administração E Gestão', color: '#5EAAA8' },
@@ -233,17 +244,33 @@ const DetailBreakdownView = () => {
             <CardTitle className="text-sm font-semibold">UNIDADE DE CUSTOS</CardTitle>
           </CardHeader>
           <CardContent className="flex">
-            {/* Legend */}
-            <div className="w-28 space-y-1 mr-2">
-              {legendData.map((item, index) => (
-                <div key={index} className="flex items-center gap-1">
+            {/* Interactive Legend */}
+            <div className="w-32 space-y-2 mr-2">
+              {costUnitsInner.map((item, index) => (
+                <div 
+                  key={index} 
+                  className="flex items-center gap-2 cursor-pointer hover:bg-accent/50 p-1 rounded transition-colors"
+                  onClick={() => setSelectedCostUnit(selectedCostUnit === item.name ? null : item.name)}
+                >
                   <div 
-                    className="w-2 h-2 rounded-full" 
+                    className="w-3 h-3 rounded-full flex-shrink-0" 
                     style={{ backgroundColor: item.color }}
                   />
-                  <span className="text-xs text-muted-foreground">{item.name}</span>
+                  <span 
+                    className={`text-xs ${selectedCostUnit === item.name ? 'font-bold text-foreground' : 'text-muted-foreground'}`}
+                  >
+                    {item.name.length > 20 ? item.name.substring(0, 18) + '...' : item.name}
+                  </span>
                 </div>
               ))}
+              {selectedCostUnit && (
+                <button
+                  onClick={() => setSelectedCostUnit(null)}
+                  className="text-xs text-primary hover:underline w-full text-left pl-5"
+                >
+                  Limpar filtro
+                </button>
+              )}
             </div>
             
             {/* Two-ring Donut Chart */}
@@ -252,7 +279,7 @@ const DetailBreakdownView = () => {
                 <PieChart>
                   {/* Inner ring - Cost Units */}
                   <Pie
-                    data={costUnitsInner}
+                    data={filteredInnerData}
                     cx="50%"
                     cy="50%"
                     innerRadius={80}
@@ -294,7 +321,7 @@ const DetailBreakdownView = () => {
                   
                   {/* Outer ring - Years per Cost Unit */}
                   <Pie
-                    data={costUnitsOuter}
+                    data={filteredOuterData}
                     cx="50%"
                     cy="50%"
                     innerRadius={115}
