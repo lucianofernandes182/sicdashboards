@@ -23,19 +23,19 @@ const DetailBreakdownView = () => {
 
   // Data for two-ring donut chart - Inner ring: 2024 data, Outer ring: 2025 data
   const costUnits2024 = [
-    { name: 'Administração E Gestão', value: 2500, color: '#5EAAA8' },
-    { name: 'Almoxarifado', value: 1800, color: '#A78BA8' },
-    { name: 'Arquivo', value: 1400, color: '#A07CA8' },
-    { name: 'Base De Vigilância', value: 1100, color: '#6B7AA1' },
-    { name: 'Auditórios E Similares', value: 1200, color: '#6DA9D5' },
+    { name: 'Administração E Gestão', value: 2500, color: '#F59E0B' },
+    { name: 'Almoxarifado', value: 1800, color: '#F59E0B' },
+    { name: 'Arquivo', value: 1400, color: '#F59E0B' },
+    { name: 'Base De Vigilância', value: 1100, color: '#F59E0B' },
+    { name: 'Auditórios E Similares', value: 1200, color: '#F59E0B' },
   ];
 
   const costUnits2025 = [
-    { name: 'Administração E Gestão', value: 2700, color: '#6B7AA1' },
-    { name: 'Almoxarifado', value: 2000, color: '#9B6FA9' },
-    { name: 'Arquivo', value: 1500, color: '#8B6BA8' },
-    { name: 'Base De Vigilância', value: 1300, color: '#596FA8' },
-    { name: 'Auditórios E Similares', value: 1400, color: '#5C98CE' },
+    { name: 'Administração E Gestão', value: 2700, color: '#3B82F6' },
+    { name: 'Almoxarifado', value: 2000, color: '#3B82F6' },
+    { name: 'Arquivo', value: 1500, color: '#3B82F6' },
+    { name: 'Base De Vigilância', value: 1300, color: '#3B82F6' },
+    { name: 'Auditórios E Similares', value: 1400, color: '#3B82F6' },
   ];
 
   const legendData = [
@@ -254,7 +254,7 @@ const DetailBreakdownView = () => {
                           fontWeight="600"
                           className="drop-shadow-lg"
                         >
-                          2025
+                          2024
                         </text>
                       );
                     }}
