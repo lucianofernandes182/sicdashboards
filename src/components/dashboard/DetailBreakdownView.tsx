@@ -21,45 +21,29 @@ const DetailBreakdownView = () => {
     { month: 'Dez', '2024Accumulated': 130, '2025Accumulated': 180, '2024Monthly': 20, '2025Monthly': 35 },
   ];
 
-  // Data for two-level pie chart - Inner ring: Total per Cost Unit, Outer ring: Year breakdown
-  const costUnitsTotal = [
-    { name: 'Pedagogia', value: 5200, color: '#4F46E5' },
-    { name: 'Administração', value: 3800, color: '#F59E0B' },
-    { name: 'Biblioteca', value: 2900, color: '#8B5CF6' },
-    { name: 'Centros Esportivos', value: 2400, color: '#10B981' },
-    { name: 'Laboratórios', value: 2600, color: '#EF4444' },
-    { name: 'Alimentação e Nutrição', value: 2100, color: '#F97316' },
+  // Data for two-ring donut chart - Inner ring: 2024 data, Outer ring: 2025 data
+  const costUnits2024 = [
+    { name: 'Administração E Gestão', value: 2500, color: '#5EAAA8' },
+    { name: 'Almoxarifado', value: 1800, color: '#A78BA8' },
+    { name: 'Arquivo', value: 1400, color: '#A07CA8' },
+    { name: 'Base De Vigilância', value: 1100, color: '#6B7AA1' },
+    { name: 'Auditórios E Similares', value: 1200, color: '#6DA9D5' },
   ];
 
-  // Outer ring: Breakdown by year for each cost unit
-  const costUnitsYearBreakdown = [
-    // Pedagogia
-    { name: 'Pedagogia 2024', value: 2500, color: '#4F46E5', parentName: 'Pedagogia', year: '2024' },
-    { name: 'Pedagogia 2025', value: 2700, color: '#6366F1', parentName: 'Pedagogia', year: '2025' },
-    // Administração
-    { name: 'Administração 2024', value: 1800, color: '#F59E0B', parentName: 'Administração', year: '2024' },
-    { name: 'Administração 2025', value: 2000, color: '#FBBF24', parentName: 'Administração', year: '2025' },
-    // Biblioteca
-    { name: 'Biblioteca 2024', value: 1400, color: '#8B5CF6', parentName: 'Biblioteca', year: '2024' },
-    { name: 'Biblioteca 2025', value: 1500, color: '#A78BFA', parentName: 'Biblioteca', year: '2025' },
-    // Centros Esportivos
-    { name: 'Centros Esportivos 2024', value: 1100, color: '#10B981', parentName: 'Centros Esportivos', year: '2024' },
-    { name: 'Centros Esportivos 2025', value: 1300, color: '#34D399', parentName: 'Centros Esportivos', year: '2025' },
-    // Laboratórios
-    { name: 'Laboratórios 2024', value: 1200, color: '#EF4444', parentName: 'Laboratórios', year: '2024' },
-    { name: 'Laboratórios 2025', value: 1400, color: '#F87171', parentName: 'Laboratórios', year: '2025' },
-    // Alimentação e Nutrição
-    { name: 'Alimentação e Nutrição 2024', value: 1000, color: '#F97316', parentName: 'Alimentação e Nutrição', year: '2024' },
-    { name: 'Alimentação e Nutrição 2025', value: 1100, color: '#FB923C', parentName: 'Alimentação e Nutrição', year: '2025' },
+  const costUnits2025 = [
+    { name: 'Administração E Gestão', value: 2700, color: '#6B7AA1' },
+    { name: 'Almoxarifado', value: 2000, color: '#9B6FA9' },
+    { name: 'Arquivo', value: 1500, color: '#8B6BA8' },
+    { name: 'Base De Vigilância', value: 1300, color: '#596FA8' },
+    { name: 'Auditórios E Similares', value: 1400, color: '#5C98CE' },
   ];
 
   const legendData = [
-    { name: 'Pedagogia', color: '#4F46E5' },
-    { name: 'Administração', color: '#F59E0B' },
-    { name: 'Biblioteca', color: '#8B5CF6' },
-    { name: 'Centros Esportivos', color: '#10B981' },
-    { name: 'Laboratórios', color: '#EF4444' },
-    { name: 'Alimentação e Nutrição', color: '#F97316' },
+    { name: 'Administração E Gestão', color: '#5EAAA8' },
+    { name: 'Almoxarifado', color: '#A78BA8' },
+    { name: 'Arquivo', color: '#A07CA8' },
+    { name: 'Base De Vigilância', color: '#6B7AA1' },
+    { name: 'Auditórios E Similares', color: '#6DA9D5' },
   ];
 
   const costElementsData = [
@@ -240,27 +224,24 @@ const DetailBreakdownView = () => {
               ))}
             </div>
             
-            {/* Two-level Pie Chart */}
+            {/* Two-ring Donut Chart */}
             <div className="flex-1">
               <ResponsiveContainer width="100%" height={400}>
                 <PieChart>
-                  {/* Inner pie - Total per Cost Unit (Sum of all years) */}
+                  {/* Inner ring - 2024 data */}
                   <Pie
-                    data={costUnitsTotal}
+                    data={costUnits2024}
                     cx="50%"
                     cy="50%"
-                    innerRadius={0}
-                    outerRadius={80}
+                    innerRadius={80}
+                    outerRadius={110}
                     paddingAngle={2}
                     dataKey="value"
-                    label={({ cx, cy, midAngle, innerRadius, outerRadius, name }) => {
+                    label={({ cx, cy, midAngle, innerRadius, outerRadius }) => {
                       const RADIAN = Math.PI / 180;
                       const radius = innerRadius + (outerRadius - innerRadius) * 0.5;
                       const x = cx + radius * Math.cos(-midAngle * RADIAN);
                       const y = cy + radius * Math.sin(-midAngle * RADIAN);
-                      
-                      // Abbreviate long names
-                      const shortName = name.length > 12 ? name.substring(0, 10) + '...' : name;
                       
                       return (
                         <text 
@@ -269,31 +250,33 @@ const DetailBreakdownView = () => {
                           fill="white" 
                           textAnchor="middle"
                           dominantBaseline="central"
-                          fontSize="10"
+                          fontSize="11"
                           fontWeight="600"
                           className="drop-shadow-lg"
                         >
-                          {shortName}
+                          2025
                         </text>
                       );
                     }}
                     labelLine={false}
+                    strokeWidth={2}
+                    stroke="white"
                   >
-                    {costUnitsTotal.map((entry, index) => (
-                      <Cell key={`inner-${index}`} fill={entry.color} />
+                    {costUnits2024.map((entry, index) => (
+                      <Cell key={`inner-${index}`} fill={entry.color} opacity={0.85} />
                     ))}
                   </Pie>
                   
-                  {/* Outer pie - Year breakdown per Cost Unit */}
+                  {/* Outer ring - 2025 data */}
                   <Pie
-                    data={costUnitsYearBreakdown}
+                    data={costUnits2025}
                     cx="50%"
                     cy="50%"
-                    innerRadius={90}
+                    innerRadius={115}
                     outerRadius={160}
-                    paddingAngle={1}
+                    paddingAngle={2}
                     dataKey="value"
-                    label={({ cx, cy, midAngle, innerRadius, outerRadius, year }) => {
+                    label={({ cx, cy, midAngle, innerRadius, outerRadius }) => {
                       const RADIAN = Math.PI / 180;
                       const radius = innerRadius + (outerRadius - innerRadius) * 0.5;
                       const x = cx + radius * Math.cos(-midAngle * RADIAN);
@@ -306,41 +289,28 @@ const DetailBreakdownView = () => {
                           fill="white" 
                           textAnchor="middle"
                           dominantBaseline="central"
-                          fontSize="12"
-                          fontWeight="700"
+                          fontSize="11"
+                          fontWeight="600"
                           className="drop-shadow-lg"
                         >
-                          {year}
+                          2025
                         </text>
                       );
                     }}
                     labelLine={false}
+                    strokeWidth={2}
+                    stroke="white"
                   >
-                    {costUnitsYearBreakdown.map((entry, index) => (
-                      <Cell 
-                        key={`outer-${index}`} 
-                        fill={entry.color}
-                        className="cursor-pointer hover:opacity-80 transition-opacity"
-                      />
+                    {costUnits2025.map((entry, index) => (
+                      <Cell key={`outer-${index}`} fill={entry.color} />
                     ))}
                   </Pie>
                   
-                  <Tooltip 
-                    formatter={(value, name) => [value.toLocaleString('pt-BR'), name]} 
-                    contentStyle={{ 
-                      backgroundColor: 'hsl(var(--background))', 
-                      border: '1px solid hsl(var(--border))', 
+                  <Tooltip
+                    contentStyle={{
+                      backgroundColor: 'hsl(var(--card))',
+                      border: '1px solid hsl(var(--border))',
                       borderRadius: '8px',
-                      padding: '12px',
-                      boxShadow: '0 4px 12px rgba(0,0,0,0.15)',
-                      zIndex: 1000
-                    }}
-                    labelStyle={{ 
-                      color: 'hsl(var(--foreground))',
-                      fontWeight: 600,
-                      marginBottom: '4px'
-                    }}
-                    itemStyle={{ 
                       color: 'hsl(var(--foreground))'
                     }}
                   />
