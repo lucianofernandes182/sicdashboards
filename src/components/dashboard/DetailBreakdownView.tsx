@@ -31,23 +31,33 @@ const DetailBreakdownView = () => {
     { name: 'Auditórios E Similares', value: 2600, color: '#7BA9C5' },
   ];
 
-  // Outer ring: Year breakdown per Cost Unit (2024 and 2025 for each unit)
+  // Outer ring: Year breakdown per Cost Unit (2023, 2024, 2025, 2026 for each unit)
   const costUnitsOuter = [
     // Administração E Gestão
+    { name: 'Administração E Gestão', value: 2000, year: '2023', color: '#DC2626', parentColor: '#5EAAA8' },
     { name: 'Administração E Gestão', value: 2500, year: '2024', color: '#F59E0B', parentColor: '#5EAAA8' },
     { name: 'Administração E Gestão', value: 2700, year: '2025', color: '#3B82F6', parentColor: '#5EAAA8' },
+    { name: 'Administração E Gestão', value: 2900, year: '2026', color: '#10B981', parentColor: '#5EAAA8' },
     // Almoxarifado
+    { name: 'Almoxarifado', value: 1500, year: '2023', color: '#DC2626', parentColor: '#A78BA8' },
     { name: 'Almoxarifado', value: 1800, year: '2024', color: '#F59E0B', parentColor: '#A78BA8' },
     { name: 'Almoxarifado', value: 2000, year: '2025', color: '#3B82F6', parentColor: '#A78BA8' },
+    { name: 'Almoxarifado', value: 2200, year: '2026', color: '#10B981', parentColor: '#A78BA8' },
     // Arquivo
+    { name: 'Arquivo', value: 1200, year: '2023', color: '#DC2626', parentColor: '#8B7AA8' },
     { name: 'Arquivo', value: 1400, year: '2024', color: '#F59E0B', parentColor: '#8B7AA8' },
     { name: 'Arquivo', value: 1500, year: '2025', color: '#3B82F6', parentColor: '#8B7AA8' },
+    { name: 'Arquivo', value: 1700, year: '2026', color: '#10B981', parentColor: '#8B7AA8' },
     // Base De Vigilância
+    { name: 'Base De Vigilância', value: 900, year: '2023', color: '#DC2626', parentColor: '#6B9AA1' },
     { name: 'Base De Vigilância', value: 1100, year: '2024', color: '#F59E0B', parentColor: '#6B9AA1' },
     { name: 'Base De Vigilância', value: 1300, year: '2025', color: '#3B82F6', parentColor: '#6B9AA1' },
+    { name: 'Base De Vigilância', value: 1500, year: '2026', color: '#10B981', parentColor: '#6B9AA1' },
     // Auditórios E Similares
+    { name: 'Auditórios E Similares', value: 1000, year: '2023', color: '#DC2626', parentColor: '#7BA9C5' },
     { name: 'Auditórios E Similares', value: 1200, year: '2024', color: '#F59E0B', parentColor: '#7BA9C5' },
     { name: 'Auditórios E Similares', value: 1400, year: '2025', color: '#3B82F6', parentColor: '#7BA9C5' },
+    { name: 'Auditórios E Similares', value: 1600, year: '2026', color: '#10B981', parentColor: '#7BA9C5' },
   ];
 
   const legendData = [
