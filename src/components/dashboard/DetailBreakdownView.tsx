@@ -21,13 +21,13 @@ const DetailBreakdownView = () => {
     { month: 'Dez', '2024Accumulated': 130, '2025Accumulated': 180, '2024Monthly': 20, '2025Monthly': 35 },
   ];
 
-  // Data for two-ring donut chart - Inner ring: 2024 data, Outer ring: 2025 data
+  // Data for two-ring donut chart - Inner ring: Cost Units with tonal variations, Outer ring: 2025 standard color
   const costUnits2024 = [
-    { name: 'Administração E Gestão', value: 2500, color: '#F59E0B' },
-    { name: 'Almoxarifado', value: 1800, color: '#F59E0B' },
-    { name: 'Arquivo', value: 1400, color: '#F59E0B' },
-    { name: 'Base De Vigilância', value: 1100, color: '#F59E0B' },
-    { name: 'Auditórios E Similares', value: 1200, color: '#F59E0B' },
+    { name: 'Administração E Gestão', value: 2500, color: '#5EAAA8' },
+    { name: 'Almoxarifado', value: 1800, color: '#4A9694' },
+    { name: 'Arquivo', value: 1400, color: '#3A8280' },
+    { name: 'Base De Vigilância', value: 1100, color: '#2A6E6C' },
+    { name: 'Auditórios E Similares', value: 1200, color: '#1A5A58' },
   ];
 
   const costUnits2025 = [
@@ -40,10 +40,10 @@ const DetailBreakdownView = () => {
 
   const legendData = [
     { name: 'Administração E Gestão', color: '#5EAAA8' },
-    { name: 'Almoxarifado', color: '#A78BA8' },
-    { name: 'Arquivo', color: '#A07CA8' },
-    { name: 'Base De Vigilância', color: '#6B7AA1' },
-    { name: 'Auditórios E Similares', color: '#6DA9D5' },
+    { name: 'Almoxarifado', color: '#4A9694' },
+    { name: 'Arquivo', color: '#3A8280' },
+    { name: 'Base De Vigilância', color: '#2A6E6C' },
+    { name: 'Auditórios E Similares', color: '#1A5A58' },
   ];
 
   const costElementsData = [
