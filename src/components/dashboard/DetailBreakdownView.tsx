@@ -21,29 +21,41 @@ const DetailBreakdownView = () => {
     { month: 'Dez', '2024Accumulated': 130, '2025Accumulated': 180, '2024Monthly': 20, '2025Monthly': 35 },
   ];
 
-  // Data for two-ring donut chart - Inner ring: Cost Units with tonal variations, Outer ring: 2025 standard color
-  const costUnits2024 = [
-    { name: 'Administração E Gestão', value: 2500, color: '#5EAAA8' },
-    { name: 'Almoxarifado', value: 1800, color: '#4A9694' },
-    { name: 'Arquivo', value: 1400, color: '#3A8280' },
-    { name: 'Base De Vigilância', value: 1100, color: '#2A6E6C' },
-    { name: 'Auditórios E Similares', value: 1200, color: '#1A5A58' },
+  // Data for two-ring donut chart
+  // Inner ring: Cost Units (each with unique color)
+  const costUnitsInner = [
+    { name: 'Administração E Gestão', value: 5200, color: '#5EAAA8' },
+    { name: 'Almoxarifado', value: 3800, color: '#A78BA8' },
+    { name: 'Arquivo', value: 2900, color: '#8B7AA8' },
+    { name: 'Base De Vigilância', value: 2400, color: '#6B9AA1' },
+    { name: 'Auditórios E Similares', value: 2600, color: '#7BA9C5' },
   ];
 
-  const costUnits2025 = [
-    { name: 'Administração E Gestão', value: 2700, color: '#3B82F6' },
-    { name: 'Almoxarifado', value: 2000, color: '#3B82F6' },
-    { name: 'Arquivo', value: 1500, color: '#3B82F6' },
-    { name: 'Base De Vigilância', value: 1300, color: '#3B82F6' },
-    { name: 'Auditórios E Similares', value: 1400, color: '#3B82F6' },
+  // Outer ring: Year breakdown per Cost Unit (2024 and 2025 for each unit)
+  const costUnitsOuter = [
+    // Administração E Gestão
+    { name: 'Administração E Gestão', value: 2500, year: '2024', color: '#F59E0B', parentColor: '#5EAAA8' },
+    { name: 'Administração E Gestão', value: 2700, year: '2025', color: '#3B82F6', parentColor: '#5EAAA8' },
+    // Almoxarifado
+    { name: 'Almoxarifado', value: 1800, year: '2024', color: '#F59E0B', parentColor: '#A78BA8' },
+    { name: 'Almoxarifado', value: 2000, year: '2025', color: '#3B82F6', parentColor: '#A78BA8' },
+    // Arquivo
+    { name: 'Arquivo', value: 1400, year: '2024', color: '#F59E0B', parentColor: '#8B7AA8' },
+    { name: 'Arquivo', value: 1500, year: '2025', color: '#3B82F6', parentColor: '#8B7AA8' },
+    // Base De Vigilância
+    { name: 'Base De Vigilância', value: 1100, year: '2024', color: '#F59E0B', parentColor: '#6B9AA1' },
+    { name: 'Base De Vigilância', value: 1300, year: '2025', color: '#3B82F6', parentColor: '#6B9AA1' },
+    // Auditórios E Similares
+    { name: 'Auditórios E Similares', value: 1200, year: '2024', color: '#F59E0B', parentColor: '#7BA9C5' },
+    { name: 'Auditórios E Similares', value: 1400, year: '2025', color: '#3B82F6', parentColor: '#7BA9C5' },
   ];
 
   const legendData = [
     { name: 'Administração E Gestão', color: '#5EAAA8' },
-    { name: 'Almoxarifado', color: '#4A9694' },
-    { name: 'Arquivo', color: '#3A8280' },
-    { name: 'Base De Vigilância', color: '#2A6E6C' },
-    { name: 'Auditórios E Similares', color: '#1A5A58' },
+    { name: 'Almoxarifado', color: '#A78BA8' },
+    { name: 'Arquivo', color: '#8B7AA8' },
+    { name: 'Base De Vigilância', color: '#6B9AA1' },
+    { name: 'Auditórios E Similares', color: '#7BA9C5' },
   ];
 
   const costElementsData = [
@@ -228,20 +240,23 @@ const DetailBreakdownView = () => {
             <div className="flex-1">
               <ResponsiveContainer width="100%" height={400}>
                 <PieChart>
-                  {/* Inner ring - 2024 data */}
+                  {/* Inner ring - Cost Units */}
                   <Pie
-                    data={costUnits2024}
+                    data={costUnitsInner}
                     cx="50%"
                     cy="50%"
                     innerRadius={80}
                     outerRadius={110}
                     paddingAngle={2}
                     dataKey="value"
-                    label={({ cx, cy, midAngle, innerRadius, outerRadius }) => {
+                    label={({ cx, cy, midAngle, innerRadius, outerRadius, name }) => {
                       const RADIAN = Math.PI / 180;
                       const radius = innerRadius + (outerRadius - innerRadius) * 0.5;
                       const x = cx + radius * Math.cos(-midAngle * RADIAN);
                       const y = cy + radius * Math.sin(-midAngle * RADIAN);
+                      
+                      // Abbreviate long names
+                      const shortName = name.length > 15 ? name.substring(0, 12) + '...' : name;
                       
                       return (
                         <text 
@@ -250,11 +265,11 @@ const DetailBreakdownView = () => {
                           fill="white" 
                           textAnchor="middle"
                           dominantBaseline="central"
-                          fontSize="11"
+                          fontSize="9"
                           fontWeight="600"
                           className="drop-shadow-lg"
                         >
-                          2024
+                          {shortName}
                         </text>
                       );
                     }}
@@ -262,21 +277,21 @@ const DetailBreakdownView = () => {
                     strokeWidth={2}
                     stroke="white"
                   >
-                    {costUnits2024.map((entry, index) => (
-                      <Cell key={`inner-${index}`} fill={entry.color} opacity={0.85} />
+                    {costUnitsInner.map((entry, index) => (
+                      <Cell key={`inner-${index}`} fill={entry.color} />
                     ))}
                   </Pie>
                   
-                  {/* Outer ring - 2025 data */}
+                  {/* Outer ring - Years per Cost Unit */}
                   <Pie
-                    data={costUnits2025}
+                    data={costUnitsOuter}
                     cx="50%"
                     cy="50%"
                     innerRadius={115}
                     outerRadius={160}
-                    paddingAngle={2}
+                    paddingAngle={1}
                     dataKey="value"
-                    label={({ cx, cy, midAngle, innerRadius, outerRadius }) => {
+                    label={({ cx, cy, midAngle, innerRadius, outerRadius, year }) => {
                       const RADIAN = Math.PI / 180;
                       const radius = innerRadius + (outerRadius - innerRadius) * 0.5;
                       const x = cx + radius * Math.cos(-midAngle * RADIAN);
@@ -290,10 +305,10 @@ const DetailBreakdownView = () => {
                           textAnchor="middle"
                           dominantBaseline="central"
                           fontSize="11"
-                          fontWeight="600"
+                          fontWeight="700"
                           className="drop-shadow-lg"
                         >
-                          2025
+                          {year}
                         </text>
                       );
                     }}
@@ -301,7 +316,7 @@ const DetailBreakdownView = () => {
                     strokeWidth={2}
                     stroke="white"
                   >
-                    {costUnits2025.map((entry, index) => (
+                    {costUnitsOuter.map((entry, index) => (
                       <Cell key={`outer-${index}`} fill={entry.color} />
                     ))}
                   </Pie>
@@ -312,6 +327,14 @@ const DetailBreakdownView = () => {
                       border: '1px solid hsl(var(--border))',
                       borderRadius: '8px',
                       color: 'hsl(var(--foreground))'
+                    }}
+                    formatter={(value: any, name: any, props: any) => {
+                      const year = props.payload.year;
+                      const unitName = props.payload.name;
+                      return [
+                        `R$ ${value.toLocaleString('pt-BR')}`,
+                        year ? `${unitName} - ${year}` : unitName
+                      ];
                     }}
                   />
                 </PieChart>
