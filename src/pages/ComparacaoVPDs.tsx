@@ -3,7 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { ArrowLeft, CheckCircle, XCircle, AlertTriangle, ChevronDown, ChevronRight } from "lucide-react";
+import { ArrowLeft, CheckCircle, XCircle, AlertTriangle, ChevronDown, ChevronRight, TrendingUp, TrendingDown, Minus, CircleAlert, ShieldCheck, FileWarning, Info } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
@@ -631,20 +631,43 @@ export default function ComparacaoVPDs() {
                       <TableRow key={record.id} className="cursor-pointer hover:bg-muted/50" onClick={() => setSelectedRecord(record)}>
                         <TableCell className="font-medium">{record.mes}/{record.ano}</TableCell>
                         <TableCell>
-                          <Badge variant={record.status === "aprovado" ? "default" : "secondary"}>
-                            {record.status === "aprovado" ? "Aprovado" : "Pendente"}
+                          <Badge 
+                            variant={record.status === "aprovado" ? "default" : "secondary"} 
+                            className={`flex items-center gap-1 ${record.status === "aprovado" ? "bg-green-600" : "bg-amber-500"}`}
+                          >
+                            {record.status === "aprovado" ? (
+                              <>
+                                <ShieldCheck className="h-3 w-3" />
+                                Aprovado
+                              </>
+                            ) : (
+                              <>
+                                <FileWarning className="h-3 w-3" />
+                                Pendente
+                              </>
+                            )}
                           </Badge>
                         </TableCell>
                         <TableCell>
                           <div className="flex items-center gap-2">
                             {formatCurrency(record.modeloOrganico.totalVPDs)}
-                            {divOrganic && <AlertTriangle className="h-4 w-4 text-yellow-500" />}
+                            {divOrganic && (
+                              <Badge variant="outline" className="border-amber-500 text-amber-700 dark:text-amber-400 flex items-center gap-1">
+                                <CircleAlert className="h-3 w-3" />
+                                Divergente
+                              </Badge>
+                            )}
                           </div>
                         </TableCell>
                         <TableCell>
                           <div className="flex items-center gap-2">
                             {formatCurrency(record.modeloProgramatico.totalVPDs)}
-                            {divProg && <AlertTriangle className="h-4 w-4 text-yellow-500" />}
+                            {divProg && (
+                              <Badge variant="outline" className="border-amber-500 text-amber-700 dark:text-amber-400 flex items-center gap-1">
+                                <CircleAlert className="h-3 w-3" />
+                                Divergente
+                              </Badge>
+                            )}
                           </div>
                         </TableCell>
                         <TableCell>
@@ -682,7 +705,7 @@ export default function ComparacaoVPDs() {
                       <CardDescription>Conciliação entre CP (VPDs) e SIC (Sistemas)</CardDescription>
                     </div>
                     {temDivergencia(selectedRecord.modeloOrganico.totalVPDs, selectedRecord.modeloOrganico.totalSIC) ? (
-                      <Badge variant="destructive" className="flex items-center gap-2">
+                      <Badge variant="destructive" className="flex items-center gap-2 animate-pulse">
                         <XCircle className="h-4 w-4" />
                         Divergente
                       </Badge>
@@ -857,13 +880,15 @@ export default function ComparacaoVPDs() {
                                                 {subgrupo.vpds.map((vpd) => (
                                                   <TableRow 
                                                     key={vpd.codigo} 
-                                                    className={`${hasDivergence(vpd.valorCP, vpd.valorSIC) ? 'bg-red-50 dark:bg-red-950/20' : 'bg-background'}`}
+                                                     className={`${hasDivergence(vpd.valorCP, vpd.valorSIC) ? 'bg-red-50 dark:bg-red-950/20 border-l-4 border-l-destructive' : 'bg-background'}`}
                                                   >
                                                    <TableCell className="text-xs py-2 font-mono">
                                                       <div className="flex items-center gap-1">
                                                         {vpd.codigo}
-                                                        {hasDivergence(vpd.valorCP, vpd.valorSIC) && (
-                                                          <AlertTriangle className="h-3 w-3 text-destructive" />
+                                                         {hasDivergence(vpd.valorCP, vpd.valorSIC) && (
+                                                          <div className="relative">
+                                                            <AlertTriangle className="h-3 w-3 text-destructive animate-pulse" />
+                                                          </div>
                                                         )}
                                                       </div>
                                                     </TableCell>
@@ -871,7 +896,14 @@ export default function ComparacaoVPDs() {
                                                       <div className="flex items-center gap-2">
                                                         <span>{vpd.descricao}</span>
                                                         {hasDivergence(vpd.valorCP, vpd.valorSIC) && (
-                                                          <Badge variant="outline" className="text-[10px] py-0 h-4 border-amber-500 text-amber-700 dark:text-amber-400">
+                                                          <Badge variant="outline" className="text-[10px] py-0 h-4 border-amber-500 text-amber-700 dark:text-amber-400 flex items-center gap-0.5">
+                                                            {vpd.valorSIC > vpd.valorCP ? (
+                                                              <TrendingUp className="h-2.5 w-2.5" />
+                                                            ) : vpd.valorSIC < vpd.valorCP ? (
+                                                              <TrendingDown className="h-2.5 w-2.5" />
+                                                            ) : (
+                                                              <Minus className="h-2.5 w-2.5" />
+                                                            )}
                                                             SIC ≠ CP
                                                           </Badge>
                                                         )}
@@ -913,11 +945,13 @@ export default function ComparacaoVPDs() {
                   </div>
 
                   {/* Resumo de Diferença */}
-                  {temDivergencia(selectedRecord.modeloOrganico.totalVPDs, selectedRecord.modeloOrganico.totalSIC) && (
-                    <div className="mt-6 p-4 bg-destructive/10 border border-destructive/20 rounded-lg">
+                   {temDivergencia(selectedRecord.modeloOrganico.totalVPDs, selectedRecord.modeloOrganico.totalSIC) && (
+                    <div className="mt-6 p-4 bg-destructive/10 border-2 border-destructive/30 rounded-lg animate-fade-in">
                       <div className="flex items-center gap-2 mb-2">
-                        <AlertTriangle className="h-5 w-5 text-destructive" />
-                        <p className="font-semibold text-destructive">Divergência Identificada</p>
+                        <div className="p-1.5 rounded-full bg-destructive/20">
+                          <AlertTriangle className="h-5 w-5 text-destructive" />
+                        </div>
+                        <p className="font-semibold text-destructive">Divergência Identificada no Modelo Orgânico</p>
                       </div>
                       <div className="grid grid-cols-2 gap-4 text-sm">
                         <div>
@@ -943,7 +977,7 @@ export default function ComparacaoVPDs() {
                       <CardDescription>Conciliação entre CP (VPDs) e SIC (Sistemas)</CardDescription>
                     </div>
                     {temDivergencia(selectedRecord.modeloProgramatico.totalVPDs, selectedRecord.modeloProgramatico.totalSIC) ? (
-                      <Badge variant="destructive" className="flex items-center gap-2">
+                      <Badge variant="destructive" className="flex items-center gap-2 animate-pulse">
                         <XCircle className="h-4 w-4" />
                         Divergente
                       </Badge>
@@ -1023,7 +1057,7 @@ export default function ComparacaoVPDs() {
                                                 {subgrupo.vpds.map((vpd) => (
                                                   <TableRow 
                                                     key={vpd.codigo} 
-                                                    className={`${hasDivergence(vpd.valorCP, vpd.valorSIC) ? 'bg-red-50 dark:bg-red-950/20' : 'bg-background'}`}
+                                                     className={`${hasDivergence(vpd.valorCP, vpd.valorSIC) ? 'bg-red-50 dark:bg-red-950/20 border-l-4 border-l-destructive' : 'bg-background'}`}
                                                   >
                                                    <TableCell className="text-xs py-2 font-mono">
                                                       <div className="flex items-center gap-1">
@@ -1037,7 +1071,14 @@ export default function ComparacaoVPDs() {
                                                       <div className="flex items-center gap-2">
                                                         <span>{vpd.descricao}</span>
                                                         {hasDivergence(vpd.valorCP, vpd.valorSIC) && (
-                                                          <Badge variant="outline" className="text-[10px] py-0 h-4 border-amber-500 text-amber-700 dark:text-amber-400">
+                                                          <Badge variant="outline" className="text-[10px] py-0 h-4 border-amber-500 text-amber-700 dark:text-amber-400 flex items-center gap-0.5">
+                                                            {vpd.valorSIC > vpd.valorCP ? (
+                                                              <TrendingUp className="h-2.5 w-2.5" />
+                                                            ) : vpd.valorSIC < vpd.valorCP ? (
+                                                              <TrendingDown className="h-2.5 w-2.5" />
+                                                            ) : (
+                                                              <Minus className="h-2.5 w-2.5" />
+                                                            )}
                                                             SIC ≠ CP
                                                           </Badge>
                                                         )}
@@ -1136,7 +1177,7 @@ export default function ComparacaoVPDs() {
                                                 {subgrupo.vpds.map((vpd) => (
                                                   <TableRow 
                                                     key={vpd.codigo} 
-                                                    className={`${hasDivergence(vpd.valorCP, vpd.valorSIC) ? 'bg-red-50 dark:bg-red-950/20' : 'bg-background'}`}
+                                                     className={`${hasDivergence(vpd.valorCP, vpd.valorSIC) ? 'bg-red-50 dark:bg-red-950/20 border-l-4 border-l-destructive' : 'bg-background'}`}
                                                   >
                                                    <TableCell className="text-xs py-2 font-mono">
                                                       <div className="flex items-center gap-1">
@@ -1150,7 +1191,14 @@ export default function ComparacaoVPDs() {
                                                       <div className="flex items-center gap-2">
                                                         <span>{vpd.descricao}</span>
                                                         {hasDivergence(vpd.valorCP, vpd.valorSIC) && (
-                                                          <Badge variant="outline" className="text-[10px] py-0 h-4 border-amber-500 text-amber-700 dark:text-amber-400">
+                                                          <Badge variant="outline" className="text-[10px] py-0 h-4 border-amber-500 text-amber-700 dark:text-amber-400 flex items-center gap-0.5">
+                                                            {vpd.valorSIC > vpd.valorCP ? (
+                                                              <TrendingUp className="h-2.5 w-2.5" />
+                                                            ) : vpd.valorSIC < vpd.valorCP ? (
+                                                              <TrendingDown className="h-2.5 w-2.5" />
+                                                            ) : (
+                                                              <Minus className="h-2.5 w-2.5" />
+                                                            )}
                                                             SIC ≠ CP
                                                           </Badge>
                                                         )}
@@ -1203,11 +1251,13 @@ export default function ComparacaoVPDs() {
                   </div>
 
                   {/* Resumo de Diferença */}
-                  {temDivergencia(selectedRecord.modeloProgramatico.totalVPDs, selectedRecord.modeloProgramatico.totalSIC) && (
-                    <div className="mt-6 p-4 bg-destructive/10 border border-destructive/20 rounded-lg">
+                   {temDivergencia(selectedRecord.modeloProgramatico.totalVPDs, selectedRecord.modeloProgramatico.totalSIC) && (
+                    <div className="mt-6 p-4 bg-destructive/10 border-2 border-destructive/30 rounded-lg animate-fade-in">
                       <div className="flex items-center gap-2 mb-2">
-                        <AlertTriangle className="h-5 w-5 text-destructive" />
-                        <p className="font-semibold text-destructive">Divergência Identificada</p>
+                        <div className="p-1.5 rounded-full bg-destructive/20">
+                          <AlertTriangle className="h-5 w-5 text-destructive" />
+                        </div>
+                        <p className="font-semibold text-destructive">Divergência Identificada no Modelo Programático</p>
                       </div>
                       <div className="grid grid-cols-2 gap-4 text-sm">
                         <div>
