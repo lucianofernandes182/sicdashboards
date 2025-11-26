@@ -736,12 +736,21 @@ export default function ComparacaoVPDs() {
                                 onClick={() => toggleGroup(`organico-cp-${grupo.codigoPrincipal}`)}
                                 className="w-full p-3 flex items-center justify-between hover:bg-accent/50 transition-colors bg-yellow-50 dark:bg-yellow-950/30"
                               >
-                                <div className="flex flex-col items-start">
+                                <div className="flex flex-col items-start flex-1">
                                   <span className="text-xs font-mono text-muted-foreground">{grupo.codigoPrincipal}</span>
                                   <span className="text-sm font-medium">{grupo.descricao}</span>
                                 </div>
                                 <div className="flex items-center gap-2">
-                                  <span className="text-sm font-semibold">{formatCurrency(grupo.totalCP)}</span>
+                                  <div className="flex flex-col items-end gap-1">
+                                    <span className="text-sm font-semibold">{formatCurrency(grupo.totalCP)}</span>
+                                    {hasDivergence(grupo.totalCP, grupo.totalSIC) && (
+                                      <div className="flex items-center gap-1">
+                                        <Badge variant="outline" className="text-[9px] py-0 h-3.5 border-amber-500 text-amber-700 dark:text-amber-400">
+                                          Dif: {formatCurrency(Math.abs(grupo.totalCP - grupo.totalSIC))}
+                                        </Badge>
+                                      </div>
+                                    )}
+                                  </div>
                                   {expandedGroups.has(`organico-cp-${grupo.codigoPrincipal}`) ? (
                                     <ChevronDown className="h-4 w-4" />
                                   ) : (
@@ -763,7 +772,14 @@ export default function ComparacaoVPDs() {
                                             <span className="text-xs font-medium">{subgrupo.descricao}</span>
                                           </div>
                                           <div className="flex items-center gap-2">
-                                            <span className="text-xs font-semibold">{formatCurrency(subgrupo.totalCP)}</span>
+                                            <div className="flex flex-col items-end gap-0.5">
+                                              <span className="text-xs font-semibold">{formatCurrency(subgrupo.totalCP)}</span>
+                                              {hasDivergence(subgrupo.totalCP, subgrupo.totalSIC) && (
+                                                <Badge variant="outline" className="text-[9px] py-0 h-3.5 border-amber-500 text-amber-700 dark:text-amber-400">
+                                                  Dif: {formatCurrency(Math.abs(subgrupo.totalCP - subgrupo.totalSIC))}
+                                                </Badge>
+                                              )}
+                                            </div>
                                             {expandedSubGroups.has(`organico-cp-sub-${subgrupo.codigo}`) ? (
                                               <ChevronDown className="h-3 w-3" />
                                             ) : (
@@ -831,12 +847,21 @@ export default function ComparacaoVPDs() {
                                 onClick={() => toggleGroup(`organico-sic-${grupo.codigoPrincipal}`)}
                                 className="w-full p-3 flex items-center justify-between hover:bg-accent/50 transition-colors bg-yellow-50 dark:bg-yellow-950/30"
                               >
-                                <div className="flex flex-col items-start">
+                                <div className="flex flex-col items-start flex-1">
                                   <span className="text-xs font-mono text-muted-foreground">{grupo.codigoPrincipal}</span>
                                   <span className="text-sm font-medium">{grupo.descricao}</span>
                                 </div>
                                 <div className="flex items-center gap-2">
-                                  <span className="text-sm font-semibold">{formatCurrency(grupo.totalSIC)}</span>
+                                  <div className="flex flex-col items-end gap-1">
+                                    <span className="text-sm font-semibold">{formatCurrency(grupo.totalSIC)}</span>
+                                    {hasDivergence(grupo.totalCP, grupo.totalSIC) && (
+                                      <div className="flex items-center gap-1">
+                                        <Badge variant="outline" className="text-[9px] py-0 h-3.5 border-amber-500 text-amber-700 dark:text-amber-400">
+                                          CP: {formatCurrency(grupo.totalCP)}
+                                        </Badge>
+                                      </div>
+                                    )}
+                                  </div>
                                   {expandedGroups.has(`organico-sic-${grupo.codigoPrincipal}`) ? (
                                     <ChevronDown className="h-4 w-4" />
                                   ) : (
@@ -858,7 +883,14 @@ export default function ComparacaoVPDs() {
                                             <span className="text-xs font-medium">{subgrupo.descricao}</span>
                                           </div>
                                           <div className="flex items-center gap-2">
-                                            <span className="text-xs font-semibold">{formatCurrency(subgrupo.totalSIC)}</span>
+                                            <div className="flex flex-col items-end gap-0.5">
+                                              <span className="text-xs font-semibold">{formatCurrency(subgrupo.totalSIC)}</span>
+                                              {hasDivergence(subgrupo.totalCP, subgrupo.totalSIC) && (
+                                                <Badge variant="outline" className="text-[9px] py-0 h-3.5 border-amber-500 text-amber-700 dark:text-amber-400">
+                                                  CP: {formatCurrency(subgrupo.totalCP)}
+                                                </Badge>
+                                              )}
+                                            </div>
                                             {expandedSubGroups.has(`organico-sic-sub-${subgrupo.codigo}`) ? (
                                               <ChevronDown className="h-3 w-3" />
                                             ) : (
@@ -1008,12 +1040,21 @@ export default function ComparacaoVPDs() {
                                 onClick={() => toggleGroup(`programatico-cp-${grupo.codigoPrincipal}`)}
                                 className="w-full p-3 flex items-center justify-between hover:bg-accent/50 transition-colors bg-yellow-50 dark:bg-yellow-950/30"
                               >
-                                <div className="flex flex-col items-start">
+                                <div className="flex flex-col items-start flex-1">
                                   <span className="text-xs font-mono text-muted-foreground">{grupo.codigoPrincipal}</span>
                                   <span className="text-sm font-medium">{grupo.descricao}</span>
                                 </div>
                                 <div className="flex items-center gap-2">
-                                  <span className="text-sm font-semibold">{formatCurrency(grupo.totalCP)}</span>
+                                  <div className="flex flex-col items-end gap-1">
+                                    <span className="text-sm font-semibold">{formatCurrency(grupo.totalCP)}</span>
+                                    {hasDivergence(grupo.totalCP, grupo.totalSIC) && (
+                                      <div className="flex items-center gap-1">
+                                        <Badge variant="outline" className="text-[9px] py-0 h-3.5 border-amber-500 text-amber-700 dark:text-amber-400">
+                                          Dif: {formatCurrency(Math.abs(grupo.totalCP - grupo.totalSIC))}
+                                        </Badge>
+                                      </div>
+                                    )}
+                                  </div>
                                   {expandedGroups.has(`programatico-cp-${grupo.codigoPrincipal}`) ? (
                                     <ChevronDown className="h-4 w-4" />
                                   ) : (
@@ -1035,7 +1076,14 @@ export default function ComparacaoVPDs() {
                                             <span className="text-xs font-medium">{subgrupo.descricao}</span>
                                           </div>
                                           <div className="flex items-center gap-2">
-                                            <span className="text-xs font-semibold">{formatCurrency(subgrupo.totalCP)}</span>
+                                            <div className="flex flex-col items-end gap-0.5">
+                                              <span className="text-xs font-semibold">{formatCurrency(subgrupo.totalCP)}</span>
+                                              {hasDivergence(subgrupo.totalCP, subgrupo.totalSIC) && (
+                                                <Badge variant="outline" className="text-[9px] py-0 h-3.5 border-amber-500 text-amber-700 dark:text-amber-400">
+                                                  Dif: {formatCurrency(Math.abs(subgrupo.totalCP - subgrupo.totalSIC))}
+                                                </Badge>
+                                              )}
+                                            </div>
                                             {expandedSubGroups.has(`programatico-cp-sub-${subgrupo.codigo}`) ? (
                                               <ChevronDown className="h-3 w-3" />
                                             ) : (
@@ -1059,14 +1107,16 @@ export default function ComparacaoVPDs() {
                                                     key={vpd.codigo} 
                                                      className={`${hasDivergence(vpd.valorCP, vpd.valorSIC) ? 'bg-red-50 dark:bg-red-950/20 border-l-4 border-l-destructive' : 'bg-background'}`}
                                                   >
-                                                   <TableCell className="text-xs py-2 font-mono">
-                                                      <div className="flex items-center gap-1">
-                                                        {vpd.codigo}
-                                                        {hasDivergence(vpd.valorCP, vpd.valorSIC) && (
-                                                          <AlertTriangle className="h-3 w-3 text-destructive" />
-                                                        )}
-                                                      </div>
-                                                    </TableCell>
+                                                    <TableCell className="text-xs py-2 font-mono">
+                                                       <div className="flex items-center gap-1">
+                                                         {vpd.codigo}
+                                                          {hasDivergence(vpd.valorCP, vpd.valorSIC) && (
+                                                           <div className="relative">
+                                                             <AlertTriangle className="h-3 w-3 text-destructive animate-pulse" />
+                                                           </div>
+                                                         )}
+                                                       </div>
+                                                     </TableCell>
                                                     <TableCell className="text-xs py-2">
                                                       <div className="flex items-center gap-2">
                                                         <span>{vpd.descricao}</span>
@@ -1128,12 +1178,21 @@ export default function ComparacaoVPDs() {
                                 onClick={() => toggleGroup(`programatico-sic-${grupo.codigoPrincipal}`)}
                                 className="w-full p-3 flex items-center justify-between hover:bg-accent/50 transition-colors bg-yellow-50 dark:bg-yellow-950/30"
                               >
-                                <div className="flex flex-col items-start">
+                                <div className="flex flex-col items-start flex-1">
                                   <span className="text-xs font-mono text-muted-foreground">{grupo.codigoPrincipal}</span>
                                   <span className="text-sm font-medium">{grupo.descricao}</span>
                                 </div>
                                 <div className="flex items-center gap-2">
-                                  <span className="text-sm font-semibold">{formatCurrency(grupo.totalSIC)}</span>
+                                  <div className="flex flex-col items-end gap-1">
+                                    <span className="text-sm font-semibold">{formatCurrency(grupo.totalSIC)}</span>
+                                    {hasDivergence(grupo.totalCP, grupo.totalSIC) && (
+                                      <div className="flex items-center gap-1">
+                                        <Badge variant="outline" className="text-[9px] py-0 h-3.5 border-amber-500 text-amber-700 dark:text-amber-400">
+                                          CP: {formatCurrency(grupo.totalCP)}
+                                        </Badge>
+                                      </div>
+                                    )}
+                                  </div>
                                   {expandedGroups.has(`programatico-sic-${grupo.codigoPrincipal}`) ? (
                                     <ChevronDown className="h-4 w-4" />
                                   ) : (
@@ -1155,7 +1214,14 @@ export default function ComparacaoVPDs() {
                                             <span className="text-xs font-medium">{subgrupo.descricao}</span>
                                           </div>
                                           <div className="flex items-center gap-2">
-                                            <span className="text-xs font-semibold">{formatCurrency(subgrupo.totalSIC)}</span>
+                                            <div className="flex flex-col items-end gap-0.5">
+                                              <span className="text-xs font-semibold">{formatCurrency(subgrupo.totalSIC)}</span>
+                                              {hasDivergence(subgrupo.totalCP, subgrupo.totalSIC) && (
+                                                <Badge variant="outline" className="text-[9px] py-0 h-3.5 border-amber-500 text-amber-700 dark:text-amber-400">
+                                                  CP: {formatCurrency(subgrupo.totalCP)}
+                                                </Badge>
+                                              )}
+                                            </div>
                                             {expandedSubGroups.has(`programatico-sic-sub-${subgrupo.codigo}`) ? (
                                               <ChevronDown className="h-3 w-3" />
                                             ) : (
