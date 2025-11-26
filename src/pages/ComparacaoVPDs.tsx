@@ -859,7 +859,7 @@ export default function ComparacaoVPDs() {
                                                     key={vpd.codigo} 
                                                     className={`${hasDivergence(vpd.valorCP, vpd.valorSIC) ? 'bg-red-50 dark:bg-red-950/20' : 'bg-background'}`}
                                                   >
-                                                    <TableCell className="text-xs py-2 font-mono">
+                                                   <TableCell className="text-xs py-2 font-mono">
                                                       <div className="flex items-center gap-1">
                                                         {vpd.codigo}
                                                         {hasDivergence(vpd.valorCP, vpd.valorSIC) && (
@@ -867,14 +867,30 @@ export default function ComparacaoVPDs() {
                                                         )}
                                                       </div>
                                                     </TableCell>
-                                                    <TableCell className="text-xs py-2">{vpd.descricao}</TableCell>
-                                                    <TableCell className="text-right text-xs py-2 font-semibold">
-                                                      <div className="flex flex-col items-end">
-                                                        <span>{formatCurrency(vpd.valorSIC)}</span>
+                                                    <TableCell className="text-xs py-2">
+                                                      <div className="flex items-center gap-2">
+                                                        <span>{vpd.descricao}</span>
                                                         {hasDivergence(vpd.valorCP, vpd.valorSIC) && (
-                                                          <span className="text-[10px] text-destructive font-normal">
-                                                            Dif: {formatCurrency(getDivergenceAmount(vpd.valorCP, vpd.valorSIC))}
-                                                          </span>
+                                                          <Badge variant="outline" className="text-[10px] py-0 h-4 border-amber-500 text-amber-700 dark:text-amber-400">
+                                                            SIC ≠ CP
+                                                          </Badge>
+                                                        )}
+                                                      </div>
+                                                    </TableCell>
+                                                    <TableCell className="text-right text-xs py-2 font-semibold">
+                                                      <div className="flex flex-col items-end gap-0.5">
+                                                        <div className="flex items-center gap-2">
+                                                          <span>{formatCurrency(vpd.valorSIC)}</span>
+                                                        </div>
+                                                        {hasDivergence(vpd.valorCP, vpd.valorSIC) && (
+                                                          <div className="flex items-center gap-1 text-destructive">
+                                                            <span className="text-[10px] font-normal">
+                                                              CP: {formatCurrency(vpd.valorCP)}
+                                                            </span>
+                                                            <span className="text-[10px] font-semibold">
+                                                              ({formatCurrency(getDivergenceAmount(vpd.valorCP, vpd.valorSIC))})
+                                                            </span>
+                                                          </div>
                                                         )}
                                                       </div>
                                                     </TableCell>
@@ -1009,7 +1025,7 @@ export default function ComparacaoVPDs() {
                                                     key={vpd.codigo} 
                                                     className={`${hasDivergence(vpd.valorCP, vpd.valorSIC) ? 'bg-red-50 dark:bg-red-950/20' : 'bg-background'}`}
                                                   >
-                                                    <TableCell className="text-xs py-2 font-mono">
+                                                   <TableCell className="text-xs py-2 font-mono">
                                                       <div className="flex items-center gap-1">
                                                         {vpd.codigo}
                                                         {hasDivergence(vpd.valorCP, vpd.valorSIC) && (
@@ -1017,8 +1033,26 @@ export default function ComparacaoVPDs() {
                                                         )}
                                                       </div>
                                                     </TableCell>
-                                                    <TableCell className="text-xs py-2">{vpd.descricao}</TableCell>
-                                                    <TableCell className="text-right text-xs py-2 font-semibold">{formatCurrency(vpd.valorCP)}</TableCell>
+                                                    <TableCell className="text-xs py-2">
+                                                      <div className="flex items-center gap-2">
+                                                        <span>{vpd.descricao}</span>
+                                                        {hasDivergence(vpd.valorCP, vpd.valorSIC) && (
+                                                          <Badge variant="outline" className="text-[10px] py-0 h-4 border-amber-500 text-amber-700 dark:text-amber-400">
+                                                            SIC ≠ CP
+                                                          </Badge>
+                                                        )}
+                                                      </div>
+                                                    </TableCell>
+                                                    <TableCell className="text-right text-xs py-2 font-semibold">
+                                                      <div className="flex flex-col items-end gap-0.5">
+                                                        <span>{formatCurrency(vpd.valorCP)}</span>
+                                                        {hasDivergence(vpd.valorCP, vpd.valorSIC) && (
+                                                          <span className="text-[10px] text-muted-foreground font-normal">
+                                                            SIC: {formatCurrency(vpd.valorSIC)}
+                                                          </span>
+                                                        )}
+                                                      </div>
+                                                    </TableCell>
                                                   </TableRow>
                                                 ))}
                                               </TableBody>
@@ -1104,11 +1138,38 @@ export default function ComparacaoVPDs() {
                                                     key={vpd.codigo} 
                                                     className={`${hasDivergence(vpd.valorCP, vpd.valorSIC) ? 'bg-red-50 dark:bg-red-950/20' : 'bg-background'}`}
                                                   >
-                                                    <TableCell className="text-xs py-2 font-mono">
+                                                   <TableCell className="text-xs py-2 font-mono">
                                                       <div className="flex items-center gap-1">
                                                         {vpd.codigo}
                                                         {hasDivergence(vpd.valorCP, vpd.valorSIC) && (
                                                           <AlertTriangle className="h-3 w-3 text-destructive" />
+                                                        )}
+                                                      </div>
+                                                    </TableCell>
+                                                    <TableCell className="text-xs py-2">
+                                                      <div className="flex items-center gap-2">
+                                                        <span>{vpd.descricao}</span>
+                                                        {hasDivergence(vpd.valorCP, vpd.valorSIC) && (
+                                                          <Badge variant="outline" className="text-[10px] py-0 h-4 border-amber-500 text-amber-700 dark:text-amber-400">
+                                                            SIC ≠ CP
+                                                          </Badge>
+                                                        )}
+                                                      </div>
+                                                    </TableCell>
+                                                    <TableCell className="text-right text-xs py-2 font-semibold">
+                                                      <div className="flex flex-col items-end gap-0.5">
+                                                        <div className="flex items-center gap-2">
+                                                          <span>{formatCurrency(vpd.valorSIC)}</span>
+                                                        </div>
+                                                        {hasDivergence(vpd.valorCP, vpd.valorSIC) && (
+                                                          <div className="flex items-center gap-1 text-destructive">
+                                                            <span className="text-[10px] font-normal">
+                                                              CP: {formatCurrency(vpd.valorCP)}
+                                                            </span>
+                                                            <span className="text-[10px] font-semibold">
+                                                              ({formatCurrency(getDivergenceAmount(vpd.valorCP, vpd.valorSIC))})
+                                                            </span>
+                                                          </div>
                                                         )}
                                                       </div>
                                                     </TableCell>
