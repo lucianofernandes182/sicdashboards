@@ -927,14 +927,14 @@ export default function ComparacaoVPDs() {
                                                     <TableCell className="text-xs py-2">
                                                       <div className="flex items-center gap-2">
                                                         <span>{vpd.descricao}</span>
-                                                        {hasDivergence(vpd.valorCP, vpd.valorSIC) && (
-                                                          <Badge variant="outline" className="text-[10px] py-0 h-4 border-amber-500 text-amber-700 dark:text-amber-400 flex items-center gap-0.5">
+                                                         {hasDivergence(vpd.valorCP, vpd.valorSIC) && (
+                                                          <Badge variant="outline" className="text-[10px] py-0 h-4 border-amber-500 text-amber-700 dark:text-amber-400 flex items-center gap-0.5 whitespace-nowrap shrink-0">
                                                             {vpd.valorSIC > vpd.valorCP ? (
-                                                              <TrendingUp className="h-2.5 w-2.5" />
+                                                              <TrendingUp className="h-2.5 w-2.5 shrink-0" />
                                                             ) : vpd.valorSIC < vpd.valorCP ? (
-                                                              <TrendingDown className="h-2.5 w-2.5" />
+                                                              <TrendingDown className="h-2.5 w-2.5 shrink-0" />
                                                             ) : (
-                                                              <Minus className="h-2.5 w-2.5" />
+                                                              <Minus className="h-2.5 w-2.5 shrink-0" />
                                                             )}
                                                             SIC ≠ CP
                                                           </Badge>
@@ -947,11 +947,11 @@ export default function ComparacaoVPDs() {
                                                           <span>{formatCurrency(vpd.valorSIC)}</span>
                                                         </div>
                                                         {hasDivergence(vpd.valorCP, vpd.valorSIC) && (
-                                                          <div className="flex items-center gap-1 text-destructive">
-                                                            <span className="text-[10px] font-normal">
+                                                          <div className="flex items-center gap-1 text-destructive whitespace-nowrap">
+                                                            <span className="text-[10px] font-normal whitespace-nowrap">
                                                               CP: {formatCurrency(vpd.valorCP)}
                                                             </span>
-                                                            <span className="text-[10px] font-semibold">
+                                                            <span className="text-[10px] font-semibold whitespace-nowrap">
                                                               ({formatCurrency(getDivergenceAmount(vpd.valorCP, vpd.valorSIC))})
                                                             </span>
                                                           </div>
