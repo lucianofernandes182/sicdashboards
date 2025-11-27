@@ -1270,34 +1270,23 @@ export default function ComparacaoVPDs() {
                                                         )}
                                                       </div>
                                                     </TableCell>
-                                                    <TableCell className="text-right text-xs py-2 font-semibold">
-                                                      <div className="flex flex-col items-end gap-0.5">
-                                                        <div className="flex items-center gap-2">
-                                                          <span>{formatCurrency(vpd.valorSIC)}</span>
-                                                        </div>
-                                                        {hasDivergence(vpd.valorCP, vpd.valorSIC) && (
-                                                          <div className="flex items-center gap-1 text-destructive">
-                                                            <span className="text-[10px] font-normal">
-                                                              CP: {formatCurrency(vpd.valorCP)}
-                                                            </span>
-                                                            <span className="text-[10px] font-semibold">
-                                                              ({formatCurrency(getDivergenceAmount(vpd.valorCP, vpd.valorSIC))})
-                                                            </span>
-                                                          </div>
-                                                        )}
-                                                      </div>
-                                                    </TableCell>
-                                                    <TableCell className="text-xs py-2">{vpd.descricao}</TableCell>
-                                                    <TableCell className="text-right text-xs py-2 font-semibold">
-                                                      <div className="flex flex-col items-end">
-                                                        <span>{formatCurrency(vpd.valorSIC)}</span>
-                                                        {hasDivergence(vpd.valorCP, vpd.valorSIC) && (
-                                                          <span className="text-[10px] text-destructive font-normal">
-                                                            Dif: {formatCurrency(getDivergenceAmount(vpd.valorCP, vpd.valorSIC))}
-                                                          </span>
-                                                        )}
-                                                      </div>
-                                                    </TableCell>
+                                                     <TableCell className="text-right text-xs py-2 font-semibold">
+                                                       <div className="flex flex-col items-end gap-0.5">
+                                                         <div className="flex items-center gap-2">
+                                                           <span>{formatCurrency(vpd.valorSIC)}</span>
+                                                         </div>
+                                                         {hasDivergence(vpd.valorCP, vpd.valorSIC) && (
+                                                           <div className="flex items-center gap-1 text-destructive">
+                                                             <span className="text-[10px] font-normal">
+                                                               CP: {formatCurrency(vpd.valorCP)}
+                                                             </span>
+                                                             <span className="text-[10px] font-semibold">
+                                                               ({formatCurrency(getDivergenceAmount(vpd.valorCP, vpd.valorSIC))})
+                                                             </span>
+                                                           </div>
+                                                         )}
+                                                       </div>
+                                                     </TableCell>
                                                   </TableRow>
                                                 ))}
                                               </TableBody>
