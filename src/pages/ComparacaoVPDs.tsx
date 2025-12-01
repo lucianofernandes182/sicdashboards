@@ -573,6 +573,40 @@ export default function ComparacaoVPDs() {
     return diferenca > 0.01;
   };
 
+  const subgrupoTemDivergencia = (subgrupo: VPDSubGroup) => {
+    return hasDivergence(subgrupo.totalCP, subgrupo.totalSIC) || 
+           subgrupo.vpds.some(vpd => hasDivergence(vpd.valorCP, vpd.valorSIC));
+  };
+
+  const grupoTemDivergencia = (grupo: VPDGroup) => {
+    return hasDivergence(grupo.totalCP, grupo.totalSIC) || 
+           grupo.subgrupos.some(sub => subgrupoTemDivergencia(sub));
+  };
+
+  const contarItensSemDivergencia = (grupos: VPDGroup[]) => {
+    let gruposSemDiv = 0;
+    let subgruposSemDiv = 0;
+    let vpdsSemDiv = 0;
+
+    grupos.forEach(grupo => {
+      if (!grupoTemDivergencia(grupo)) {
+        gruposSemDiv++;
+      }
+      grupo.subgrupos.forEach(sub => {
+        if (!subgrupoTemDivergencia(sub)) {
+          subgruposSemDiv++;
+        }
+        sub.vpds.forEach(vpd => {
+          if (!hasDivergence(vpd.valorCP, vpd.valorSIC)) {
+            vpdsSemDiv++;
+          }
+        });
+      });
+    });
+
+    return { gruposSemDiv, subgruposSemDiv, vpdsSemDiv };
+  };
+
   const handleAprovar = (recordId: string) => {
     const record = records.find(r => r.id === recordId);
     if (!record) return;
@@ -728,8 +762,23 @@ export default function ComparacaoVPDs() {
                       </div>
 
                       <div className="space-y-2">
-                        <p className="text-sm font-semibold text-muted-foreground mb-2">Detalhamento por VPD</p>
-                        {selectedRecord.modeloOrganico.gruposVPD.map((grupo) => (
+                        <div className="flex items-center justify-between mb-3">
+                          <p className="text-sm font-semibold text-muted-foreground">Detalhamento por VPD</p>
+                          {(() => {
+                            const { gruposSemDiv, subgruposSemDiv, vpdsSemDiv } = contarItensSemDivergencia(selectedRecord.modeloOrganico.gruposVPD);
+                            const totalItensOk = gruposSemDiv + subgruposSemDiv + vpdsSemDiv;
+                            if (totalItensOk > 0) {
+                              return (
+                                <Badge variant="outline" className="border-green-500 text-green-700 dark:text-green-400 flex items-center gap-1.5">
+                                  <CheckCircle className="h-3 w-3" />
+                                  {totalItensOk} {totalItensOk === 1 ? 'item' : 'itens'} OK
+                                </Badge>
+                              );
+                            }
+                            return null;
+                          })()}
+                        </div>
+                        {selectedRecord.modeloOrganico.gruposVPD.filter(grupo => grupoTemDivergencia(grupo)).map((grupo) => (
                           <Collapsible key={`organico-cp-${grupo.codigoPrincipal}`} open={expandedGroups.has(`organico-cp-${grupo.codigoPrincipal}`)}>
                             <div className="border rounded-lg overflow-hidden">
                               <CollapsibleTrigger
@@ -760,7 +809,7 @@ export default function ComparacaoVPDs() {
                               </CollapsibleTrigger>
                               <CollapsibleContent>
                                 <div className="px-3 pb-3 pt-1 space-y-2">
-                                  {grupo.subgrupos.map((subgrupo) => (
+                                  {grupo.subgrupos.filter(sub => subgrupoTemDivergencia(sub)).map((subgrupo) => (
                                     <Collapsible key={`organico-cp-sub-${subgrupo.codigo}`} open={expandedSubGroups.has(`organico-cp-sub-${subgrupo.codigo}`)}>
                                       <div className="border rounded-lg overflow-hidden">
                                         <CollapsibleTrigger
@@ -798,7 +847,7 @@ export default function ComparacaoVPDs() {
                                                 </TableRow>
                                               </TableHeader>
                                               <TableBody>
-                                                {subgrupo.vpds.map((vpd) => (
+                                                {subgrupo.vpds.filter(vpd => hasDivergence(vpd.valorCP, vpd.valorSIC)).map((vpd) => (
                                                   <TableRow 
                                                     key={vpd.codigo} 
                                                     className={`${hasDivergence(vpd.valorCP, vpd.valorSIC) ? 'bg-red-50 dark:bg-red-950/20' : 'bg-background'}`}
@@ -839,8 +888,23 @@ export default function ComparacaoVPDs() {
                       </div>
 
                       <div className="space-y-2">
-                        <p className="text-sm font-semibold text-muted-foreground mb-2">Detalhamento por VPD</p>
-                        {selectedRecord.modeloOrganico.gruposVPD.map((grupo) => (
+                        <div className="flex items-center justify-between mb-3">
+                          <p className="text-sm font-semibold text-muted-foreground">Detalhamento por VPD</p>
+                          {(() => {
+                            const { gruposSemDiv, subgruposSemDiv, vpdsSemDiv } = contarItensSemDivergencia(selectedRecord.modeloOrganico.gruposVPD);
+                            const totalItensOk = gruposSemDiv + subgruposSemDiv + vpdsSemDiv;
+                            if (totalItensOk > 0) {
+                              return (
+                                <Badge variant="outline" className="border-green-500 text-green-700 dark:text-green-400 flex items-center gap-1.5">
+                                  <CheckCircle className="h-3 w-3" />
+                                  {totalItensOk} {totalItensOk === 1 ? 'item' : 'itens'} OK
+                                </Badge>
+                              );
+                            }
+                            return null;
+                          })()}
+                        </div>
+                        {selectedRecord.modeloOrganico.gruposVPD.filter(grupo => grupoTemDivergencia(grupo)).map((grupo) => (
                           <Collapsible key={`organico-sic-${grupo.codigoPrincipal}`} open={expandedGroups.has(`organico-sic-${grupo.codigoPrincipal}`)}>
                             <div className="border rounded-lg overflow-hidden">
                               <CollapsibleTrigger
@@ -871,7 +935,7 @@ export default function ComparacaoVPDs() {
                               </CollapsibleTrigger>
                               <CollapsibleContent>
                                 <div className="px-3 pb-3 pt-1 space-y-2">
-                                  {grupo.subgrupos.map((subgrupo) => (
+                                  {grupo.subgrupos.filter(sub => subgrupoTemDivergencia(sub)).map((subgrupo) => (
                                     <Collapsible key={`organico-sic-sub-${subgrupo.codigo}`} open={expandedSubGroups.has(`organico-sic-sub-${subgrupo.codigo}`)}>
                                       <div className="border rounded-lg overflow-hidden">
                                         <CollapsibleTrigger
@@ -909,7 +973,7 @@ export default function ComparacaoVPDs() {
                                                 </TableRow>
                                               </TableHeader>
                                               <TableBody>
-                                                {subgrupo.vpds.map((vpd) => (
+                                                {subgrupo.vpds.filter(vpd => hasDivergence(vpd.valorCP, vpd.valorSIC)).map((vpd) => (
                                                   <TableRow 
                                                     key={vpd.codigo} 
                                                      className={`${hasDivergence(vpd.valorCP, vpd.valorSIC) ? 'bg-red-50 dark:bg-red-950/20 border-l-4 border-l-destructive' : 'bg-background'}`}
@@ -1032,8 +1096,23 @@ export default function ComparacaoVPDs() {
                       </div>
 
                       <div className="space-y-2">
-                        <p className="text-sm font-semibold text-muted-foreground mb-2">Detalhamento por VPD</p>
-                        {selectedRecord.modeloProgramatico.gruposVPD.map((grupo) => (
+                        <div className="flex items-center justify-between mb-3">
+                          <p className="text-sm font-semibold text-muted-foreground">Detalhamento por VPD</p>
+                          {(() => {
+                            const { gruposSemDiv, subgruposSemDiv, vpdsSemDiv } = contarItensSemDivergencia(selectedRecord.modeloProgramatico.gruposVPD);
+                            const totalItensOk = gruposSemDiv + subgruposSemDiv + vpdsSemDiv;
+                            if (totalItensOk > 0) {
+                              return (
+                                <Badge variant="outline" className="border-green-500 text-green-700 dark:text-green-400 flex items-center gap-1.5">
+                                  <CheckCircle className="h-3 w-3" />
+                                  {totalItensOk} {totalItensOk === 1 ? 'item' : 'itens'} OK
+                                </Badge>
+                              );
+                            }
+                            return null;
+                          })()}
+                        </div>
+                        {selectedRecord.modeloProgramatico.gruposVPD.filter(grupo => grupoTemDivergencia(grupo)).map((grupo) => (
                           <Collapsible key={`programatico-cp-${grupo.codigoPrincipal}`} open={expandedGroups.has(`programatico-cp-${grupo.codigoPrincipal}`)}>
                             <div className="border rounded-lg overflow-hidden">
                               <CollapsibleTrigger
@@ -1064,7 +1143,7 @@ export default function ComparacaoVPDs() {
                               </CollapsibleTrigger>
                               <CollapsibleContent>
                                 <div className="px-3 pb-3 pt-1 space-y-2">
-                                  {grupo.subgrupos.map((subgrupo) => (
+                                  {grupo.subgrupos.filter(sub => subgrupoTemDivergencia(sub)).map((subgrupo) => (
                                     <Collapsible key={`programatico-cp-sub-${subgrupo.codigo}`} open={expandedSubGroups.has(`programatico-cp-sub-${subgrupo.codigo}`)}>
                                       <div className="border rounded-lg overflow-hidden">
                                         <CollapsibleTrigger
@@ -1102,7 +1181,7 @@ export default function ComparacaoVPDs() {
                                                 </TableRow>
                                               </TableHeader>
                                               <TableBody>
-                                                {subgrupo.vpds.map((vpd) => (
+                                                {subgrupo.vpds.filter(vpd => hasDivergence(vpd.valorCP, vpd.valorSIC)).map((vpd) => (
                                                   <TableRow 
                                                     key={vpd.codigo} 
                                                      className={`${hasDivergence(vpd.valorCP, vpd.valorSIC) ? 'bg-red-50 dark:bg-red-950/20 border-l-4 border-l-destructive' : 'bg-background'}`}
@@ -1170,8 +1249,23 @@ export default function ComparacaoVPDs() {
                       </div>
 
                       <div className="space-y-2">
-                        <p className="text-sm font-semibold text-muted-foreground mb-2">Detalhamento por VPD</p>
-                        {selectedRecord.modeloProgramatico.gruposVPD.map((grupo) => (
+                        <div className="flex items-center justify-between mb-3">
+                          <p className="text-sm font-semibold text-muted-foreground">Detalhamento por VPD</p>
+                          {(() => {
+                            const { gruposSemDiv, subgruposSemDiv, vpdsSemDiv } = contarItensSemDivergencia(selectedRecord.modeloProgramatico.gruposVPD);
+                            const totalItensOk = gruposSemDiv + subgruposSemDiv + vpdsSemDiv;
+                            if (totalItensOk > 0) {
+                              return (
+                                <Badge variant="outline" className="border-green-500 text-green-700 dark:text-green-400 flex items-center gap-1.5">
+                                  <CheckCircle className="h-3 w-3" />
+                                  {totalItensOk} {totalItensOk === 1 ? 'item' : 'itens'} OK
+                                </Badge>
+                              );
+                            }
+                            return null;
+                          })()}
+                        </div>
+                        {selectedRecord.modeloProgramatico.gruposVPD.filter(grupo => grupoTemDivergencia(grupo)).map((grupo) => (
                           <Collapsible key={`programatico-sic-${grupo.codigoPrincipal}`} open={expandedGroups.has(`programatico-sic-${grupo.codigoPrincipal}`)}>
                             <div className="border rounded-lg overflow-hidden">
                               <CollapsibleTrigger
@@ -1202,7 +1296,7 @@ export default function ComparacaoVPDs() {
                               </CollapsibleTrigger>
                               <CollapsibleContent>
                                 <div className="px-3 pb-3 pt-1 space-y-2">
-                                  {grupo.subgrupos.map((subgrupo) => (
+                                  {grupo.subgrupos.filter(sub => subgrupoTemDivergencia(sub)).map((subgrupo) => (
                                     <Collapsible key={`programatico-sic-sub-${subgrupo.codigo}`} open={expandedSubGroups.has(`programatico-sic-sub-${subgrupo.codigo}`)}>
                                       <div className="border rounded-lg overflow-hidden">
                                         <CollapsibleTrigger
@@ -1240,7 +1334,7 @@ export default function ComparacaoVPDs() {
                                                 </TableRow>
                                               </TableHeader>
                                               <TableBody>
-                                                {subgrupo.vpds.map((vpd) => (
+                                                {subgrupo.vpds.filter(vpd => hasDivergence(vpd.valorCP, vpd.valorSIC)).map((vpd) => (
                                                   <TableRow 
                                                     key={vpd.codigo} 
                                                      className={`${hasDivergence(vpd.valorCP, vpd.valorSIC) ? 'bg-red-50 dark:bg-red-950/20 border-l-4 border-l-destructive' : 'bg-background'}`}
