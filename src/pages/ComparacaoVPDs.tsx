@@ -593,6 +593,28 @@ export default function ComparacaoVPDs() {
            grupo.subgrupos.some(sub => subgrupoTemDivergencia(sub));
   };
 
+  const calcularDivergenciaInternaGrupo = (grupo: VPDGroup) => {
+    let totalDivergencia = 0;
+    grupo.subgrupos.forEach(sub => {
+      sub.vpds.forEach(vpd => {
+        if (hasDivergence(vpd.valorCP, vpd.valorSIC)) {
+          totalDivergencia += Math.abs(vpd.valorCP - vpd.valorSIC);
+        }
+      });
+    });
+    return totalDivergencia;
+  };
+
+  const calcularDivergenciaInternaSubgrupo = (subgrupo: VPDSubGroup) => {
+    let totalDivergencia = 0;
+    subgrupo.vpds.forEach(vpd => {
+      if (hasDivergence(vpd.valorCP, vpd.valorSIC)) {
+        totalDivergencia += Math.abs(vpd.valorCP - vpd.valorSIC);
+      }
+    });
+    return totalDivergencia;
+  };
+
   const contarItensSemDivergencia = (grupos: VPDGroup[]) => {
     let gruposSemDiv = 0;
     let subgruposSemDiv = 0;
@@ -810,9 +832,8 @@ export default function ComparacaoVPDs() {
                                       </div>
                                     ) : grupoTemDivergenciaInterna(grupo) && (
                                       <div className="flex items-center gap-1">
-                                        <Badge variant="outline" className="text-[9px] py-0 h-3.5 border-amber-500 text-amber-700 dark:text-amber-400 flex items-center gap-0.5">
-                                          <Info className="h-2.5 w-2.5" />
-                                          Div. interna
+                                        <Badge variant="outline" className="text-[9px] py-0 h-3.5 border-amber-500 text-amber-700 dark:text-amber-400">
+                                          Dif: {formatCurrency(calcularDivergenciaInternaGrupo(grupo))}
                                         </Badge>
                                       </div>
                                     )}
@@ -845,9 +866,8 @@ export default function ComparacaoVPDs() {
                                                   Dif: {formatCurrency(Math.abs(subgrupo.totalCP - subgrupo.totalSIC))}
                                                 </Badge>
                                               ) : subgrupoTemDivergenciaInterna(subgrupo) && (
-                                                <Badge variant="outline" className="text-[9px] py-0 h-3.5 border-amber-500 text-amber-700 dark:text-amber-400 flex items-center gap-0.5">
-                                                  <Info className="h-2.5 w-2.5" />
-                                                  Div. interna
+                                                <Badge variant="outline" className="text-[9px] py-0 h-3.5 border-amber-500 text-amber-700 dark:text-amber-400">
+                                                  Dif: {formatCurrency(calcularDivergenciaInternaSubgrupo(subgrupo))}
                                                 </Badge>
                                               )}
                                             </div>
@@ -948,9 +968,8 @@ export default function ComparacaoVPDs() {
                                       </div>
                                     ) : grupoTemDivergenciaInterna(grupo) && (
                                       <div className="flex items-center gap-1">
-                                        <Badge variant="outline" className="text-[9px] py-0 h-3.5 border-amber-500 text-amber-700 dark:text-amber-400 flex items-center gap-0.5">
-                                          <Info className="h-2.5 w-2.5" />
-                                          Div. interna
+                                        <Badge variant="outline" className="text-[9px] py-0 h-3.5 border-amber-500 text-amber-700 dark:text-amber-400">
+                                          Dif: {formatCurrency(calcularDivergenciaInternaGrupo(grupo))}
                                         </Badge>
                                       </div>
                                     )}
@@ -983,9 +1002,8 @@ export default function ComparacaoVPDs() {
                                                   CP: {formatCurrency(subgrupo.totalCP)}
                                                 </Badge>
                                               ) : subgrupoTemDivergenciaInterna(subgrupo) && (
-                                                <Badge variant="outline" className="text-[9px] py-0 h-3.5 border-amber-500 text-amber-700 dark:text-amber-400 flex items-center gap-0.5">
-                                                  <Info className="h-2.5 w-2.5" />
-                                                  Div. interna
+                                                <Badge variant="outline" className="text-[9px] py-0 h-3.5 border-amber-500 text-amber-700 dark:text-amber-400">
+                                                  Dif: {formatCurrency(calcularDivergenciaInternaSubgrupo(subgrupo))}
                                                 </Badge>
                                               )}
                                             </div>
@@ -1168,9 +1186,8 @@ export default function ComparacaoVPDs() {
                                       </div>
                                     ) : grupoTemDivergenciaInterna(grupo) && (
                                       <div className="flex items-center gap-1">
-                                        <Badge variant="outline" className="text-[9px] py-0 h-3.5 border-amber-500 text-amber-700 dark:text-amber-400 flex items-center gap-0.5">
-                                          <Info className="h-2.5 w-2.5" />
-                                          Div. interna
+                                        <Badge variant="outline" className="text-[9px] py-0 h-3.5 border-amber-500 text-amber-700 dark:text-amber-400">
+                                          Dif: {formatCurrency(calcularDivergenciaInternaGrupo(grupo))}
                                         </Badge>
                                       </div>
                                     )}
@@ -1203,9 +1220,8 @@ export default function ComparacaoVPDs() {
                                                   Dif: {formatCurrency(Math.abs(subgrupo.totalCP - subgrupo.totalSIC))}
                                                 </Badge>
                                               ) : subgrupoTemDivergenciaInterna(subgrupo) && (
-                                                <Badge variant="outline" className="text-[9px] py-0 h-3.5 border-amber-500 text-amber-700 dark:text-amber-400 flex items-center gap-0.5">
-                                                  <Info className="h-2.5 w-2.5" />
-                                                  Div. interna
+                                                <Badge variant="outline" className="text-[9px] py-0 h-3.5 border-amber-500 text-amber-700 dark:text-amber-400">
+                                                  Dif: {formatCurrency(calcularDivergenciaInternaSubgrupo(subgrupo))}
                                                 </Badge>
                                               )}
                                             </div>
@@ -1333,9 +1349,8 @@ export default function ComparacaoVPDs() {
                                       </div>
                                     ) : grupoTemDivergenciaInterna(grupo) && (
                                       <div className="flex items-center gap-1">
-                                        <Badge variant="outline" className="text-[9px] py-0 h-3.5 border-amber-500 text-amber-700 dark:text-amber-400 flex items-center gap-0.5">
-                                          <Info className="h-2.5 w-2.5" />
-                                          Div. interna
+                                        <Badge variant="outline" className="text-[9px] py-0 h-3.5 border-amber-500 text-amber-700 dark:text-amber-400">
+                                          Dif: {formatCurrency(calcularDivergenciaInternaGrupo(grupo))}
                                         </Badge>
                                       </div>
                                     )}
@@ -1368,9 +1383,8 @@ export default function ComparacaoVPDs() {
                                                   CP: {formatCurrency(subgrupo.totalCP)}
                                                 </Badge>
                                               ) : subgrupoTemDivergenciaInterna(subgrupo) && (
-                                                <Badge variant="outline" className="text-[9px] py-0 h-3.5 border-amber-500 text-amber-700 dark:text-amber-400 flex items-center gap-0.5">
-                                                  <Info className="h-2.5 w-2.5" />
-                                                  Div. interna
+                                                <Badge variant="outline" className="text-[9px] py-0 h-3.5 border-amber-500 text-amber-700 dark:text-amber-400">
+                                                  Dif: {formatCurrency(calcularDivergenciaInternaSubgrupo(subgrupo))}
                                                 </Badge>
                                               )}
                                             </div>
