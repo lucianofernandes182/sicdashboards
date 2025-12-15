@@ -3,10 +3,12 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { ArrowLeft, CheckCircle, XCircle, AlertTriangle, ChevronDown, ChevronRight, TrendingUp, TrendingDown, Minus, CircleAlert, ShieldCheck, FileWarning, Info } from "lucide-react";
+import { ArrowLeft, CheckCircle, XCircle, AlertTriangle, ChevronDown, ChevronRight, TrendingUp, TrendingDown, Minus, CircleAlert, ShieldCheck, FileWarning, Info, Eye, Building2, School, Users, FileText, DollarSign, MapPin } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
+import { cn } from "@/lib/utils";
 
 interface VPDDetail {
   codigo: string;
@@ -516,12 +518,193 @@ const mockRecords: VPDRecord[] = [
   }
 ];
 
+// Mock data para estrutura da TreeView no modal
+interface TreeNode {
+  id: string;
+  name: string;
+  code?: string;
+  value: number;
+  level: number;
+  children?: TreeNode[];
+  icon?: string;
+  isEquipment?: boolean;
+}
+
+const getMockTreeDataForVPD = (vpd: VPDDetail): TreeNode[] => {
+  return [
+    {
+      id: "1",
+      name: "ORGÂNICO",
+      code: "1",
+      value: vpd.valorSIC,
+      level: 1,
+      icon: "Building2",
+      children: [
+        {
+          id: "1.12",
+          name: "EDUCAÇÃO",
+          code: "12",
+          value: vpd.valorSIC * 0.8,
+          level: 2,
+          icon: "School",
+          children: [
+            {
+              id: "1.12.010",
+              name: "SECRETARIA MUNICIPAL",
+              code: "010",
+              value: vpd.valorSIC * 0.6,
+              level: 3,
+              icon: "Users",
+              children: [
+                {
+                  id: "1.12.010.001",
+                  name: "Secretaria Municipal de Educação",
+                  code: "1.3.3205200.12.0001",
+                  value: vpd.valorSIC * 0.4,
+                  level: 4,
+                  icon: "FileText"
+                },
+                {
+                  id: "1.12.010.002",
+                  name: "Coordenadoria de Ensino",
+                  code: "1.3.3205200.12.0002",
+                  value: vpd.valorSIC * 0.2,
+                  level: 4,
+                  icon: "FileText"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          id: "1.04",
+          name: "ADMINISTRAÇÃO",
+          code: "04",
+          value: vpd.valorSIC * 0.2,
+          level: 2,
+          icon: "Building2",
+          children: [
+            {
+              id: "1.04.001",
+              name: "Secretaria de Administração",
+              code: "001",
+              value: vpd.valorSIC * 0.2,
+              level: 3,
+              icon: "Users"
+            }
+          ]
+        }
+      ]
+    }
+  ];
+};
+
 export default function ComparacaoVPDs() {
   const navigate = useNavigate();
   const [selectedRecord, setSelectedRecord] = useState<VPDRecord | null>(null);
   const [records, setRecords] = useState<VPDRecord[]>(mockRecords);
   const [expandedGroups, setExpandedGroups] = useState<Set<string>>(new Set());
   const [expandedSubGroups, setExpandedSubGroups] = useState<Set<string>>(new Set());
+  const [selectedVPD, setSelectedVPD] = useState<VPDDetail | null>(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [modalExpandedNodes, setModalExpandedNodes] = useState<Set<string>>(new Set());
+
+  const openVPDDetail = (vpd: VPDDetail) => {
+    setSelectedVPD(vpd);
+    setModalExpandedNodes(new Set());
+    setIsModalOpen(true);
+  };
+
+  const toggleModalNode = (nodeId: string) => {
+    setModalExpandedNodes(prev => {
+      const next = new Set(prev);
+      if (next.has(nodeId)) {
+        next.delete(nodeId);
+      } else {
+        next.add(nodeId);
+      }
+      return next;
+    });
+  };
+
+  const getIconComponent = (iconName: string) => {
+    switch (iconName) {
+      case "Building2": return <Building2 className="h-4 w-4" />;
+      case "School": return <School className="h-4 w-4" />;
+      case "Users": return <Users className="h-4 w-4" />;
+      case "FileText": return <FileText className="h-4 w-4" />;
+      case "DollarSign": return <DollarSign className="h-4 w-4" />;
+      case "MapPin": return <MapPin className="h-4 w-4" />;
+      default: return <FileText className="h-4 w-4" />;
+    }
+  };
+
+  const renderTreeNode = (node: TreeNode): React.ReactNode => {
+    const hasChildren = node.children && node.children.length > 0;
+    const isExpanded = modalExpandedNodes.has(node.id);
+
+    return (
+      <div key={node.id} className="w-full">
+        <div 
+          className={cn(
+            "flex items-start gap-1.5 sm:gap-2 p-2 sm:p-3 rounded-lg cursor-pointer transition-all duration-200 hover:bg-muted/30",
+            node.isEquipment && "bg-blue-500/10 border border-blue-500/20"
+          )}
+          style={{ paddingLeft: `${Math.min((node.level - 1) * 12, 36)}px` }}
+        >
+          {hasChildren ? (
+            <button
+              onClick={(e) => {
+                e.stopPropagation();
+                toggleModalNode(node.id);
+              }}
+              className="flex-shrink-0 p-0.5 hover:bg-muted/50 rounded mt-0.5"
+            >
+              {isExpanded ? (
+                <ChevronDown className="h-3 w-3 sm:h-4 sm:w-4" />
+              ) : (
+                <ChevronRight className="h-3 w-3 sm:h-4 sm:w-4" />
+              )}
+            </button>
+          ) : (
+            <div className="w-4 sm:w-5 flex-shrink-0" />
+          )}
+          
+          {node.icon && (
+            <div className="flex-shrink-0 mt-0.5">
+              {getIconComponent(node.icon)}
+            </div>
+          )}
+          
+          <div className="flex-1 min-w-0 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-1 sm:gap-4">
+            <div className="flex-1 min-w-0">
+              {node.code && (
+                <div className="text-[10px] sm:text-xs font-mono text-muted-foreground bg-muted/20 px-1.5 py-0.5 rounded inline-block mb-1">
+                  {node.code}
+                </div>
+              )}
+              <div className={cn(
+                "text-xs sm:text-sm font-medium leading-snug",
+                node.isEquipment && "text-blue-600 dark:text-blue-400"
+              )}>
+                {node.name}
+              </div>
+            </div>
+            
+            <div className="text-xs sm:text-sm font-bold text-primary whitespace-nowrap">
+              {formatCurrency(node.value)}
+            </div>
+          </div>
+        </div>
+
+        {hasChildren && isExpanded && (
+          <div className="mt-0.5">
+            {node.children?.map(renderTreeNode)}
+          </div>
+        )}
+      </div>
+    );
+  };
 
   const toggleGroup = (groupKey: string) => {
     setExpandedGroups(prev => {
@@ -886,6 +1069,7 @@ export default function ComparacaoVPDs() {
                                                   <TableHead className="text-xs">Código</TableHead>
                                                   <TableHead className="text-xs">Descrição</TableHead>
                                                   <TableHead className="text-right text-xs">Valor CP</TableHead>
+                                                  <TableHead className="text-xs w-[50px]"></TableHead>
                                                 </TableRow>
                                               </TableHeader>
                                               <TableBody>
@@ -904,6 +1088,16 @@ export default function ComparacaoVPDs() {
                                                     </TableCell>
                                                     <TableCell className="text-xs py-2">{vpd.descricao}</TableCell>
                                                     <TableCell className="text-right text-xs py-2 font-semibold">{formatCurrency(vpd.valorCP)}</TableCell>
+                                                    <TableCell className="text-center py-2">
+                                                      <Button
+                                                        variant="ghost"
+                                                        size="sm"
+                                                        className="h-6 w-6 p-0"
+                                                        onClick={() => openVPDDetail(vpd)}
+                                                      >
+                                                        <Eye className="h-3 w-3" />
+                                                      </Button>
+                                                    </TableCell>
                                                   </TableRow>
                                                 ))}
                                               </TableBody>
@@ -1022,36 +1216,28 @@ export default function ComparacaoVPDs() {
                                                   <TableHead className="text-xs">Código</TableHead>
                                                   <TableHead className="text-xs">Descrição</TableHead>
                                                   <TableHead className="text-right text-xs">Valor SIC</TableHead>
+                                                  <TableHead className="text-xs w-[50px]"></TableHead>
                                                 </TableRow>
                                               </TableHeader>
                                               <TableBody>
                                                 {subgrupo.vpds.filter(vpd => hasDivergence(vpd.valorCP, vpd.valorSIC)).map((vpd) => (
                                                   <TableRow 
                                                     key={vpd.codigo} 
-                                                     className={`${hasDivergence(vpd.valorCP, vpd.valorSIC) ? 'bg-red-50 dark:bg-red-950/20 border-l-4 border-l-destructive' : 'bg-background'}`}
+                                                    className={`${hasDivergence(vpd.valorCP, vpd.valorSIC) ? 'bg-red-50 dark:bg-red-950/20 border-l-4 border-l-destructive' : 'bg-background'}`}
                                                   >
-                                                   <TableCell className="text-xs py-2 font-mono">
+                                                    <TableCell className="text-xs py-2 font-mono">
                                                       <div className="flex items-center gap-1">
                                                         {vpd.codigo}
-                                                         {hasDivergence(vpd.valorCP, vpd.valorSIC) && (
-                                                          <div className="relative">
-                                                            <AlertTriangle className="h-3 w-3 text-destructive animate-pulse" />
-                                                          </div>
+                                                        {hasDivergence(vpd.valorCP, vpd.valorSIC) && (
+                                                          <AlertTriangle className="h-3 w-3 text-destructive animate-pulse" />
                                                         )}
                                                       </div>
                                                     </TableCell>
                                                     <TableCell className="text-xs py-2">
                                                       <div className="flex items-center gap-2">
                                                         <span>{vpd.descricao}</span>
-                                                         {hasDivergence(vpd.valorCP, vpd.valorSIC) && (
-                                                          <Badge variant="outline" className="text-[10px] py-0 h-4 border-amber-500 text-amber-700 dark:text-amber-400 flex items-center gap-0.5 whitespace-nowrap shrink-0">
-                                                            {vpd.valorSIC > vpd.valorCP ? (
-                                                              <TrendingUp className="h-2.5 w-2.5 shrink-0" />
-                                                            ) : vpd.valorSIC < vpd.valorCP ? (
-                                                              <TrendingDown className="h-2.5 w-2.5 shrink-0" />
-                                                            ) : (
-                                                              <Minus className="h-2.5 w-2.5 shrink-0" />
-                                                            )}
+                                                        {hasDivergence(vpd.valorCP, vpd.valorSIC) && (
+                                                          <Badge variant="outline" className="text-[10px] py-0 h-4 border-amber-500 text-amber-700 dark:text-amber-400 flex items-center gap-0.5">
                                                             SIC ≠ CP
                                                           </Badge>
                                                         )}
@@ -1059,20 +1245,23 @@ export default function ComparacaoVPDs() {
                                                     </TableCell>
                                                     <TableCell className="text-right text-xs py-2 font-semibold">
                                                       <div className="flex flex-col items-end gap-0.5">
-                                                        <div className="flex items-center gap-2">
-                                                          <span>{formatCurrency(vpd.valorSIC)}</span>
-                                                        </div>
+                                                        <span>{formatCurrency(vpd.valorSIC)}</span>
                                                         {hasDivergence(vpd.valorCP, vpd.valorSIC) && (
-                                                          <div className="flex items-center gap-1 text-destructive whitespace-nowrap">
-                                                            <span className="text-[10px] font-normal whitespace-nowrap">
-                                                              CP: {formatCurrency(vpd.valorCP)}
-                                                            </span>
-                                                            <span className="text-[10px] font-semibold whitespace-nowrap">
-                                                              ({formatCurrency(getDivergenceAmount(vpd.valorCP, vpd.valorSIC))})
-                                                            </span>
-                                                          </div>
+                                                          <span className="text-[10px] text-muted-foreground font-normal">
+                                                            CP: {formatCurrency(vpd.valorCP)}
+                                                          </span>
                                                         )}
                                                       </div>
+                                                    </TableCell>
+                                                    <TableCell className="text-center py-2">
+                                                      <Button
+                                                        variant="ghost"
+                                                        size="sm"
+                                                        className="h-6 w-6 p-0"
+                                                        onClick={() => openVPDDetail(vpd)}
+                                                      >
+                                                        <Eye className="h-3 w-3" />
+                                                      </Button>
                                                     </TableCell>
                                                   </TableRow>
                                                 ))}
@@ -1498,6 +1687,38 @@ export default function ComparacaoVPDs() {
           </div>
         )}
       </div>
+
+      {/* Modal de Detalhamento VPD */}
+      <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
+        <DialogContent className="max-w-3xl max-h-[80vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              <FileText className="h-5 w-5" />
+              Estrutura de Análise de Custos
+            </DialogTitle>
+            <DialogDescription>
+              {selectedVPD && (
+                <div className="flex flex-col gap-1 mt-2">
+                  <span className="font-mono text-sm">{selectedVPD.codigo}</span>
+                  <span className="font-medium">{selectedVPD.descricao}</span>
+                  <div className="flex gap-4 mt-2">
+                    <Badge variant="outline" className="text-xs">
+                      CP: {formatCurrency(selectedVPD.valorCP)}
+                    </Badge>
+                    <Badge variant="outline" className="text-xs">
+                      SIC: {formatCurrency(selectedVPD.valorSIC)}
+                    </Badge>
+                  </div>
+                </div>
+              )}
+            </DialogDescription>
+          </DialogHeader>
+          
+          <div className="space-y-1 max-h-96 overflow-y-auto border rounded-lg p-3 bg-muted/20">
+            {selectedVPD && getMockTreeDataForVPD(selectedVPD).map(renderTreeNode)}
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
