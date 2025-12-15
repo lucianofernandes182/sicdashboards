@@ -9,6 +9,7 @@ import { toast } from "sonner";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { cn } from "@/lib/utils";
+import { AnalyticalGrid } from "@/components/dashboard/AnalyticalGrid";
 
 interface VPDDetail {
   codigo: string;
@@ -1690,11 +1691,11 @@ export default function ComparacaoVPDs() {
 
       {/* Modal de Detalhamento VPD */}
       <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
-        <DialogContent className="max-w-3xl max-h-[80vh] overflow-y-auto">
+        <DialogContent className="max-w-4xl max-h-[85vh] overflow-y-auto">
           <DialogHeader>
             <DialogTitle className="flex items-center gap-2">
               <FileText className="h-5 w-5" />
-              Estrutura de Análise de Custos
+              Dados Analíticos - VPD
             </DialogTitle>
             <DialogDescription>
               {selectedVPD && (
@@ -1708,15 +1709,23 @@ export default function ComparacaoVPDs() {
                     <Badge variant="outline" className="text-xs">
                       SIC: {formatCurrency(selectedVPD.valorSIC)}
                     </Badge>
+                    {hasDivergence(selectedVPD.valorCP, selectedVPD.valorSIC) && (
+                      <Badge variant="destructive" className="text-xs">
+                        Dif: {formatCurrency(Math.abs(selectedVPD.valorCP - selectedVPD.valorSIC))}
+                      </Badge>
+                    )}
                   </div>
                 </div>
               )}
             </DialogDescription>
           </DialogHeader>
           
-          <div className="space-y-1 max-h-96 overflow-y-auto border rounded-lg p-3 bg-muted/20">
-            {selectedVPD && getMockTreeDataForVPD(selectedVPD).map(renderTreeNode)}
-          </div>
+          {selectedVPD && (
+            <AnalyticalGrid 
+              selectedNodeName={selectedVPD.descricao} 
+              selectedNodeLevel={4} 
+            />
+          )}
         </DialogContent>
       </Dialog>
     </div>
