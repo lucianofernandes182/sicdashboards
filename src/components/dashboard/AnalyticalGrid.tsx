@@ -1,13 +1,14 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
+import { AlertTriangle, CheckCircle2 } from "lucide-react";
 
 interface AnalyticalData {
   item: string;
   codigo: string;
-  valor2024: number;
-  valor2025: number;
-  variacao: number;
+  valorCP: number;
+  valorSIC: number;
+  diferenca: number;
   percentual: number;
   categoria: string;
 }
@@ -15,62 +16,69 @@ interface AnalyticalData {
 interface AnalyticalGridProps {
   selectedNodeName?: string;
   selectedNodeLevel?: number;
+  valorCP?: number;
+  valorSIC?: number;
 }
 
-export function AnalyticalGrid({ selectedNodeName = "Secretaria Municipal de Educação", selectedNodeLevel = 4 }: AnalyticalGridProps) {
-  // Dados analíticos simulados baseados no nó selecionado
+export function AnalyticalGrid({ 
+  selectedNodeName = "Secretaria Municipal de Educação", 
+  selectedNodeLevel = 4,
+  valorCP = 0,
+  valorSIC = 0
+}: AnalyticalGridProps) {
+  // Dados analíticos simulados comparando CP vs SIC
   const analyticalData: AnalyticalData[] = [
     {
       item: "Pessoal Ativo",
       codigo: "001.01.01",
-      valor2024: 8500000,
-      valor2025: 9200000,
-      variacao: 8.2,
+      valorCP: 8500000,
+      valorSIC: 8650000,
+      diferenca: -150000,
       percentual: 65.5,
       categoria: "Recursos Humanos"
     },
     {
       item: "Encargos Sociais",
       codigo: "001.01.02",
-      valor2024: 1200000,
-      valor2025: 1300000,
-      variacao: 8.3,
+      valorCP: 1200000,
+      valorSIC: 1200000,
+      diferenca: 0,
       percentual: 9.3,
       categoria: "Recursos Humanos"
     },
     {
       item: "Material de Consumo",
       codigo: "001.02.01",
-      valor2024: 890000,
-      valor2025: 950000,
-      variacao: 6.7,
+      valorCP: 890000,
+      valorSIC: 875000,
+      diferenca: 15000,
       percentual: 6.8,
       categoria: "Materiais"
     },
     {
       item: "Serviços de Terceiros",
       codigo: "001.03.01",
-      valor2024: 1800000,
-      valor2025: 1950000,
-      variacao: 8.3,
+      valorCP: 1800000,
+      valorSIC: 1950000,
+      diferenca: -150000,
       percentual: 13.9,
       categoria: "Contabilidade"
     },
     {
       item: "Equipamentos e Instalações",
       codigo: "001.04.01",
-      valor2024: 450000,
-      valor2025: 380000,
-      variacao: -15.6,
+      valorCP: 450000,
+      valorSIC: 380000,
+      diferenca: 70000,
       percentual: 2.7,
       categoria: "Materiais"
     },
     {
       item: "Manutenção e Operação",
       codigo: "001.05.01",
-      valor2024: 210000,
-      valor2025: 250000,
-      variacao: 19.0,
+      valorCP: 210000,
+      valorSIC: 250000,
+      diferenca: -40000,
       percentual: 1.8,
       categoria: "Contabilidade"
     }
@@ -85,9 +93,9 @@ export function AnalyticalGrid({ selectedNodeName = "Secretaria Municipal de Edu
     }).format(value);
   };
 
-  const formatVariation = (value: number) => {
+  const formatDiferenca = (value: number) => {
     const sign = value > 0 ? '+' : '';
-    return `${sign}${value.toFixed(1)}%`;
+    return `${sign}${formatCurrency(value)}`;
   };
 
   const getCategoryColor = (categoria: string) => {
@@ -103,20 +111,38 @@ export function AnalyticalGrid({ selectedNodeName = "Secretaria Municipal de Edu
     }
   };
 
-  const getVariationColor = (value: number) => {
+  const getDiferencaColor = (value: number) => {
     if (value > 0) return "text-green-600 dark:text-green-400";
     if (value < 0) return "text-red-600 dark:text-red-400";
     return "text-muted-foreground";
   };
 
+  const totalCP = analyticalData.reduce((sum, item) => sum + item.valorCP, 0);
+  const totalSIC = analyticalData.reduce((sum, item) => sum + item.valorSIC, 0);
+  const totalDiferenca = totalCP - totalSIC;
+  const itensComDivergencia = analyticalData.filter(item => item.diferenca !== 0).length;
+
   return (
     <Card className="glass neon-border">
       <CardHeader>
         <CardTitle className="glow-text flex items-center justify-between">
-          <span>Dados Analíticos Detalhados</span>
-          <Badge variant="outline" className="text-xs">
-            Nível {selectedNodeLevel}
-          </Badge>
+          <span>Comparativo CP vs SIC</span>
+          <div className="flex items-center gap-2">
+            <Badge variant="outline" className="text-xs">
+              Nível {selectedNodeLevel}
+            </Badge>
+            {itensComDivergencia > 0 ? (
+              <Badge variant="destructive" className="text-xs flex items-center gap-1">
+                <AlertTriangle className="h-3 w-3" />
+                {itensComDivergencia} divergência(s)
+              </Badge>
+            ) : (
+              <Badge className="bg-green-500/20 text-green-600 border-green-500/30 text-xs flex items-center gap-1">
+                <CheckCircle2 className="h-3 w-3" />
+                Sem divergências
+              </Badge>
+            )}
+          </div>
         </CardTitle>
         <p className="text-sm text-muted-foreground">
           Análise detalhada para: <span className="font-medium text-primary">{selectedNodeName}</span>
@@ -129,10 +155,10 @@ export function AnalyticalGrid({ selectedNodeName = "Secretaria Municipal de Edu
               <TableRow className="bg-muted/20">
                 <TableHead className="font-semibold">Item</TableHead>
                 <TableHead className="font-semibold">Código</TableHead>
-                <TableHead className="font-semibold text-right">2024</TableHead>
-                <TableHead className="font-semibold text-right">2025</TableHead>
-                <TableHead className="font-semibold text-right">Variação</TableHead>
-                <TableHead className="font-semibold text-right">% Total</TableHead>
+                <TableHead className="font-semibold text-right">CP (VPD)</TableHead>
+                <TableHead className="font-semibold text-right">SIC (Sistemas)</TableHead>
+                <TableHead className="font-semibold text-right">Diferença</TableHead>
+                <TableHead className="font-semibold text-center">Status</TableHead>
                 <TableHead className="font-semibold text-center">Categoria</TableHead>
               </TableRow>
             </TableHeader>
@@ -144,16 +170,26 @@ export function AnalyticalGrid({ selectedNodeName = "Secretaria Municipal de Edu
                     {item.codigo}
                   </TableCell>
                   <TableCell className="text-right font-semibold">
-                    {formatCurrency(item.valor2024)}
+                    {formatCurrency(item.valorCP)}
                   </TableCell>
                   <TableCell className="text-right font-semibold">
-                    {formatCurrency(item.valor2025)}
+                    {formatCurrency(item.valorSIC)}
                   </TableCell>
-                  <TableCell className={`text-right font-semibold ${getVariationColor(item.variacao)}`}>
-                    {formatVariation(item.variacao)}
+                  <TableCell className={`text-right font-semibold ${getDiferencaColor(item.diferenca)}`}>
+                    {item.diferenca !== 0 ? formatDiferenca(item.diferenca) : '-'}
                   </TableCell>
-                  <TableCell className="text-right font-medium text-primary">
-                    {item.percentual.toFixed(1)}%
+                  <TableCell className="text-center">
+                    {item.diferenca !== 0 ? (
+                      <Badge variant="destructive" className="text-xs">
+                        <AlertTriangle className="h-3 w-3 mr-1" />
+                        Divergente
+                      </Badge>
+                    ) : (
+                      <Badge className="bg-green-500/20 text-green-600 border-green-500/30 text-xs">
+                        <CheckCircle2 className="h-3 w-3 mr-1" />
+                        OK
+                      </Badge>
+                    )}
                   </TableCell>
                   <TableCell className="text-center">
                     <Badge className={getCategoryColor(item.categoria)}>
@@ -166,11 +202,27 @@ export function AnalyticalGrid({ selectedNodeName = "Secretaria Municipal de Edu
           </Table>
         </div>
         
-        <div className="mt-4 flex justify-between items-center text-sm text-muted-foreground">
-          <span>Total de {analyticalData.length} itens analíticos</span>
-          <span>
-            Total: {formatCurrency(analyticalData.reduce((sum, item) => sum + item.valor2025, 0))}
-          </span>
+        {/* Totais */}
+        <div className="mt-4 p-3 rounded-lg bg-muted/30 border border-border/50">
+          <div className="flex justify-between items-center">
+            <span className="text-sm text-muted-foreground">
+              Total de {analyticalData.length} itens analíticos
+            </span>
+            <div className="flex items-center gap-4 text-sm">
+              <span>
+                <span className="text-muted-foreground">CP:</span>{" "}
+                <span className="font-semibold">{formatCurrency(totalCP)}</span>
+              </span>
+              <span>
+                <span className="text-muted-foreground">SIC:</span>{" "}
+                <span className="font-semibold">{formatCurrency(totalSIC)}</span>
+              </span>
+              <span className={`font-semibold ${getDiferencaColor(totalDiferenca)}`}>
+                <span className="text-muted-foreground">Dif:</span>{" "}
+                {formatDiferenca(totalDiferenca)}
+              </span>
+            </div>
+          </div>
         </div>
       </CardContent>
     </Card>
