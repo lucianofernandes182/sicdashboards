@@ -446,38 +446,38 @@ const EquipamentosPublicos = () => {
                           <div><span className="font-medium">Tipo:</span> {equipamento.Tipo}</div>
                           <div className="truncate"><span className="font-medium">Responsabilidade:</span> {equipamento.CentroDeResponsabilidade}</div>
                         </div>
-                        <div className="flex justify-end gap-1 border-t pt-3">
+                        <div className="grid grid-cols-3 gap-2 border-t pt-3">
                           <Button
-                            variant="ghost"
-                            size="sm"
+                            variant="outline"
                             onClick={() => handleOpenAssociations(equipamento)}
-                            className="h-8 px-2"
+                            className="h-11 flex items-center justify-center gap-1.5"
                           >
-                            <Link2 className="h-4 w-4" />
+                            <Link2 className="h-5 w-5" />
+                            <span className="text-xs">Associar</span>
                             {getAssociationsCount(equipamento.NumeroControle) > 0 && (
                               <Badge 
                                 variant="secondary" 
-                                className="ml-1 h-4 min-w-4 p-0 flex items-center justify-center text-[10px]"
+                                className="h-5 min-w-5 p-0 flex items-center justify-center text-[10px]"
                               >
                                 {getAssociationsCount(equipamento.NumeroControle)}
                               </Badge>
                             )}
                           </Button>
                           <Button
-                            variant="ghost"
-                            size="sm"
+                            variant="outline"
                             onClick={() => handleEdit(equipamento)}
-                            className="h-8 px-2"
+                            className="h-11 flex items-center justify-center gap-1.5"
                           >
-                            <Edit className="h-4 w-4" />
+                            <Edit className="h-5 w-5" />
+                            <span className="text-xs">Editar</span>
                           </Button>
                           <Button
-                            variant="ghost"
-                            size="sm"
+                            variant="outline"
                             onClick={() => handleDelete(equipamento.NumeroControle)}
-                            className="h-8 px-2"
+                            className="h-11 flex items-center justify-center gap-1.5 text-destructive hover:text-destructive"
                           >
-                            <Trash2 className="h-4 w-4" />
+                            <Trash2 className="h-5 w-5" />
+                            <span className="text-xs">Excluir</span>
                           </Button>
                         </div>
                       </Card>
