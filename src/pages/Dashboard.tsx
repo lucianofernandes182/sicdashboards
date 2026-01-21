@@ -176,7 +176,11 @@ const Dashboard = () => {
             onSourcesChange={handleDataSourcesChange}
           />
         ) : (
-          <FilterSidebar isCollapsed={sidebarCollapsed} onViewChange={setActiveView} />
+          <FilterSidebar 
+            isCollapsed={sidebarCollapsed} 
+            onToggle={() => setSidebarCollapsed(!sidebarCollapsed)}
+            onViewChange={setActiveView} 
+          />
         )}
         
         <main className="flex-1 overflow-auto">
