@@ -3,13 +3,16 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { ArrowLeft, CheckCircle, XCircle, AlertTriangle, ChevronDown, ChevronRight, TrendingUp, TrendingDown, Minus, CircleAlert, ShieldCheck, FileWarning, Info, Eye, Building2, School, Users, FileText, DollarSign, MapPin } from "lucide-react";
+import { ArrowLeft, CheckCircle, XCircle, AlertTriangle, ChevronDown, ChevronRight, TrendingUp, TrendingDown, Minus, CircleAlert, ShieldCheck, FileWarning, Info, Eye, Building2, School, Users, FileText, DollarSign, MapPin, ClipboardList, ExternalLink, AlertCircle } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from "@/components/ui/dialog";
 import { cn } from "@/lib/utils";
 import { AnalyticalGrid } from "@/components/dashboard/AnalyticalGrid";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 
 interface VPDDetail {
   codigo: string;
@@ -50,6 +53,72 @@ interface VPDRecord {
     gruposVPD: VPDGroup[];
   };
 }
+
+// Interface para registros pendentes de cadastro
+interface RegistroPendente {
+  id: string;
+  tipo: "EP" | "VPD";
+  codigo: string;
+  descricao: string;
+  origem: string;
+  valor: number;
+  dataIdentificacao: string;
+  status: "pendente" | "em_analise";
+}
+
+// Mock de registros pendentes de cadastro
+const mockRegistrosPendentes: RegistroPendente[] = [
+  {
+    id: "pend-1",
+    tipo: "EP",
+    codigo: "EP-2025-001",
+    descricao: "Escola Municipal José de Alencar",
+    origem: "Sistema de Educação",
+    valor: 125000.00,
+    dataIdentificacao: "2025-05-15",
+    status: "pendente"
+  },
+  {
+    id: "pend-2",
+    tipo: "VPD",
+    codigo: "3.3.9.1.00.00.00",
+    descricao: "Despesas com Manutenção Predial",
+    origem: "CP - Contabilidade",
+    valor: 45780.50,
+    dataIdentificacao: "2025-05-18",
+    status: "pendente"
+  },
+  {
+    id: "pend-3",
+    tipo: "EP",
+    codigo: "EP-2025-002",
+    descricao: "Centro de Saúde Vila Nova",
+    origem: "Sistema de Saúde",
+    valor: 89500.00,
+    dataIdentificacao: "2025-05-20",
+    status: "em_analise"
+  },
+  {
+    id: "pend-4",
+    tipo: "VPD",
+    codigo: "3.1.9.2.00.00.00",
+    descricao: "Gratificação Especial Temporária",
+    origem: "Folha de Pagamento",
+    valor: 234100.00,
+    dataIdentificacao: "2025-05-22",
+    status: "pendente"
+  },
+  {
+    id: "pend-5",
+    tipo: "EP",
+    codigo: "EP-2025-003",
+    descricao: "Praça Municipal Central",
+    origem: "Sistema de Urbanismo",
+    valor: 0,
+    dataIdentificacao: "2025-05-25",
+    status: "pendente"
+  }
+];
 
 // Mock data baseado na estrutura da imagem de referência
 const mockRecords: VPDRecord[] = [
@@ -609,6 +678,36 @@ export default function ComparacaoVPDs() {
   const [selectedVPD, setSelectedVPD] = useState<VPDDetail | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [modalExpandedNodes, setModalExpandedNodes] = useState<Set<string>>(new Set());
+  
+  // Estados para modal de registros pendentes
+  const [registrosPendentes, setRegistrosPendentes] = useState<RegistroPendente[]>(mockRegistrosPendentes);
+  const [isPendentesModalOpen, setIsPendentesModalOpen] = useState(false);
+  const [registroEmEdicao, setRegistroEmEdicao] = useState<RegistroPendente | null>(null);
+  const [isAjusteModalOpen, setIsAjusteModalOpen] = useState(false);
+
+  const totalPendentes = registrosPendentes.length;
+  const pendentesEP = registrosPendentes.filter(r => r.tipo === "EP").length;
+  const pendentesVPD = registrosPendentes.filter(r => r.tipo === "VPD").length;
+
+  const handleAbrirAjuste = (registro: RegistroPendente) => {
+    setRegistroEmEdicao(registro);
+    setIsAjusteModalOpen(true);
+  };
+
+  const handleSalvarAjuste = () => {
+    if (registroEmEdicao) {
+      // Remove o registro da lista de pendentes (simulando cadastro concluído)
+      setRegistrosPendentes(prev => prev.filter(r => r.id !== registroEmEdicao.id));
+      toast.success(`Cadastro de ${registroEmEdicao.tipo === "EP" ? "Equipamento Público" : "VPD"} realizado com sucesso!`);
+      setIsAjusteModalOpen(false);
+      setRegistroEmEdicao(null);
+    }
+  };
+
+  const formatDate = (dateStr: string) => {
+    const date = new Date(dateStr);
+    return date.toLocaleDateString('pt-BR');
+  };
 
   const openVPDDetail = (vpd: VPDDetail) => {
     setSelectedVPD(vpd);
@@ -845,14 +944,43 @@ export default function ComparacaoVPDs() {
   return (
     <div className="min-h-screen bg-background p-6">
       <div className="max-w-7xl mx-auto space-y-6">
-        <div className="flex items-center gap-4">
-          <Button variant="ghost" size="icon" onClick={() => navigate("/")}>
-            <ArrowLeft className="h-5 w-5" />
-          </Button>
-          <div>
-            <h1 className="text-3xl font-bold">Comparação de VPDs</h1>
-            <p className="text-muted-foreground">Conciliação bancária - Validação de registros mensais entre sistemas</p>
+        <div className="flex items-center justify-between flex-wrap gap-4">
+          <div className="flex items-center gap-4">
+            <Button variant="ghost" size="icon" onClick={() => navigate("/")}>
+              <ArrowLeft className="h-5 w-5" />
+            </Button>
+            <div>
+              <h1 className="text-3xl font-bold">Comparação de VPDs</h1>
+              <p className="text-muted-foreground">Conciliação bancária - Validação de registros mensais entre sistemas</p>
+            </div>
           </div>
+          
+          {/* Indicador de Registros Pendentes de Cadastro */}
+          {totalPendentes > 0 && (
+            <Button
+              variant="outline"
+              className="border-orange-500 text-orange-700 dark:text-orange-400 hover:bg-orange-50 dark:hover:bg-orange-950/30 gap-2"
+              onClick={() => setIsPendentesModalOpen(true)}
+            >
+              <AlertCircle className="h-4 w-4" />
+              <span className="font-semibold">{totalPendentes}</span>
+              <span className="hidden sm:inline">
+                {totalPendentes === 1 ? 'Cadastro Pendente' : 'Cadastros Pendentes'}
+              </span>
+              <div className="flex gap-1 ml-1">
+                {pendentesEP > 0 && (
+                  <Badge variant="secondary" className="bg-blue-100 text-blue-700 dark:bg-blue-900/50 dark:text-blue-300 text-[10px] px-1.5">
+                    {pendentesEP} EP
+                  </Badge>
+                )}
+                {pendentesVPD > 0 && (
+                  <Badge variant="secondary" className="bg-purple-100 text-purple-700 dark:bg-purple-900/50 dark:text-purple-300 text-[10px] px-1.5">
+                    {pendentesVPD} VPD
+                  </Badge>
+                )}
+              </div>
+            </Button>
+          )}
         </div>
 
         {!selectedRecord ? (
@@ -1726,6 +1854,237 @@ export default function ComparacaoVPDs() {
               selectedNodeLevel={4} 
             />
           )}
+        </DialogContent>
+      </Dialog>
+
+      {/* Modal de Registros Pendentes de Cadastro */}
+      <Dialog open={isPendentesModalOpen} onOpenChange={setIsPendentesModalOpen}>
+        <DialogContent className="max-w-4xl max-h-[85vh] overflow-hidden flex flex-col">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              <ClipboardList className="h-5 w-5 text-orange-500" />
+              Registros Pendentes de Cadastro
+            </DialogTitle>
+            <DialogDescription>
+              Os registros abaixo foram identificados nos sistemas mas não possuem cadastro correspondente. 
+              Clique em "Ajustar" para realizar o cadastro.
+            </DialogDescription>
+          </DialogHeader>
+          
+          <div className="flex gap-4 mb-4">
+            <Badge variant="outline" className="border-blue-500 text-blue-700 dark:text-blue-400 flex items-center gap-1.5 px-3 py-1">
+              <Building2 className="h-3.5 w-3.5" />
+              {pendentesEP} Equipamentos Públicos (EP)
+            </Badge>
+            <Badge variant="outline" className="border-purple-500 text-purple-700 dark:text-purple-400 flex items-center gap-1.5 px-3 py-1">
+              <FileText className="h-3.5 w-3.5" />
+              {pendentesVPD} VPDs
+            </Badge>
+          </div>
+
+          <div className="flex-1 overflow-auto">
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead className="w-[80px]">Tipo</TableHead>
+                  <TableHead>Código</TableHead>
+                  <TableHead>Descrição</TableHead>
+                  <TableHead>Origem</TableHead>
+                  <TableHead className="text-right">Valor</TableHead>
+                  <TableHead>Data</TableHead>
+                  <TableHead>Status</TableHead>
+                  <TableHead className="text-right">Ações</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {registrosPendentes.map((registro) => (
+                  <TableRow key={registro.id}>
+                    <TableCell>
+                      <Badge 
+                        variant="secondary" 
+                        className={cn(
+                          "text-xs",
+                          registro.tipo === "EP" 
+                            ? "bg-blue-100 text-blue-700 dark:bg-blue-900/50 dark:text-blue-300" 
+                            : "bg-purple-100 text-purple-700 dark:bg-purple-900/50 dark:text-purple-300"
+                        )}
+                      >
+                        {registro.tipo}
+                      </Badge>
+                    </TableCell>
+                    <TableCell className="font-mono text-xs">{registro.codigo}</TableCell>
+                    <TableCell className="max-w-[200px] truncate" title={registro.descricao}>
+                      {registro.descricao}
+                    </TableCell>
+                    <TableCell className="text-xs text-muted-foreground">{registro.origem}</TableCell>
+                    <TableCell className="text-right font-semibold text-sm">
+                      {registro.valor > 0 ? formatCurrency(registro.valor) : "-"}
+                    </TableCell>
+                    <TableCell className="text-xs">{formatDate(registro.dataIdentificacao)}</TableCell>
+                    <TableCell>
+                      <Badge 
+                        variant="outline" 
+                        className={cn(
+                          "text-[10px]",
+                          registro.status === "em_analise" 
+                            ? "border-yellow-500 text-yellow-700 dark:text-yellow-400" 
+                            : "border-orange-500 text-orange-700 dark:text-orange-400"
+                        )}
+                      >
+                        {registro.status === "em_analise" ? "Em Análise" : "Pendente"}
+                      </Badge>
+                    </TableCell>
+                    <TableCell className="text-right">
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        className="gap-1.5"
+                        onClick={() => handleAbrirAjuste(registro)}
+                      >
+                        <ExternalLink className="h-3.5 w-3.5" />
+                        Ajustar
+                      </Button>
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </div>
+
+          <DialogFooter className="mt-4">
+            <Button variant="outline" onClick={() => setIsPendentesModalOpen(false)}>
+              Fechar
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* Modal de Ajuste de Cadastro */}
+      <Dialog open={isAjusteModalOpen} onOpenChange={setIsAjusteModalOpen}>
+        <DialogContent className="max-w-lg">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              {registroEmEdicao?.tipo === "EP" ? (
+                <Building2 className="h-5 w-5 text-blue-500" />
+              ) : (
+                <FileText className="h-5 w-5 text-purple-500" />
+              )}
+              Cadastrar {registroEmEdicao?.tipo === "EP" ? "Equipamento Público" : "VPD"}
+            </DialogTitle>
+            <DialogDescription>
+              Complete as informações abaixo para realizar o cadastro do registro pendente.
+            </DialogDescription>
+          </DialogHeader>
+
+          {registroEmEdicao && (
+            <div className="space-y-4">
+              <div className="p-3 bg-muted/50 rounded-lg space-y-2">
+                <div className="flex items-center justify-between">
+                  <span className="text-xs text-muted-foreground">Código</span>
+                  <span className="font-mono text-sm">{registroEmEdicao.codigo}</span>
+                </div>
+                <div className="flex items-center justify-between">
+                  <span className="text-xs text-muted-foreground">Origem</span>
+                  <span className="text-sm">{registroEmEdicao.origem}</span>
+                </div>
+                {registroEmEdicao.valor > 0 && (
+                  <div className="flex items-center justify-between">
+                    <span className="text-xs text-muted-foreground">Valor</span>
+                    <span className="text-sm font-semibold">{formatCurrency(registroEmEdicao.valor)}</span>
+                  </div>
+                )}
+              </div>
+
+              <div className="space-y-3">
+                <div className="space-y-2">
+                  <Label htmlFor="descricao">Descrição</Label>
+                  <Input 
+                    id="descricao" 
+                    defaultValue={registroEmEdicao.descricao}
+                    placeholder="Descrição do registro"
+                  />
+                </div>
+
+                {registroEmEdicao.tipo === "EP" ? (
+                  <>
+                    <div className="space-y-2">
+                      <Label htmlFor="endereco">Endereço</Label>
+                      <Input id="endereco" placeholder="Endereço do equipamento" />
+                    </div>
+                    <div className="grid grid-cols-2 gap-3">
+                      <div className="space-y-2">
+                        <Label htmlFor="tipo-ep">Tipo de EP</Label>
+                        <Select>
+                          <SelectTrigger id="tipo-ep">
+                            <SelectValue placeholder="Selecione" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="escola">Escola</SelectItem>
+                            <SelectItem value="saude">Unidade de Saúde</SelectItem>
+                            <SelectItem value="administrativo">Administrativo</SelectItem>
+                            <SelectItem value="lazer">Esporte/Lazer</SelectItem>
+                            <SelectItem value="outro">Outro</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
+                      <div className="space-y-2">
+                        <Label htmlFor="secretaria">Secretaria</Label>
+                        <Select>
+                          <SelectTrigger id="secretaria">
+                            <SelectValue placeholder="Selecione" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="educacao">Educação</SelectItem>
+                            <SelectItem value="saude">Saúde</SelectItem>
+                            <SelectItem value="urbanismo">Urbanismo</SelectItem>
+                            <SelectItem value="social">Assistência Social</SelectItem>
+                            <SelectItem value="outro">Outro</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
+                    </div>
+                  </>
+                ) : (
+                  <>
+                    <div className="space-y-2">
+                      <Label htmlFor="categoria">Categoria</Label>
+                      <Select>
+                        <SelectTrigger id="categoria">
+                          <SelectValue placeholder="Selecione a categoria" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="pessoal">Pessoal e Encargos</SelectItem>
+                          <SelectItem value="beneficios">Benefícios Previdenciários</SelectItem>
+                          <SelectItem value="manutencao">Manutenção e Operação</SelectItem>
+                          <SelectItem value="tributarias">Tributárias</SelectItem>
+                          <SelectItem value="outras">Outras VPDs</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="natureza">Natureza da Despesa</Label>
+                      <Input id="natureza" placeholder="Ex: 3.3.90.30.00" />
+                    </div>
+                  </>
+                )}
+
+                <div className="space-y-2">
+                  <Label htmlFor="observacao">Observação</Label>
+                  <Input id="observacao" placeholder="Observações adicionais (opcional)" />
+                </div>
+              </div>
+            </div>
+          )}
+
+          <DialogFooter className="gap-2 sm:gap-0">
+            <Button variant="outline" onClick={() => setIsAjusteModalOpen(false)}>
+              Cancelar
+            </Button>
+            <Button onClick={handleSalvarAjuste}>
+              <CheckCircle className="h-4 w-4 mr-2" />
+              Salvar Cadastro
+            </Button>
+          </DialogFooter>
         </DialogContent>
       </Dialog>
     </div>
