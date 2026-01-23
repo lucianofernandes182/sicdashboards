@@ -12,6 +12,8 @@ import { cn } from "@/lib/utils";
 import { AnalyticalGrid } from "@/components/dashboard/AnalyticalGrid";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { EPDynamicForm } from "@/components/dashboard/EPDynamicForm";
+import { ScrollArea } from "@/components/ui/scroll-area";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 
 interface VPDDetail {
@@ -1961,7 +1963,7 @@ export default function ComparacaoVPDs() {
 
       {/* Modal de Ajuste de Cadastro */}
       <Dialog open={isAjusteModalOpen} onOpenChange={setIsAjusteModalOpen}>
-        <DialogContent className="max-w-lg">
+        <DialogContent className="max-w-2xl max-h-[90vh] overflow-hidden flex flex-col">
           <DialogHeader>
             <DialogTitle className="flex items-center gap-2">
               {registroEmEdicao?.tipo === "EP" ? (
@@ -1977,8 +1979,9 @@ export default function ComparacaoVPDs() {
           </DialogHeader>
 
           {registroEmEdicao && (
-            <div className="space-y-4">
-              <div className="p-3 bg-muted/50 rounded-lg space-y-2">
+            <div className="flex-1 overflow-hidden flex flex-col space-y-4">
+              {/* Informações do registro pendente */}
+              <div className="p-3 bg-muted/50 rounded-lg space-y-2 flex-shrink-0">
                 <div className="flex items-center justify-between">
                   <span className="text-xs text-muted-foreground">Código</span>
                   <span className="font-mono text-sm">{registroEmEdicao.codigo}</span>
@@ -1995,57 +1998,23 @@ export default function ComparacaoVPDs() {
                 )}
               </div>
 
-              <div className="space-y-3">
-                <div className="space-y-2">
-                  <Label htmlFor="descricao">Descrição</Label>
-                  <Input 
-                    id="descricao" 
-                    defaultValue={registroEmEdicao.descricao}
-                    placeholder="Descrição do registro"
-                  />
-                </div>
-
+              {/* Formulário dinâmico baseado no tipo */}
+              <div className="flex-1 overflow-y-auto">
                 {registroEmEdicao.tipo === "EP" ? (
-                  <>
-                    <div className="space-y-2">
-                      <Label htmlFor="endereco">Endereço</Label>
-                      <Input id="endereco" placeholder="Endereço do equipamento" />
-                    </div>
-                    <div className="grid grid-cols-2 gap-3">
-                      <div className="space-y-2">
-                        <Label htmlFor="tipo-ep">Tipo de EP</Label>
-                        <Select>
-                          <SelectTrigger id="tipo-ep">
-                            <SelectValue placeholder="Selecione" />
-                          </SelectTrigger>
-                          <SelectContent>
-                            <SelectItem value="escola">Escola</SelectItem>
-                            <SelectItem value="saude">Unidade de Saúde</SelectItem>
-                            <SelectItem value="administrativo">Administrativo</SelectItem>
-                            <SelectItem value="lazer">Esporte/Lazer</SelectItem>
-                            <SelectItem value="outro">Outro</SelectItem>
-                          </SelectContent>
-                        </Select>
-                      </div>
-                      <div className="space-y-2">
-                        <Label htmlFor="secretaria">Secretaria</Label>
-                        <Select>
-                          <SelectTrigger id="secretaria">
-                            <SelectValue placeholder="Selecione" />
-                          </SelectTrigger>
-                          <SelectContent>
-                            <SelectItem value="educacao">Educação</SelectItem>
-                            <SelectItem value="saude">Saúde</SelectItem>
-                            <SelectItem value="urbanismo">Urbanismo</SelectItem>
-                            <SelectItem value="social">Assistência Social</SelectItem>
-                            <SelectItem value="outro">Outro</SelectItem>
-                          </SelectContent>
-                        </Select>
-                      </div>
-                    </div>
-                  </>
+                  <EPDynamicForm 
+                    defaultDescricao={registroEmEdicao.descricao}
+                    compact={true}
+                  />
                 ) : (
-                  <>
+                  <div className="space-y-3">
+                    <div className="space-y-2">
+                      <Label htmlFor="descricao">Descrição</Label>
+                      <Input 
+                        id="descricao" 
+                        defaultValue={registroEmEdicao.descricao}
+                        placeholder="Descrição do registro"
+                      />
+                    </div>
                     <div className="space-y-2">
                       <Label htmlFor="categoria">Categoria</Label>
                       <Select>
@@ -2065,18 +2034,17 @@ export default function ComparacaoVPDs() {
                       <Label htmlFor="natureza">Natureza da Despesa</Label>
                       <Input id="natureza" placeholder="Ex: 3.3.90.30.00" />
                     </div>
-                  </>
+                    <div className="space-y-2">
+                      <Label htmlFor="observacao">Observação</Label>
+                      <Input id="observacao" placeholder="Observações adicionais (opcional)" />
+                    </div>
+                  </div>
                 )}
-
-                <div className="space-y-2">
-                  <Label htmlFor="observacao">Observação</Label>
-                  <Input id="observacao" placeholder="Observações adicionais (opcional)" />
-                </div>
               </div>
             </div>
           )}
 
-          <DialogFooter className="gap-2 sm:gap-0">
+          <DialogFooter className="gap-2 sm:gap-0 flex-shrink-0 pt-4 border-t">
             <Button variant="outline" onClick={() => setIsAjusteModalOpen(false)}>
               Cancelar
             </Button>
