@@ -1832,7 +1832,7 @@ export default function ComparacaoVPDs() {
                 <div className="flex flex-col gap-1 mt-2">
                   <span className="font-mono text-sm">{selectedVPD.codigo}</span>
                   <span className="font-medium">{selectedVPD.descricao}</span>
-                  <div className="flex gap-4 mt-2">
+                  <div className="flex flex-wrap gap-2 mt-2">
                     <Badge variant="outline" className="text-xs">
                       CP: {formatCurrency(selectedVPD.valorCP)}
                     </Badge>
@@ -1842,6 +1842,19 @@ export default function ComparacaoVPDs() {
                     {hasDivergence(selectedVPD.valorCP, selectedVPD.valorSIC) && (
                       <Badge variant="destructive" className="text-xs">
                         Dif: {formatCurrency(Math.abs(selectedVPD.valorCP - selectedVPD.valorSIC))}
+                      </Badge>
+                    )}
+                    {/* Indicador de Pendentes */}
+                    {totalPendentes > 0 && (
+                      <Badge 
+                        variant="outline" 
+                        className="text-xs border-orange-500 text-orange-700 dark:text-orange-400 cursor-pointer hover:bg-orange-100 dark:hover:bg-orange-900/30 transition-colors gap-1"
+                        onClick={() => {
+                          setIsPendentesModalOpen(true);
+                        }}
+                      >
+                        <AlertCircle className="h-3 w-3" />
+                        {totalPendentes} pendente{totalPendentes > 1 ? 's' : ''}
                       </Badge>
                     )}
                   </div>
