@@ -1004,6 +1004,11 @@ export default function ComparacaoVPDs() {
                   {records.map((record) => {
                     const divOrganic = temDivergencia(record.modeloOrganico.totalVPDs, record.modeloOrganico.totalSIC);
                     const divProg = temDivergencia(record.modeloProgramatico.totalVPDs, record.modeloProgramatico.totalSIC);
+                    // Simular cadastros pendentes por registro (em produção, viria do backend)
+                    const pendentesDoRegistro = registrosPendentes.filter(r => 
+                      r.dataIdentificacao.includes(record.ano)
+                    );
+                    const temPendentes = pendentesDoRegistro.length > 0;
                     
                     return (
                       <TableRow key={record.id} className="cursor-pointer hover:bg-muted/50" onClick={() => setSelectedRecord(record)}>
@@ -1049,7 +1054,29 @@ export default function ComparacaoVPDs() {
                           </div>
                         </TableCell>
                         <TableCell>
-                          <Button variant="outline" size="sm">Ver Detalhes</Button>
+                          <div className="flex items-center gap-2">
+                            <Button variant="outline" size="sm">Ver Detalhes</Button>
+                            {temPendentes && (
+                              <Button
+                                variant="ghost"
+                                size="sm"
+                                className="text-orange-600 hover:text-orange-700 hover:bg-orange-50 dark:text-orange-400 dark:hover:bg-orange-950/30 p-1.5"
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  setIsPendentesModalOpen(true);
+                                }}
+                                title={`${pendentesDoRegistro.length} cadastro(s) pendente(s)`}
+                              >
+                                <AlertCircle className="h-4 w-4" />
+                                <Badge 
+                                  variant="secondary" 
+                                  className="ml-1 bg-orange-100 text-orange-700 dark:bg-orange-900/50 dark:text-orange-300 text-[10px] px-1.5 h-4 min-w-4"
+                                >
+                                  {pendentesDoRegistro.length}
+                                </Badge>
+                              </Button>
+                            )}
+                          </div>
                         </TableCell>
                       </TableRow>
                     );
