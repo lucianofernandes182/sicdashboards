@@ -681,30 +681,10 @@ export default function ComparacaoVPDs() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [modalExpandedNodes, setModalExpandedNodes] = useState<Set<string>>(new Set());
   
-  // Estados para modal de registros pendentes
-  const [registrosPendentes, setRegistrosPendentes] = useState<RegistroPendente[]>(mockRegistrosPendentes);
-  const [isPendentesModalOpen, setIsPendentesModalOpen] = useState(false);
-  const [registroEmEdicao, setRegistroEmEdicao] = useState<RegistroPendente | null>(null);
-  const [isAjusteModalOpen, setIsAjusteModalOpen] = useState(false);
+  // Estados para registros pendentes (apenas para contagem)
+  const [registrosPendentes] = useState<RegistroPendente[]>(mockRegistrosPendentes);
 
   const totalPendentes = registrosPendentes.length;
-  const pendentesEP = registrosPendentes.filter(r => r.tipo === "EP").length;
-  const pendentesVPD = registrosPendentes.filter(r => r.tipo === "VPD").length;
-
-  const handleAbrirAjuste = (registro: RegistroPendente) => {
-    setRegistroEmEdicao(registro);
-    setIsAjusteModalOpen(true);
-  };
-
-  const handleSalvarAjuste = () => {
-    if (registroEmEdicao) {
-      // Remove o registro da lista de pendentes (simulando cadastro concluído)
-      setRegistrosPendentes(prev => prev.filter(r => r.id !== registroEmEdicao.id));
-      toast.success(`Cadastro de ${registroEmEdicao.tipo === "EP" ? "Equipamento Público" : "VPD"} realizado com sucesso!`);
-      setIsAjusteModalOpen(false);
-      setRegistroEmEdicao(null);
-    }
-  };
 
   const formatDate = (dateStr: string) => {
     const date = new Date(dateStr);
@@ -1038,7 +1018,7 @@ export default function ComparacaoVPDs() {
                                 className="text-orange-600 hover:text-orange-700 hover:bg-orange-50 dark:text-orange-400 dark:hover:bg-orange-950/30 p-1.5"
                                 onClick={(e) => {
                                   e.stopPropagation();
-                                  setIsPendentesModalOpen(true);
+                                  navigate("/cadastros-pendentes");
                                 }}
                                 title={`${pendentesDoRegistro.length} cadastro(s) pendente(s)`}
                               >
@@ -1073,7 +1053,7 @@ export default function ComparacaoVPDs() {
                     <Badge 
                       variant="outline" 
                       className="text-xs border-orange-500 text-orange-700 dark:text-orange-400 cursor-pointer hover:bg-orange-100 dark:hover:bg-orange-900/30 transition-colors gap-1"
-                      onClick={() => setIsPendentesModalOpen(true)}
+                      onClick={() => navigate("/cadastros-pendentes")}
                     >
                       <AlertCircle className="h-3 w-3" />
                       {totalPendentes} pendente{totalPendentes > 1 ? 's' : ''}
@@ -1862,7 +1842,8 @@ export default function ComparacaoVPDs() {
                         variant="outline" 
                         className="text-xs border-orange-500 text-orange-700 dark:text-orange-400 cursor-pointer hover:bg-orange-100 dark:hover:bg-orange-900/30 transition-colors gap-1"
                         onClick={() => {
-                          setIsPendentesModalOpen(true);
+                          setIsModalOpen(false);
+                          navigate("/cadastros-pendentes");
                         }}
                       >
                         <AlertCircle className="h-3 w-3" />
@@ -1884,202 +1865,6 @@ export default function ComparacaoVPDs() {
         </DialogContent>
       </Dialog>
 
-      {/* Modal de Registros Pendentes de Cadastro */}
-      <Dialog open={isPendentesModalOpen} onOpenChange={setIsPendentesModalOpen}>
-        <DialogContent className="max-w-4xl max-h-[85vh] overflow-hidden flex flex-col">
-          <DialogHeader>
-            <DialogTitle className="flex items-center gap-2">
-              <ClipboardList className="h-5 w-5 text-orange-500" />
-              Registros Pendentes de Cadastro
-            </DialogTitle>
-            <DialogDescription>
-              Os registros abaixo foram identificados nos sistemas mas não possuem cadastro correspondente. 
-              Clique em "Ajustar" para realizar o cadastro.
-            </DialogDescription>
-          </DialogHeader>
-          
-          <div className="flex gap-4 mb-4">
-            <Badge variant="outline" className="border-blue-500 text-blue-700 dark:text-blue-400 flex items-center gap-1.5 px-3 py-1">
-              <Building2 className="h-3.5 w-3.5" />
-              {pendentesEP} Equipamentos Públicos (EP)
-            </Badge>
-            <Badge variant="outline" className="border-purple-500 text-purple-700 dark:text-purple-400 flex items-center gap-1.5 px-3 py-1">
-              <FileText className="h-3.5 w-3.5" />
-              {pendentesVPD} VPDs
-            </Badge>
-          </div>
-
-          <div className="flex-1 overflow-auto">
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead className="w-[80px]">Tipo</TableHead>
-                  <TableHead>Código</TableHead>
-                  <TableHead>Descrição</TableHead>
-                  <TableHead>Origem</TableHead>
-                  <TableHead className="text-right">Valor</TableHead>
-                  <TableHead>Data</TableHead>
-                  <TableHead>Status</TableHead>
-                  <TableHead className="text-right">Ações</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {registrosPendentes.map((registro) => (
-                  <TableRow key={registro.id}>
-                    <TableCell>
-                      <Badge 
-                        variant="secondary" 
-                        className={cn(
-                          "text-xs",
-                          registro.tipo === "EP" 
-                            ? "bg-blue-100 text-blue-700 dark:bg-blue-900/50 dark:text-blue-300" 
-                            : "bg-purple-100 text-purple-700 dark:bg-purple-900/50 dark:text-purple-300"
-                        )}
-                      >
-                        {registro.tipo}
-                      </Badge>
-                    </TableCell>
-                    <TableCell className="font-mono text-xs">{registro.codigo}</TableCell>
-                    <TableCell className="max-w-[200px] truncate" title={registro.descricao}>
-                      {registro.descricao}
-                    </TableCell>
-                    <TableCell className="text-xs text-muted-foreground">{registro.origem}</TableCell>
-                    <TableCell className="text-right font-semibold text-sm">
-                      {registro.valor > 0 ? formatCurrency(registro.valor) : "-"}
-                    </TableCell>
-                    <TableCell className="text-xs">{formatDate(registro.dataIdentificacao)}</TableCell>
-                    <TableCell>
-                      <Badge 
-                        variant="outline" 
-                        className={cn(
-                          "text-[10px]",
-                          registro.status === "em_analise" 
-                            ? "border-yellow-500 text-yellow-700 dark:text-yellow-400" 
-                            : "border-orange-500 text-orange-700 dark:text-orange-400"
-                        )}
-                      >
-                        {registro.status === "em_analise" ? "Em Análise" : "Pendente"}
-                      </Badge>
-                    </TableCell>
-                    <TableCell className="text-right">
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        className="gap-1.5"
-                        onClick={() => handleAbrirAjuste(registro)}
-                      >
-                        <ExternalLink className="h-3.5 w-3.5" />
-                        Ajustar
-                      </Button>
-                    </TableCell>
-                  </TableRow>
-                ))}
-              </TableBody>
-            </Table>
-          </div>
-
-          <DialogFooter className="mt-4">
-            <Button variant="outline" onClick={() => setIsPendentesModalOpen(false)}>
-              Fechar
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
-
-      {/* Modal de Ajuste de Cadastro */}
-      <Dialog open={isAjusteModalOpen} onOpenChange={setIsAjusteModalOpen}>
-        <DialogContent className="max-w-2xl max-h-[90vh] overflow-hidden flex flex-col">
-          <DialogHeader>
-            <DialogTitle className="flex items-center gap-2">
-              {registroEmEdicao?.tipo === "EP" ? (
-                <Building2 className="h-5 w-5 text-blue-500" />
-              ) : (
-                <FileText className="h-5 w-5 text-purple-500" />
-              )}
-              Cadastrar {registroEmEdicao?.tipo === "EP" ? "Equipamento Público" : "VPD"}
-            </DialogTitle>
-            <DialogDescription>
-              Complete as informações abaixo para realizar o cadastro do registro pendente.
-            </DialogDescription>
-          </DialogHeader>
-
-          {registroEmEdicao && (
-            <ScrollArea className="flex-1 max-h-[60vh]">
-              <div className="space-y-4 pr-4">
-                {/* Informações do registro pendente */}
-                <div className="p-3 bg-muted/50 rounded-lg space-y-2">
-                  <div className="flex items-center justify-between">
-                    <span className="text-xs text-muted-foreground">Código</span>
-                    <span className="font-mono text-sm">{registroEmEdicao.codigo}</span>
-                  </div>
-                  <div className="flex items-center justify-between">
-                    <span className="text-xs text-muted-foreground">Origem</span>
-                    <span className="text-sm">{registroEmEdicao.origem}</span>
-                  </div>
-                  {registroEmEdicao.valor > 0 && (
-                    <div className="flex items-center justify-between">
-                      <span className="text-xs text-muted-foreground">Valor</span>
-                      <span className="text-sm font-semibold">{formatCurrency(registroEmEdicao.valor)}</span>
-                    </div>
-                  )}
-                </div>
-
-                {/* Formulário dinâmico baseado no tipo */}
-                {registroEmEdicao.tipo === "EP" ? (
-                  <EPDynamicForm 
-                    defaultDescricao={registroEmEdicao.descricao}
-                    compact={true}
-                  />
-                ) : (
-                  <div className="space-y-3">
-                    <div className="space-y-2">
-                      <Label htmlFor="descricao">Descrição</Label>
-                      <Input 
-                        id="descricao" 
-                        defaultValue={registroEmEdicao.descricao}
-                        placeholder="Descrição do registro"
-                      />
-                    </div>
-                    <div className="space-y-2">
-                      <Label htmlFor="categoria">Categoria</Label>
-                      <Select>
-                        <SelectTrigger id="categoria">
-                          <SelectValue placeholder="Selecione a categoria" />
-                        </SelectTrigger>
-                        <SelectContent>
-                          <SelectItem value="pessoal">Pessoal e Encargos</SelectItem>
-                          <SelectItem value="beneficios">Benefícios Previdenciários</SelectItem>
-                          <SelectItem value="manutencao">Manutenção e Operação</SelectItem>
-                          <SelectItem value="tributarias">Tributárias</SelectItem>
-                          <SelectItem value="outras">Outras VPDs</SelectItem>
-                        </SelectContent>
-                      </Select>
-                    </div>
-                    <div className="space-y-2">
-                      <Label htmlFor="natureza">Natureza da Despesa</Label>
-                      <Input id="natureza" placeholder="Ex: 3.3.90.30.00" />
-                    </div>
-                    <div className="space-y-2">
-                      <Label htmlFor="observacao">Observação</Label>
-                      <Input id="observacao" placeholder="Observações adicionais (opcional)" />
-                    </div>
-                  </div>
-                )}
-              </div>
-            </ScrollArea>
-          )}
-
-          <DialogFooter className="gap-2 sm:gap-0 flex-shrink-0 pt-4 border-t">
-            <Button variant="outline" onClick={() => setIsAjusteModalOpen(false)}>
-              Cancelar
-            </Button>
-            <Button onClick={handleSalvarAjuste}>
-              <CheckCircle className="h-4 w-4 mr-2" />
-              Salvar Cadastro
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
     </div>
   );
 }

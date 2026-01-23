@@ -11,6 +11,7 @@ import DeParaMapping from "./pages/DeParaMapping";
 import DeParaMappingList from "./pages/DeParaMappingList";
 import EquipamentosPublicos from "./pages/EquipamentosPublicos";
 import ComparacaoVPDs from "./pages/ComparacaoVPDs";
+import CadastrosPendentes from "./pages/CadastrosPendentes";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -30,6 +31,7 @@ const App = () => (
           <Route path="/de-para/:id" element={<DeParaMapping />} />
           <Route path="/equipamentos-publicos" element={<EquipamentosPublicos />} />
           <Route path="/comparacao-vpds" element={<ComparacaoVPDs />} />
+          <Route path="/cadastros-pendentes" element={<CadastrosPendentes />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>
