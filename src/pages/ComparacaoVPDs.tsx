@@ -954,33 +954,6 @@ export default function ComparacaoVPDs() {
               <p className="text-muted-foreground">Conciliação bancária - Validação de registros mensais entre sistemas</p>
             </div>
           </div>
-          
-          {/* Indicador de Registros Pendentes de Cadastro */}
-          {totalPendentes > 0 && (
-            <Button
-              variant="outline"
-              className="border-orange-500 text-orange-700 dark:text-orange-400 hover:bg-orange-50 dark:hover:bg-orange-950/30 gap-2"
-              onClick={() => setIsPendentesModalOpen(true)}
-            >
-              <AlertCircle className="h-4 w-4" />
-              <span className="font-semibold">{totalPendentes}</span>
-              <span className="hidden sm:inline">
-                {totalPendentes === 1 ? 'Cadastro Pendente' : 'Cadastros Pendentes'}
-              </span>
-              <div className="flex gap-1 ml-1">
-                {pendentesEP > 0 && (
-                  <Badge variant="secondary" className="bg-blue-100 text-blue-700 dark:bg-blue-900/50 dark:text-blue-300 text-[10px] px-1.5">
-                    {pendentesEP} EP
-                  </Badge>
-                )}
-                {pendentesVPD > 0 && (
-                  <Badge variant="secondary" className="bg-purple-100 text-purple-700 dark:bg-purple-900/50 dark:text-purple-300 text-[10px] px-1.5">
-                    {pendentesVPD} VPD
-                  </Badge>
-                )}
-              </div>
-            </Button>
-          )}
         </div>
 
         {!selectedRecord ? (
