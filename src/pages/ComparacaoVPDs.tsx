@@ -1979,27 +1979,27 @@ export default function ComparacaoVPDs() {
           </DialogHeader>
 
           {registroEmEdicao && (
-            <div className="flex-1 overflow-hidden flex flex-col space-y-4">
-              {/* Informações do registro pendente */}
-              <div className="p-3 bg-muted/50 rounded-lg space-y-2 flex-shrink-0">
-                <div className="flex items-center justify-between">
-                  <span className="text-xs text-muted-foreground">Código</span>
-                  <span className="font-mono text-sm">{registroEmEdicao.codigo}</span>
-                </div>
-                <div className="flex items-center justify-between">
-                  <span className="text-xs text-muted-foreground">Origem</span>
-                  <span className="text-sm">{registroEmEdicao.origem}</span>
-                </div>
-                {registroEmEdicao.valor > 0 && (
+            <ScrollArea className="flex-1 max-h-[60vh]">
+              <div className="space-y-4 pr-4">
+                {/* Informações do registro pendente */}
+                <div className="p-3 bg-muted/50 rounded-lg space-y-2">
                   <div className="flex items-center justify-between">
-                    <span className="text-xs text-muted-foreground">Valor</span>
-                    <span className="text-sm font-semibold">{formatCurrency(registroEmEdicao.valor)}</span>
+                    <span className="text-xs text-muted-foreground">Código</span>
+                    <span className="font-mono text-sm">{registroEmEdicao.codigo}</span>
                   </div>
-                )}
-              </div>
+                  <div className="flex items-center justify-between">
+                    <span className="text-xs text-muted-foreground">Origem</span>
+                    <span className="text-sm">{registroEmEdicao.origem}</span>
+                  </div>
+                  {registroEmEdicao.valor > 0 && (
+                    <div className="flex items-center justify-between">
+                      <span className="text-xs text-muted-foreground">Valor</span>
+                      <span className="text-sm font-semibold">{formatCurrency(registroEmEdicao.valor)}</span>
+                    </div>
+                  )}
+                </div>
 
-              {/* Formulário dinâmico baseado no tipo */}
-              <div className="flex-1 overflow-y-auto">
+                {/* Formulário dinâmico baseado no tipo */}
                 {registroEmEdicao.tipo === "EP" ? (
                   <EPDynamicForm 
                     defaultDescricao={registroEmEdicao.descricao}
@@ -2041,7 +2041,7 @@ export default function ComparacaoVPDs() {
                   </div>
                 )}
               </div>
-            </div>
+            </ScrollArea>
           )}
 
           <DialogFooter className="gap-2 sm:gap-0 flex-shrink-0 pt-4 border-t">
