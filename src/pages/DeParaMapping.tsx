@@ -8,6 +8,26 @@ import { Label } from "@/components/ui/label";
 import { ArrowLeft, Database, FileJson, ArrowLeftRight, Plus, Trash2 } from "lucide-react";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 
+// Estrutura de regras de mapeamento DE/PARA
+type SourceCondition = {
+  id: string;
+  field: string;
+  value: string;
+};
+
+type TargetCondition = {
+  id: string;
+  field: string;
+  value: string;
+};
+
+type MappingRule = {
+  id: string;
+  sourceConditions: SourceCondition[];
+  targetConditions: TargetCondition[];
+  transformation: string;
+};
+
 const DeParaMapping = () => {
   const navigate = useNavigate();
   const { id } = useParams<{ id: string }>();
@@ -15,29 +35,8 @@ const DeParaMapping = () => {
   const [selectedFile, setSelectedFile] = useState<string>("");
   const [selectedVersion, setSelectedVersion] = useState<string>("");
   const [savedMappings, setSavedMappings] = useState<MappingRule[]>([]);
-  const isNewConfig = id === "new";
-  
-  // Estrutura de regras de mapeamento DE/PARA
-  type SourceCondition = {
-    id: string;
-    field: string;
-    value: string;
-  };
-
-  type TargetCondition = {
-    id: string;
-    field: string;
-    value: string;
-  };
-
-  type MappingRule = {
-    id: string;
-    sourceConditions: SourceCondition[];
-    targetConditions: TargetCondition[];
-    transformation: string;
-  };
-  
   const [mappingRules, setMappingRules] = useState<MappingRule[]>([]);
+  const isNewConfig = id === "new";
   
   // Campos padronizados do SIC (PARA)
   const sicFields = [
