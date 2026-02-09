@@ -8,7 +8,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { ArrowLeft, Building2, FileJson, Save, Plus, Edit, Trash2, Link2 } from "lucide-react";
+import { ArrowLeft, Building2, FileJson, Save, Plus, Edit, Trash2, Link2, Layers } from "lucide-react";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
@@ -58,6 +58,15 @@ interface EquipamentoAssociado {
   descricao: string;
 }
 
+interface Acumulador {
+  id: string;
+  Modelo: string;
+  Funcao: string;
+  ObjetoDeCustos: string;
+  UnidadeDeCustos: string;
+  CentroDeCustos: string;
+}
+
 const EquipamentosPublicos = () => {
   const navigate = useNavigate();
   const [view, setView] = useState<"list" | "form">("list");
@@ -69,6 +78,12 @@ const EquipamentosPublicos = () => {
   const [selectedAssociationSystem, setSelectedAssociationSystem] = useState<string>("");
   const [searchEquipamento, setSearchEquipamento] = useState<string>("");
   const [associations, setAssociations] = useState<Record<string, EquipamentoAssociado[]>>({});
+  const [acumuladoresDialogOpen, setAcumuladoresDialogOpen] = useState(false);
+  const [acumuladoresEquipamento, setAcumuladoresEquipamento] = useState<EquipamentoFormValues | null>(null);
+  const [acumuladores, setAcumuladores] = useState<Record<string, Acumulador[]>>({});
+  const [novoAcumulador, setNovoAcumulador] = useState<Omit<Acumulador, "id">>({
+    Modelo: "", Funcao: "", ObjetoDeCustos: "", UnidadeDeCustos: "", CentroDeCustos: "",
+  });
 
   // Mock data - Replace with actual API calls to MongoDB
   const schemas = [
@@ -287,6 +302,36 @@ const EquipamentosPublicos = () => {
     return (associations[numeroControle] || []).length;
   };
 
+  const handleOpenAcumuladores = (equipamento: EquipamentoFormValues) => {
+    setAcumuladoresEquipamento(equipamento);
+    setNovoAcumulador({ Modelo: "", Funcao: "", ObjetoDeCustos: "", UnidadeDeCustos: "", CentroDeCustos: "" });
+    setAcumuladoresDialogOpen(true);
+  };
+
+  const handleAddAcumulador = () => {
+    if (!acumuladoresEquipamento) return;
+    if (!novoAcumulador.Modelo || !novoAcumulador.Funcao || !novoAcumulador.ObjetoDeCustos || !novoAcumulador.UnidadeDeCustos || !novoAcumulador.CentroDeCustos) {
+      toast.error("Preencha todos os campos do acumulador.");
+      return;
+    }
+    const key = acumuladoresEquipamento.NumeroControle;
+    const newAcumulador: Acumulador = { ...novoAcumulador, id: crypto.randomUUID() };
+    setAcumuladores((prev) => ({ ...prev, [key]: [...(prev[key] || []), newAcumulador] }));
+    setNovoAcumulador({ Modelo: "", Funcao: "", ObjetoDeCustos: "", UnidadeDeCustos: "", CentroDeCustos: "" });
+    toast.success("Acumulador adicionado!");
+  };
+
+  const handleDeleteAcumulador = (acumuladorId: string) => {
+    if (!acumuladoresEquipamento) return;
+    const key = acumuladoresEquipamento.NumeroControle;
+    setAcumuladores((prev) => ({ ...prev, [key]: (prev[key] || []).filter((a) => a.id !== acumuladorId) }));
+    toast.success("Acumulador removido!");
+  };
+
+  const getAcumuladoresCount = (numeroControle: string): number => {
+    return (acumuladores[numeroControle] || []).length;
+  };
+
   const handleSchemaChange = (value: string) => {
     const schema = schemas.find((s) => s.id === value);
     if (schema) {
@@ -392,6 +437,22 @@ const EquipamentosPublicos = () => {
                                 <Button
                                   variant="ghost"
                                   size="icon"
+                                  onClick={() => handleOpenAcumuladores(equipamento)}
+                                  title="Acumuladores"
+                                >
+                                  <Layers className="h-4 w-4" />
+                                  {getAcumuladoresCount(equipamento.NumeroControle) > 0 && (
+                                    <Badge 
+                                      variant="secondary" 
+                                      className="ml-1 h-4 w-4 p-0 flex items-center justify-center text-[10px]"
+                                    >
+                                      {getAcumuladoresCount(equipamento.NumeroControle)}
+                                    </Badge>
+                                  )}
+                                </Button>
+                                <Button
+                                  variant="ghost"
+                                  size="icon"
                                   onClick={() => handleEdit(equipamento)}
                                   title="Editar"
                                 >
@@ -446,7 +507,7 @@ const EquipamentosPublicos = () => {
                           <div><span className="font-medium">Tipo:</span> {equipamento.Tipo}</div>
                           <div className="truncate"><span className="font-medium">Responsabilidade:</span> {equipamento.CentroDeResponsabilidade}</div>
                         </div>
-                        <div className="grid grid-cols-3 gap-2 border-t pt-3">
+                        <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 border-t pt-3">
                           <Button
                             variant="outline"
                             onClick={() => handleOpenAssociations(equipamento)}
@@ -460,6 +521,22 @@ const EquipamentosPublicos = () => {
                                 className="h-5 min-w-5 p-0 flex items-center justify-center text-[10px]"
                               >
                                 {getAssociationsCount(equipamento.NumeroControle)}
+                              </Badge>
+                            )}
+                          </Button>
+                          <Button
+                            variant="outline"
+                            onClick={() => handleOpenAcumuladores(equipamento)}
+                            className="h-11 flex items-center justify-center gap-1.5"
+                          >
+                            <Layers className="h-5 w-5" />
+                            <span className="text-xs">Acumul.</span>
+                            {getAcumuladoresCount(equipamento.NumeroControle) > 0 && (
+                              <Badge 
+                                variant="secondary" 
+                                className="h-5 min-w-5 p-0 flex items-center justify-center text-[10px]"
+                              >
+                                {getAcumuladoresCount(equipamento.NumeroControle)}
                               </Badge>
                             )}
                           </Button>
@@ -1191,6 +1268,145 @@ const EquipamentosPublicos = () => {
               </Button>
             </div>
           </div>
+        </DialogContent>
+      </Dialog>
+
+      {/* Acumuladores Dialog */}
+      <Dialog open={acumuladoresDialogOpen} onOpenChange={setAcumuladoresDialogOpen}>
+        <DialogContent className="max-w-[95vw] sm:max-w-4xl max-h-[85vh] overflow-y-auto p-4 sm:p-6">
+          <DialogHeader>
+            <DialogTitle className="text-base sm:text-lg">Acumuladores do Equipamento Público</DialogTitle>
+            <DialogDescription className="text-xs sm:text-sm">
+              Gerencie os acumuladores associados a este equipamento
+            </DialogDescription>
+          </DialogHeader>
+
+          {acumuladoresEquipamento && (
+            <div className="space-y-4 sm:space-y-6">
+              {/* Equipment Info */}
+              <div className="rounded-md border">
+                <Table>
+                  <TableBody>
+                    <TableRow>
+                      <TableCell className="font-medium text-muted-foreground w-[200px]">Código do Equipamento</TableCell>
+                      <TableCell>{acumuladoresEquipamento.UG}</TableCell>
+                    </TableRow>
+                    <TableRow>
+                      <TableCell className="font-medium text-muted-foreground">Descrição</TableCell>
+                      <TableCell>{acumuladoresEquipamento.Descricao}</TableCell>
+                    </TableRow>
+                  </TableBody>
+                </Table>
+              </div>
+
+              {/* Add new acumulador */}
+              <div className="space-y-3">
+                <h4 className="text-sm font-semibold">Adicionar Acumulador</h4>
+                <div className="grid grid-cols-2 sm:grid-cols-5 gap-2">
+                  <div className="space-y-1">
+                    <Label className="text-xs">Modelo</Label>
+                    <Input
+                      value={novoAcumulador.Modelo}
+                      onChange={(e) => setNovoAcumulador((p) => ({ ...p, Modelo: e.target.value }))}
+                      className="text-xs h-8"
+                      placeholder="Ex: 1"
+                    />
+                  </div>
+                  <div className="space-y-1">
+                    <Label className="text-xs">Função</Label>
+                    <Input
+                      value={novoAcumulador.Funcao}
+                      onChange={(e) => setNovoAcumulador((p) => ({ ...p, Funcao: e.target.value }))}
+                      className="text-xs h-8"
+                      placeholder="Ex: 02"
+                    />
+                  </div>
+                  <div className="space-y-1">
+                    <Label className="text-xs">Objeto de Custos</Label>
+                    <Input
+                      value={novoAcumulador.ObjetoDeCustos}
+                      onChange={(e) => setNovoAcumulador((p) => ({ ...p, ObjetoDeCustos: e.target.value }))}
+                      className="text-xs h-8"
+                      placeholder="Ex: 001"
+                    />
+                  </div>
+                  <div className="space-y-1">
+                    <Label className="text-xs">Unidade de Custos</Label>
+                    <Input
+                      value={novoAcumulador.UnidadeDeCustos}
+                      onChange={(e) => setNovoAcumulador((p) => ({ ...p, UnidadeDeCustos: e.target.value }))}
+                      className="text-xs h-8"
+                      placeholder="Ex: 001"
+                    />
+                  </div>
+                  <div className="space-y-1">
+                    <Label className="text-xs">Centro de Custos</Label>
+                    <Input
+                      value={novoAcumulador.CentroDeCustos}
+                      onChange={(e) => setNovoAcumulador((p) => ({ ...p, CentroDeCustos: e.target.value }))}
+                      className="text-xs h-8"
+                      placeholder="Ex: 006"
+                    />
+                  </div>
+                </div>
+                <Button onClick={handleAddAcumulador} size="sm" className="text-xs">
+                  <Plus className="h-3 w-3 mr-1" />
+                  Adicionar
+                </Button>
+              </div>
+
+              {/* Acumuladores Table */}
+              <div className="rounded-md border">
+                <Table>
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead className="text-xs">Modelo</TableHead>
+                      <TableHead className="text-xs">Função</TableHead>
+                      <TableHead className="text-xs">Objeto de Custos</TableHead>
+                      <TableHead className="text-xs">Unidade de Custos</TableHead>
+                      <TableHead className="text-xs">Centro de Custos</TableHead>
+                      <TableHead className="text-xs text-right">Ações</TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {(acumuladores[acumuladoresEquipamento.NumeroControle] || []).length === 0 ? (
+                      <TableRow>
+                        <TableCell colSpan={6} className="text-center text-muted-foreground py-6 text-xs">
+                          Nenhum acumulador cadastrado para este equipamento.
+                        </TableCell>
+                      </TableRow>
+                    ) : (
+                      (acumuladores[acumuladoresEquipamento.NumeroControle] || []).map((acumulador) => (
+                        <TableRow key={acumulador.id}>
+                          <TableCell className="text-xs">{acumulador.Modelo}</TableCell>
+                          <TableCell className="text-xs">{acumulador.Funcao}</TableCell>
+                          <TableCell className="text-xs">{acumulador.ObjetoDeCustos}</TableCell>
+                          <TableCell className="text-xs">{acumulador.UnidadeDeCustos}</TableCell>
+                          <TableCell className="text-xs">{acumulador.CentroDeCustos}</TableCell>
+                          <TableCell className="text-right">
+                            <Button
+                              variant="ghost"
+                              size="icon"
+                              onClick={() => handleDeleteAcumulador(acumulador.id)}
+                              className="h-7 w-7"
+                            >
+                              <Trash2 className="h-3 w-3" />
+                            </Button>
+                          </TableCell>
+                        </TableRow>
+                      ))
+                    )}
+                  </TableBody>
+                </Table>
+              </div>
+
+              <div className="flex justify-end">
+                <Button variant="outline" onClick={() => setAcumuladoresDialogOpen(false)} size="sm" className="text-xs sm:text-sm">
+                  Fechar
+                </Button>
+              </div>
+            </div>
+          )}
         </DialogContent>
       </Dialog>
     </div>
