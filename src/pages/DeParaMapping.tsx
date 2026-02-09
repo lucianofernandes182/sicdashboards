@@ -5,7 +5,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { ArrowLeft, Database, FileJson, ArrowLeftRight, Plus, Trash2 } from "lucide-react";
+import { ArrowLeft, Database, FileJson, ArrowLeftRight, Plus, Trash2, Pencil } from "lucide-react";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 
 // Estrutura de regras de mapeamento DE/PARA
@@ -265,8 +265,51 @@ const DeParaMapping = () => {
       version: selectedVersion,
       rules: mappingRules,
     });
-    setSavedMappings(mappingRules);
+    setSavedMappings([...mappingRules]);
+    setMappingRules([]);
     // TODO: Implement API call to save mappings to MongoDB
+  };
+
+  const handleEditSavedRule = (rule: MappingRule) => {
+    // Remove from saved and add to editing area
+    setSavedMappings((prev) => prev.filter((r) => r.id !== rule.id));
+    setMappingRules((prev) => [...prev, rule]);
+  };
+
+  const handleDeleteSavedRule = (ruleId: string) => {
+    setSavedMappings((prev) => prev.filter((r) => r.id !== ruleId));
+  };
+
+  const getTransformationPreview = (rule: MappingRule) => {
+    const transformation = rule.transformation;
+    if (transformation === "none") return null;
+
+    // Build example from source values
+    const sourceExample = rule.sourceConditions
+      .map((c) => c.value)
+      .filter(Boolean)
+      .join(", ");
+    
+    const example = sourceExample || "exemplo";
+
+    switch (transformation) {
+      case "uppercase":
+        return { label: "MAIÚSCULAS", before: example, after: example.toUpperCase() };
+      case "lowercase":
+        return { label: "minúsculas", before: example, after: example.toLowerCase() };
+      case "trim":
+        return { label: "Remover espaços", before: `" ${example} "`, after: example.trim() };
+      case "number":
+        return { label: "Número", before: example, after: Number(example) ? Number(example).toLocaleString("pt-BR") : "0" };
+      case "date":
+        return { label: "Data", before: example, after: "dd/mm/aaaa" };
+      case "currency":
+        return { label: "Moeda", before: example, after: `R$ ${Number(example) ? Number(example).toLocaleString("pt-BR", { minimumFractionDigits: 2 }) : "0,00"}` };
+      case "zerofill":
+        return { label: "Zeros à esquerda", before: example, after: example.padStart(10, "0") };
+      default:
+        return null;
+    }
   };
 
   return (
@@ -660,10 +703,13 @@ const DeParaMapping = () => {
                       <TableHead>Condições Origem (DE)</TableHead>
                       <TableHead>Campos SIC (PARA)</TableHead>
                       <TableHead>Transformação</TableHead>
+                      <TableHead className="text-right">Ações</TableHead>
                     </TableRow>
                   </TableHeader>
                   <TableBody>
-                    {savedMappings.map((rule, index) => (
+                    {savedMappings.map((rule, index) => {
+                      const preview = getTransformationPreview(rule);
+                      return (
                       <TableRow key={rule.id}>
                         <TableCell className="font-medium align-top">{index + 1}</TableCell>
                         <TableCell>
@@ -725,12 +771,48 @@ const DeParaMapping = () => {
                           </div>
                         </TableCell>
                         <TableCell className="align-top">
-                          <span className="text-sm text-muted-foreground">
-                            {rule.transformation === "none" ? "-" : rule.transformation}
-                          </span>
+                          {preview ? (
+                            <div className="space-y-1">
+                              <span className="text-xs font-semibold px-2 py-0.5 bg-blue-100 dark:bg-blue-900 text-blue-900 dark:text-blue-100 rounded">
+                                {preview.label}
+                              </span>
+                              <div className="flex items-center gap-2 mt-1">
+                                <span className="font-mono text-xs text-muted-foreground line-through">
+                                  {preview.before}
+                                </span>
+                                <span className="text-xs">→</span>
+                                <span className="font-mono text-xs font-semibold text-foreground">
+                                  {preview.after}
+                                </span>
+                              </div>
+                            </div>
+                          ) : (
+                            <span className="text-sm text-muted-foreground">-</span>
+                          )}
+                        </TableCell>
+                        <TableCell className="align-top text-right">
+                          <div className="flex justify-end gap-1">
+                            <Button
+                              variant="ghost"
+                              size="icon"
+                              onClick={() => handleEditSavedRule(rule)}
+                              title="Editar regra"
+                            >
+                              <Pencil className="h-4 w-4" />
+                            </Button>
+                            <Button
+                              variant="ghost"
+                              size="icon"
+                              onClick={() => handleDeleteSavedRule(rule.id)}
+                              title="Excluir regra"
+                            >
+                              <Trash2 className="h-4 w-4 text-destructive" />
+                            </Button>
+                          </div>
                         </TableCell>
                       </TableRow>
-                    ))}
+                      );
+                    })}
                   </TableBody>
                 </Table>
               </CardContent>
