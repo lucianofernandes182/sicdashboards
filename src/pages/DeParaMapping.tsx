@@ -61,49 +61,41 @@ const DeParaMapping = () => {
 
   const filesBySystem: Record<string, Array<{ id: string; name: string; versions: string[] }>> = {
     smarcp: [
-      { id: "schema1", name: "Schema Orçamentário", versions: ["v1.2.0", "v1.1.5", "v1.0.0"] },
-      { id: "schema2", name: "Schema Financeiro", versions: ["v1.0.5", "v1.0.2"] },
+      { id: "contabilizacao_organica", name: "Contabilização Orgânica", versions: ["v1.2.0", "v1.1.5", "v1.0.0"] },
+      { id: "contabilizacao_programatica", name: "Contabilização Programática", versions: ["v1.2.0", "v1.1.0"] },
     ],
     sistema2: [
-      { id: "schema3", name: "Schema Receitas", versions: ["v2.1.0", "v2.0.8"] },
+      { id: "contabilizacao_organica", name: "Contabilização Orgânica", versions: ["v2.1.0", "v2.0.8"] },
+      { id: "contabilizacao_programatica", name: "Contabilização Programática", versions: ["v2.1.0", "v2.0.5"] },
     ],
     sistema3: [
-      { id: "schema4", name: "Schema Despesas", versions: ["v1.5.2", "v1.4.9", "v1.3.0"] },
+      { id: "contabilizacao_organica", name: "Contabilização Orgânica", versions: ["v1.5.2", "v1.4.9"] },
+      { id: "contabilizacao_programatica", name: "Contabilização Programática", versions: ["v1.5.2", "v1.3.0"] },
     ],
   };
 
-  // Campos dos sistemas de origem (DE)
+  // Campos dos sistemas de origem (DE) - diferenciados por tipo de contabilização
   const schemaFields: Record<string, Array<{ field: string; type: string; description: string }>> = {
-    schema1: [
+    contabilizacao_organica: [
+      { field: "poder", type: "string", description: "Poder" },
+      { field: "orgao", type: "string", description: "Órgão" },
+      { field: "unidade_orcamentaria", type: "string", description: "Unidade Orçamentária" },
+      { field: "unidade_gestora", type: "string", description: "Unidade Gestora" },
       { field: "entidade", type: "string", description: "Entidade" },
-      { field: "unio_orcamentaria_1nivel", type: "string", description: "Unidade Orçamentária (1º Nível)" },
-      { field: "unio_orcamentaria_2nivel", type: "string", description: "Unidade Orçamentária (2º Nível)" },
       { field: "unidade_executora", type: "string", description: "Unidade Executora" },
       { field: "ep_ligada_uoiue", type: "string", description: "EP ligada a UOIUE" },
       { field: "unidade_custos_ep", type: "string", description: "Unidade de Custos EP" },
       { field: "centro_custos_ep", type: "string", description: "Centro de Custos EP" },
+    ],
+    contabilizacao_programatica: [
       { field: "funcao", type: "string", description: "Função" },
-      { field: "subfuncao", type: "string", description: "SubFunção" },
+      { field: "subfuncao", type: "string", description: "Subfunção" },
       { field: "programa", type: "string", description: "Programa" },
       { field: "acao", type: "string", description: "Ação" },
-    ],
-    schema2: [
-      { field: "codigo_unidade", type: "string", description: "Código da Unidade" },
-      { field: "descricao_unidade", type: "string", description: "Descrição da Unidade" },
-      { field: "codigo_funcao", type: "string", description: "Código da Função" },
-      { field: "valor_orcado", type: "number", description: "Valor Orçado" },
-    ],
-    schema3: [
-      { field: "orgao", type: "string", description: "Órgão" },
-      { field: "unidade_gestora", type: "string", description: "Unidade Gestora" },
-      { field: "funcao_governo", type: "string", description: "Função de Governo" },
-      { field: "acao_orcamentaria", type: "string", description: "Ação Orçamentária" },
-    ],
-    schema4: [
-      { field: "codigo_despesa", type: "string", description: "Código da Despesa" },
-      { field: "elemento_despesa", type: "string", description: "Elemento de Despesa" },
-      { field: "valor_empenhado", type: "number", description: "Valor Empenhado" },
-      { field: "data_empenho", type: "date", description: "Data do Empenho" },
+      { field: "plano_orcamentario", type: "string", description: "Plano Orçamentário" },
+      { field: "natureza_despesa", type: "string", description: "Natureza da Despesa" },
+      { field: "fonte_recurso", type: "string", description: "Fonte de Recurso" },
+      { field: "identificador_uso", type: "string", description: "Identificador de Uso" },
     ],
   };
 
@@ -237,7 +229,7 @@ const DeParaMapping = () => {
       // Mock data - Replace with actual API call
       // Simulate loading existing configuration
       setSelectedSystem("smarcp");
-      setSelectedFile("schema1");
+      setSelectedFile("contabilizacao_organica");
       setSelectedVersion("v1.2.0");
       
       const mockRules: MappingRule[] = [
@@ -245,7 +237,7 @@ const DeParaMapping = () => {
           id: "rule-1",
           sourceConditions: [
             { id: "cond-1", field: "entidade", value: "214" },
-            { id: "cond-2", field: "funcao", value: "12" }
+            { id: "cond-2", field: "orgao", value: "12" }
           ],
           targetConditions: [
             { id: "target-1", field: "modelo", value: "1" }
