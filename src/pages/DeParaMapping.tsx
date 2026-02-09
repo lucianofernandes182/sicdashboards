@@ -5,7 +5,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { ArrowLeft, Database, FileJson, ArrowLeftRight, Plus, Trash2, Pencil } from "lucide-react";
+import { ArrowLeft, Database, FileJson, ArrowLeftRight, Plus, Trash2, Pencil, Info, Link2 } from "lucide-react";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 
 // Estrutura de regras de mapeamento DE/PARA
@@ -326,64 +326,57 @@ const DeParaMapping = () => {
 
       <main className="container mx-auto px-4 py-8">
         <div className="grid gap-6">
-          {/* System and Schema Selection - Side by Side */}
-          <div className="grid md:grid-cols-2 gap-6">
-            {/* System Selection */}
-            <Card>
+          {/* System and Schema Selection */}
+          <Card>
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
                 <Database className="h-5 w-5" />
-                DE - Sistema Origem
+                Configuração de Origem
               </CardTitle>
               <CardDescription>
-                Escolha o sistema que fornece os dados a serem transformados
+                Selecione o sistema de origem e o schema de contabilização para configurar o mapeamento
               </CardDescription>
             </CardHeader>
             <CardContent>
-              <Select value={selectedSystem} onValueChange={(value) => {
-                setSelectedSystem(value);
-                setSelectedFile("");
-                setSelectedVersion("");
-                setMappingRules([]);
-                setSavedMappings([]);
-              }}>
-                <SelectTrigger>
-                  <SelectValue placeholder="Selecione um sistema..." />
-                </SelectTrigger>
-                <SelectContent>
-                  {systems.map((system) => (
-                    <SelectItem key={system.id} value={system.id}>
-                      {system.name}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </CardContent>
-          </Card>
-
-            {/* File Selection */}
-            {selectedSystem && (
-              <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <FileJson className="h-5 w-5" />
-                  Schema de Dados
-                </CardTitle>
-                <CardDescription>
-                  Escolha o schema e a versão dos campos de origem a serem mapeados
-                </CardDescription>
-              </CardHeader>
-              <CardContent className="space-y-4">
+              <div className="grid md:grid-cols-3 gap-6">
+                {/* System Selection */}
                 <div className="space-y-2">
-                  <Label>Schema</Label>
-                  <Select value={selectedFile} onValueChange={(value) => {
-                    setSelectedFile(value);
+                  <Label className="font-medium">Sistema de Origem</Label>
+                  <Select value={selectedSystem} onValueChange={(value) => {
+                    setSelectedSystem(value);
+                    setSelectedFile("");
                     setSelectedVersion("");
                     setMappingRules([]);
                     setSavedMappings([]);
                   }}>
                     <SelectTrigger>
-                      <SelectValue placeholder="Selecione um schema..." />
+                      <SelectValue placeholder="Selecione um sistema..." />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {systems.map((system) => (
+                        <SelectItem key={system.id} value={system.id}>
+                          {system.name}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+
+                {/* Schema Selection */}
+                <div className="space-y-2">
+                  <Label className="font-medium">Schema</Label>
+                  <Select 
+                    value={selectedFile} 
+                    disabled={!selectedSystem}
+                    onValueChange={(value) => {
+                      setSelectedFile(value);
+                      setSelectedVersion("");
+                      setMappingRules([]);
+                      setSavedMappings([]);
+                    }}
+                  >
+                    <SelectTrigger>
+                      <SelectValue placeholder={selectedSystem ? "Selecione um schema..." : "Selecione o sistema primeiro"} />
                     </SelectTrigger>
                     <SelectContent>
                       {filesBySystem[selectedSystem]?.map((file) => (
@@ -395,29 +388,57 @@ const DeParaMapping = () => {
                   </Select>
                 </div>
 
-                {selectedFile && (
-                  <div className="space-y-2">
-                    <Label>Versão</Label>
-                    <Select value={selectedVersion} onValueChange={setSelectedVersion}>
-                      <SelectTrigger>
-                        <SelectValue placeholder="Selecione uma versão..." />
-                      </SelectTrigger>
-                      <SelectContent>
-                        {filesBySystem[selectedSystem]
-                          ?.find((file) => file.id === selectedFile)
-                          ?.versions.map((version) => (
-                            <SelectItem key={version} value={version}>
-                              {version}
-                            </SelectItem>
-                          ))}
-                      </SelectContent>
-                    </Select>
+                {/* Version Selection */}
+                <div className="space-y-2">
+                  <Label className="font-medium">Versão</Label>
+                  <Select 
+                    value={selectedVersion} 
+                    disabled={!selectedFile}
+                    onValueChange={setSelectedVersion}
+                  >
+                    <SelectTrigger>
+                      <SelectValue placeholder={selectedFile ? "Selecione uma versão..." : "Selecione o schema primeiro"} />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {filesBySystem[selectedSystem]
+                        ?.find((file) => file.id === selectedFile)
+                        ?.versions.map((version) => (
+                          <SelectItem key={version} value={version}>
+                            {version}
+                          </SelectItem>
+                        ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+              </div>
+
+              {/* Informativo de vínculo sistema ↔ schema */}
+              {selectedSystem && selectedFile && (
+                <div className="mt-4 flex items-start gap-3 rounded-lg border border-primary/20 bg-primary/5 p-4">
+                  <Link2 className="h-5 w-5 text-primary mt-0.5 shrink-0" />
+                  <div className="text-sm">
+                    <p className="font-medium text-foreground">
+                      Schema vinculado ao sistema de origem
+                    </p>
+                    <p className="text-muted-foreground mt-1">
+                      O schema <span className="font-semibold text-foreground">{filesBySystem[selectedSystem]?.find(f => f.id === selectedFile)?.name}</span> foi 
+                      identificado e vinculado automaticamente ao sistema <span className="font-semibold text-foreground">{systems.find(s => s.id === selectedSystem)?.name}</span>. 
+                      Os campos de origem disponíveis no mapeamento correspondem à estrutura deste schema.
+                    </p>
                   </div>
-                )}
-              </CardContent>
-            </Card>
-            )}
-          </div>
+                </div>
+              )}
+
+              {!selectedSystem && (
+                <div className="mt-4 flex items-start gap-3 rounded-lg border border-border bg-muted/30 p-4">
+                  <Info className="h-5 w-5 text-muted-foreground mt-0.5 shrink-0" />
+                  <p className="text-sm text-muted-foreground">
+                    Selecione um sistema de origem para visualizar os schemas de contabilização disponíveis. O sistema identificará automaticamente o schema de origem e fará o vínculo com o schema destino (SIC).
+                  </p>
+                </div>
+              )}
+            </CardContent>
+          </Card>
 
           {/* Field Mapping */}
           {selectedFile && selectedVersion && (
