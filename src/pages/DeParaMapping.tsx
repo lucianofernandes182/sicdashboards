@@ -284,13 +284,13 @@ const DeParaMapping = () => {
     const transformation = rule.transformation;
     if (transformation === "none") return null;
 
-    // Build example from source values
-    const sourceExample = rule.sourceConditions
+    // Build example from target (PARA) values
+    const targetExample = rule.targetConditions
       .map((c) => c.value)
       .filter(Boolean)
       .join(", ");
     
-    const example = sourceExample || "exemplo";
+    const example = targetExample || "exemplo";
 
     switch (transformation) {
       case "uppercase":
