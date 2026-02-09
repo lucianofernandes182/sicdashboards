@@ -24,11 +24,16 @@ const DeParaMapping = () => {
     value: string;
   };
 
+  type TargetCondition = {
+    id: string;
+    field: string;
+    value: string;
+  };
+
   type MappingRule = {
     id: string;
     sourceConditions: SourceCondition[];
-    targetField: string;
-    targetValue: string;
+    targetConditions: TargetCondition[];
     transformation: string;
   };
   
@@ -107,8 +112,7 @@ const DeParaMapping = () => {
     const newRule: MappingRule = {
       id: `rule-${Date.now()}`,
       sourceConditions: [{ id: `cond-${Date.now()}`, field: "", value: "" }],
-      targetField: "",
-      targetValue: "",
+      targetConditions: [{ id: `target-${Date.now()}`, field: "", value: "" }],
       transformation: "none",
     };
     setMappingRules([...mappingRules, newRule]);
@@ -177,6 +181,57 @@ const DeParaMapping = () => {
     );
   };
 
+  const handleAddTargetCondition = (ruleId: string) => {
+    setMappingRules((prev) =>
+      prev.map((rule) =>
+        rule.id === ruleId
+          ? {
+              ...rule,
+              targetConditions: [
+                ...rule.targetConditions,
+                { id: `target-${Date.now()}`, field: "", value: "" },
+              ],
+            }
+          : rule
+      )
+    );
+  };
+
+  const handleUpdateTargetCondition = (
+    ruleId: string,
+    conditionId: string,
+    field: keyof TargetCondition,
+    value: string
+  ) => {
+    setMappingRules((prev) =>
+      prev.map((rule) =>
+        rule.id === ruleId
+          ? {
+              ...rule,
+              targetConditions: rule.targetConditions.map((cond) =>
+                cond.id === conditionId ? { ...cond, [field]: value } : cond
+              ),
+            }
+          : rule
+      )
+    );
+  };
+
+  const handleDeleteTargetCondition = (ruleId: string, conditionId: string) => {
+    setMappingRules((prev) =>
+      prev.map((rule) =>
+        rule.id === ruleId
+          ? {
+              ...rule,
+              targetConditions: rule.targetConditions.filter(
+                (cond) => cond.id !== conditionId
+              ),
+            }
+          : rule
+      )
+    );
+  };
+
   // Load existing configuration if editing
   useEffect(() => {
     if (!isNewConfig && id) {
@@ -193,8 +248,9 @@ const DeParaMapping = () => {
             { id: "cond-1", field: "entidade", value: "214" },
             { id: "cond-2", field: "funcao", value: "12" }
           ],
-          targetField: "modelo",
-          targetValue: "1",
+          targetConditions: [
+            { id: "target-1", field: "modelo", value: "1" }
+          ],
           transformation: "none"
         }
       ];
@@ -465,39 +521,84 @@ const DeParaMapping = () => {
 
                             {/* PARA - Destino */}
                             <div className="space-y-3 p-4 rounded-lg bg-green-50 dark:bg-green-950/20">
-                              <Label className="text-base font-semibold">PARA - SIC</Label>
-                              
-                              <div className="space-y-2">
-                                <Label className="text-sm">Campo</Label>
-                                <Select
-                                  value={rule.targetField}
-                                  onValueChange={(value) =>
-                                    handleUpdateRule(rule.id, "targetField", value)
-                                  }
+                              <div className="flex items-center justify-between">
+                                <Label className="text-base font-semibold">PARA - SIC</Label>
+                                <Button
+                                  variant="outline"
+                                  size="sm"
+                                  onClick={() => handleAddTargetCondition(rule.id)}
                                 >
-                                  <SelectTrigger>
-                                    <SelectValue placeholder="Selecione campo do SIC..." />
-                                  </SelectTrigger>
-                                  <SelectContent>
-                                    {sicFields.map((field) => (
-                                      <SelectItem key={field.field} value={field.field}>
-                                        {field.description}
-                                      </SelectItem>
-                                    ))}
-                                  </SelectContent>
-                                </Select>
+                                  <Plus className="h-3 w-3 mr-1" />
+                                  Campo
+                                </Button>
                               </div>
+                              
+                              {rule.targetConditions.map((condition, condIndex) => (
+                                <div
+                                  key={condition.id}
+                                  className="space-y-2 p-3 bg-background rounded border"
+                                >
+                                  <div className="flex items-center justify-between mb-2">
+                                    <span className="text-xs font-medium text-muted-foreground">
+                                      Campo {condIndex + 1}
+                                    </span>
+                                    {rule.targetConditions.length > 1 && (
+                                      <Button
+                                        variant="ghost"
+                                        size="icon"
+                                        className="h-6 w-6"
+                                        onClick={() =>
+                                          handleDeleteTargetCondition(rule.id, condition.id)
+                                        }
+                                      >
+                                        <Trash2 className="h-3 w-3 text-destructive" />
+                                      </Button>
+                                    )}
+                                  </div>
 
-                              <div className="space-y-2">
-                                <Label className="text-sm">Valor</Label>
-                                <Input
-                                  placeholder="Ex: 1"
-                                  value={rule.targetValue}
-                                  onChange={(e) =>
-                                    handleUpdateRule(rule.id, "targetValue", e.target.value)
-                                  }
-                                />
-                              </div>
+                                  <div className="space-y-2">
+                                    <Label className="text-sm">Campo</Label>
+                                    <Select
+                                      value={condition.field}
+                                      onValueChange={(value) =>
+                                        handleUpdateTargetCondition(
+                                          rule.id,
+                                          condition.id,
+                                          "field",
+                                          value
+                                        )
+                                      }
+                                    >
+                                      <SelectTrigger>
+                                        <SelectValue placeholder="Selecione campo do SIC..." />
+                                      </SelectTrigger>
+                                      <SelectContent>
+                                        {sicFields.map((field) => (
+                                          <SelectItem key={field.field} value={field.field}>
+                                            {field.description}
+                                          </SelectItem>
+                                        ))}
+                                      </SelectContent>
+                                    </Select>
+                                  </div>
+
+                                  <div className="space-y-2">
+                                    <Label className="text-sm">Valor</Label>
+                                    <Input
+                                      placeholder="Ex: 1"
+                                      value={condition.value}
+                                      onChange={(e) =>
+                                        handleUpdateTargetCondition(
+                                          rule.id,
+                                          condition.id,
+                                          "value",
+                                          e.target.value
+                                        )
+                                      }
+                                    />
+                                  </div>
+                                </div>
+                              ))}
                             </div>
                           </div>
 
@@ -558,8 +659,7 @@ const DeParaMapping = () => {
                     <TableRow>
                       <TableHead>#</TableHead>
                       <TableHead>Condições Origem (DE)</TableHead>
-                      <TableHead>Campo SIC (PARA)</TableHead>
-                      <TableHead>Valor SIC</TableHead>
+                      <TableHead>Campos SIC (PARA)</TableHead>
                       <TableHead>Transformação</TableHead>
                     </TableRow>
                   </TableHeader>
@@ -598,20 +698,32 @@ const DeParaMapping = () => {
                           </div>
                         </TableCell>
                         <TableCell className="align-top">
-                          <div className="flex flex-col">
-                            <span className="font-medium">
-                              {sicFields.find((f) => f.field === rule.targetField)?.description ||
-                                rule.targetField}
-                            </span>
-                            <span className="text-xs text-muted-foreground">
-                              {rule.targetField}
-                            </span>
+                          <div className="space-y-2">
+                            {rule.targetConditions.map((condition, condIndex) => (
+                              <div
+                                key={condition.id}
+                                className="flex flex-col gap-1 p-2 bg-green-50 dark:bg-green-950/20 rounded"
+                              >
+                                <div className="flex items-center gap-2">
+                                  <span className="text-xs font-semibold text-muted-foreground">
+                                    {condIndex > 0 ? "E" : "→"}
+                                  </span>
+                                  <div className="flex flex-col">
+                                    <span className="font-medium text-sm">
+                                      {sicFields.find((f) => f.field === condition.field)?.description || condition.field}
+                                    </span>
+                                    <span className="text-xs text-muted-foreground">
+                                      {condition.field}
+                                    </span>
+                                  </div>
+                                  <span className="text-xs font-semibold">=</span>
+                                  <span className="px-2 py-0.5 bg-green-100 dark:bg-green-900 text-green-900 dark:text-green-100 rounded font-mono text-xs">
+                                    {condition.value}
+                                  </span>
+                                </div>
+                              </div>
+                            ))}
                           </div>
-                        </TableCell>
-                        <TableCell className="align-top">
-                          <span className="px-2 py-1 bg-green-100 dark:bg-green-950 text-green-900 dark:text-green-100 rounded font-mono text-sm">
-                            {rule.targetValue}
-                          </span>
                         </TableCell>
                         <TableCell className="align-top">
                           <span className="text-sm text-muted-foreground">
