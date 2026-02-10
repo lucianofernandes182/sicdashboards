@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
@@ -7,7 +7,7 @@ import { Label } from "@/components/ui/label";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Badge } from "@/components/ui/badge";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { Server, Plus, Trash2, Edit, Settings2, AlertTriangle, CheckCircle2, Info, ArrowLeft, Save, Layers } from "lucide-react";
+import { Server, Plus, Trash2, Edit, Settings2, AlertTriangle, CheckCircle2, Info, ArrowLeft, Save, Layers, Search } from "lucide-react";
 import { Checkbox } from "@/components/ui/checkbox";
 import { toast } from "sonner";
 
@@ -95,6 +95,7 @@ export const VinculoSistemasDialog = ({
   const [subView, setSubView] = useState<"list" | "add" | "advanced">("list");
   const [selectedSistema, setSelectedSistema] = useState("");
   const [selectedCodigo, setSelectedCodigo] = useState("");
+  const [acumuladorSearch, setAcumuladorSearch] = useState("");
   const [selectedDescricao, setSelectedDescricao] = useState("");
   const [selectedAcumuladorIds, setSelectedAcumuladorIds] = useState<string[]>([]);
   const [advancedWarning, setAdvancedWarning] = useState<{ requires: boolean; reason: string }>({ requires: false, reason: "" });
@@ -110,6 +111,7 @@ export const VinculoSistemasDialog = ({
     setSelectedCodigo("");
     setSelectedDescricao("");
     setSelectedAcumuladorIds([]);
+    setAcumuladorSearch("");
     setAdvancedWarning({ requires: false, reason: "" });
     setEditingVinculoId(null);
     setRegraAvancada({
@@ -418,18 +420,36 @@ export const VinculoSistemasDialog = ({
                     Selecione os acumuladores existentes que deseja associar a este vínculo.
                   </p>
 
-                  <div className="rounded-md border bg-muted/20 p-3 space-y-2">
-                    <div className="grid grid-cols-2 gap-2 text-xs">
-                      <div>
-                        <span className="text-muted-foreground">Código do Equipamento:</span>{" "}
-                        <span className="font-mono font-medium">{equipamentoUG}</span>
-                      </div>
-                      <div>
-                        <span className="text-muted-foreground">Descrição:</span>{" "}
-                        <span className="font-medium">{equipamentoDescricao}</span>
-                      </div>
-                    </div>
+                  {/* Search */}
+                  <div className="relative">
+                    <Search className="absolute left-2.5 top-2.5 h-3.5 w-3.5 text-muted-foreground" />
+                    <Input
+                      value={acumuladorSearch}
+                      onChange={(e) => setAcumuladorSearch(e.target.value)}
+                      className="text-xs h-9 pl-8"
+                      placeholder="Pesquisar por modelo, função, objeto, unidade ou centro de custos..."
+                    />
                   </div>
+
+                  {/* Selected summary */}
+                  {selectedAcumuladorIds.length > 0 && (
+                    <div className="flex flex-wrap gap-1.5">
+                      {acumuladoresEquipamentosDisponiveis
+                        .filter(a => selectedAcumuladorIds.includes(a.id))
+                        .map(ac => (
+                          <Badge key={ac.id} variant="secondary" className="text-[10px] gap-1">
+                            M:{ac.modelo} F:{ac.funcao} OC:{ac.objetoCustos} UC:{ac.unidadeCustos} CC:{ac.centroCustos}
+                            <button
+                              type="button"
+                              className="ml-0.5 hover:text-destructive"
+                              onClick={(e) => { e.stopPropagation(); toggleAcumulador(ac.id); }}
+                            >
+                              ×
+                            </button>
+                          </Badge>
+                        ))}
+                    </div>
+                  )}
 
                   <div className="rounded-md border max-h-48 overflow-y-auto">
                     <Table>
@@ -449,10 +469,17 @@ export const VinculoSistemasDialog = ({
                         </TableRow>
                       </TableHeader>
                       <TableBody>
-                        {acumuladoresEquipamentosDisponiveis.map(ac => (
+                        {acumuladoresEquipamentosDisponiveis
+                          .filter(ac => {
+                            if (!acumuladorSearch) return true;
+                            const q = acumuladorSearch.toLowerCase();
+                            return [ac.modelo, ac.funcao, ac.objetoCustos, ac.unidadeCustos, ac.centroCustos]
+                              .some(v => v.toLowerCase().includes(q));
+                          })
+                          .map(ac => (
                           <TableRow
                             key={ac.id}
-                            className="cursor-pointer"
+                            className={`cursor-pointer ${selectedAcumuladorIds.includes(ac.id) ? "bg-muted/50" : ""}`}
                             onClick={() => toggleAcumulador(ac.id)}
                           >
                             <TableCell className="py-2">
@@ -471,11 +498,6 @@ export const VinculoSistemasDialog = ({
                       </TableBody>
                     </Table>
                   </div>
-                  {selectedAcumuladorIds.length > 0 && (
-                    <p className="text-[11px] text-muted-foreground">
-                      {selectedAcumuladorIds.length} acumulador(es) selecionado(s)
-                    </p>
-                  )}
                 </div>
 
                 {/* Advanced warning */}
