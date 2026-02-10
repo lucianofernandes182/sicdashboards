@@ -9,6 +9,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { ArrowLeft, Building2, FileJson, Save, Plus, Edit, Trash2, Link2, Layers, Server } from "lucide-react";
+import { VinculoSistemasDialog, type VinculoSistema } from "@/components/dashboard/VinculoSistemasDialog";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
@@ -67,12 +68,7 @@ interface Acumulador {
   CentroDeCustos: string;
 }
 
-interface VinculoSistema {
-  id: string;
-  sistema: string;
-  codigoNoSistema: string;
-  descricaoNoSistema: string;
-}
+// VinculoSistema interface imported from VinculoSistemasDialog
 
 const EquipamentosPublicos = () => {
   const navigate = useNavigate();
@@ -94,7 +90,6 @@ const EquipamentosPublicos = () => {
   const [vinculoSistemasDialogOpen, setVinculoSistemasDialogOpen] = useState(false);
   const [vinculoSistemasEquipamento, setVinculoSistemasEquipamento] = useState<EquipamentoFormValues | null>(null);
   const [vinculosSistemas, setVinculosSistemas] = useState<Record<string, VinculoSistema[]>>({});
-  const [novoVinculo, setNovoVinculo] = useState({ sistema: "", codigoNoSistema: "", descricaoNoSistema: "" });
   // Mock data - Replace with actual API calls to MongoDB
   const schemas = [
     { id: "equipamentos_v1", name: "Equipamentos Públicos", version: "v1.0.0" },
@@ -344,28 +339,13 @@ const EquipamentosPublicos = () => {
 
   const handleOpenVinculoSistemas = (equipamento: EquipamentoFormValues) => {
     setVinculoSistemasEquipamento(equipamento);
-    setNovoVinculo({ sistema: "", codigoNoSistema: "", descricaoNoSistema: "" });
     setVinculoSistemasDialogOpen(true);
   };
 
-  const handleAddVinculo = () => {
-    if (!vinculoSistemasEquipamento) return;
-    if (!novoVinculo.sistema || !novoVinculo.codigoNoSistema || !novoVinculo.descricaoNoSistema) {
-      toast.error("Preencha todos os campos do vínculo.");
-      return;
-    }
-    const key = vinculoSistemasEquipamento.NumeroControle;
-    const newVinculo: VinculoSistema = { ...novoVinculo, id: crypto.randomUUID() };
-    setVinculosSistemas((prev) => ({ ...prev, [key]: [...(prev[key] || []), newVinculo] }));
-    setNovoVinculo({ sistema: "", codigoNoSistema: "", descricaoNoSistema: "" });
-    toast.success("Vínculo de sistema adicionado!");
-  };
-
-  const handleDeleteVinculo = (vinculoId: string) => {
+  const handleVinculosChange = (newVinculos: VinculoSistema[]) => {
     if (!vinculoSistemasEquipamento) return;
     const key = vinculoSistemasEquipamento.NumeroControle;
-    setVinculosSistemas((prev) => ({ ...prev, [key]: (prev[key] || []).filter((v) => v.id !== vinculoId) }));
-    toast.success("Vínculo removido!");
+    setVinculosSistemas(prev => ({ ...prev, [key]: newVinculos }));
   };
 
   const getVinculosCount = (numeroControle: string): number => {
@@ -1483,112 +1463,17 @@ const EquipamentosPublicos = () => {
       </Dialog>
 
       {/* Vincular Sistemas Dialog */}
-      <Dialog open={vinculoSistemasDialogOpen} onOpenChange={setVinculoSistemasDialogOpen}>
-        <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
-          <DialogHeader>
-            <DialogTitle className="text-base sm:text-lg">Vincular Sistemas</DialogTitle>
-            <DialogDescription className="text-xs sm:text-sm">
-              Vincule sistemas estruturantes (AM, RH, CP) ao equipamento{" "}
-              <strong>{vinculoSistemasEquipamento?.UG}</strong> - {vinculoSistemasEquipamento?.Descricao}
-            </DialogDescription>
-          </DialogHeader>
-
-          {vinculoSistemasEquipamento && (
-            <div className="space-y-4">
-              {/* Add new vinculo */}
-              <div className="space-y-3">
-                <h4 className="text-sm font-semibold">Adicionar Vínculo</h4>
-                <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
-                  <div className="space-y-1">
-                    <Label className="text-xs">Sistema</Label>
-                    <Select value={novoVinculo.sistema} onValueChange={(v) => setNovoVinculo((p) => ({ ...p, sistema: v }))}>
-                      <SelectTrigger className="text-xs h-8">
-                        <SelectValue placeholder="Selecione..." />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="AM">AM - Administração de Materiais</SelectItem>
-                        <SelectItem value="RH">RH - Recursos Humanos</SelectItem>
-                        <SelectItem value="CP">CP - Contabilidade Pública</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </div>
-                  <div className="space-y-1">
-                    <Label className="text-xs">Código no Sistema</Label>
-                    <Input
-                      value={novoVinculo.codigoNoSistema}
-                      onChange={(e) => setNovoVinculo((p) => ({ ...p, codigoNoSistema: e.target.value }))}
-                      className="text-xs h-8"
-                      placeholder="Ex: AM001"
-                    />
-                  </div>
-                  <div className="space-y-1">
-                    <Label className="text-xs">Descrição no Sistema</Label>
-                    <Input
-                      value={novoVinculo.descricaoNoSistema}
-                      onChange={(e) => setNovoVinculo((p) => ({ ...p, descricaoNoSistema: e.target.value }))}
-                      className="text-xs h-8"
-                      placeholder="Ex: Almoxarifado Central"
-                    />
-                  </div>
-                </div>
-                <Button onClick={handleAddVinculo} size="sm" className="text-xs">
-                  <Plus className="h-3 w-3 mr-1" />
-                  Adicionar
-                </Button>
-              </div>
-
-              {/* Vinculos Table */}
-              <div className="rounded-md border">
-                <Table>
-                  <TableHeader>
-                    <TableRow>
-                      <TableHead className="text-xs">Sistema</TableHead>
-                      <TableHead className="text-xs">Código</TableHead>
-                      <TableHead className="text-xs">Descrição</TableHead>
-                      <TableHead className="text-xs text-right">Ações</TableHead>
-                    </TableRow>
-                  </TableHeader>
-                  <TableBody>
-                    {(vinculosSistemas[vinculoSistemasEquipamento.NumeroControle] || []).length === 0 ? (
-                      <TableRow>
-                        <TableCell colSpan={4} className="text-center text-muted-foreground py-6 text-xs">
-                          Nenhum sistema vinculado a este equipamento.
-                        </TableCell>
-                      </TableRow>
-                    ) : (
-                      (vinculosSistemas[vinculoSistemasEquipamento.NumeroControle] || []).map((vinculo) => (
-                        <TableRow key={vinculo.id}>
-                          <TableCell className="text-xs">
-                            <Badge variant="outline" className="text-[10px]">{vinculo.sistema}</Badge>
-                          </TableCell>
-                          <TableCell className="text-xs">{vinculo.codigoNoSistema}</TableCell>
-                          <TableCell className="text-xs">{vinculo.descricaoNoSistema}</TableCell>
-                          <TableCell className="text-right">
-                            <Button
-                              variant="ghost"
-                              size="icon"
-                              onClick={() => handleDeleteVinculo(vinculo.id)}
-                              className="h-7 w-7"
-                            >
-                              <Trash2 className="h-3 w-3" />
-                            </Button>
-                          </TableCell>
-                        </TableRow>
-                      ))
-                    )}
-                  </TableBody>
-                </Table>
-              </div>
-
-              <div className="flex justify-end">
-                <Button variant="outline" onClick={() => setVinculoSistemasDialogOpen(false)} size="sm" className="text-xs sm:text-sm">
-                  Fechar
-                </Button>
-              </div>
-            </div>
-          )}
-        </DialogContent>
-      </Dialog>
+      {vinculoSistemasEquipamento && (
+        <VinculoSistemasDialog
+          open={vinculoSistemasDialogOpen}
+          onOpenChange={setVinculoSistemasDialogOpen}
+          equipamentoUG={vinculoSistemasEquipamento.UG}
+          equipamentoDescricao={vinculoSistemasEquipamento.Descricao}
+          equipamentoNumeroControle={vinculoSistemasEquipamento.NumeroControle}
+          vinculos={vinculosSistemas[vinculoSistemasEquipamento.NumeroControle] || []}
+          onVinculosChange={handleVinculosChange}
+        />
+      )}
     </div>
   );
 };
