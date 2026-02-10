@@ -7,7 +7,8 @@ import { Label } from "@/components/ui/label";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Badge } from "@/components/ui/badge";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { Server, Plus, Trash2, Edit, Settings2, AlertTriangle, CheckCircle2, Info, ArrowLeft, Save } from "lucide-react";
+import { Server, Plus, Trash2, Edit, Settings2, AlertTriangle, CheckCircle2, Info, ArrowLeft, Save, Layers } from "lucide-react";
+import { Checkbox } from "@/components/ui/checkbox";
 import { toast } from "sonner";
 
 export interface VinculoSistema {
@@ -17,6 +18,7 @@ export interface VinculoSistema {
   descricaoNoSistema: string;
   tipoVinculo: "direto" | "avancado";
   status: "valido" | "requer_regra";
+  acumuladores: string[];
   regraAvancada?: RegraAvancada;
 }
 
@@ -63,23 +65,13 @@ const sistemasDisponiveis = [
   { id: "CP", name: "CP - Contabilidade Pública" },
 ];
 
-const codigosPorSistema: Record<string, Array<{ codigo: string; descricao: string }>> = {
-  AM: [
-    { codigo: "AM001", descricao: "Almoxarifado Central" },
-    { codigo: "AM002", descricao: "Almoxarifado Educação" },
-    { codigo: "GEN001", descricao: "Almoxarifado Geral (Genérico)" },
-  ],
-  RH: [
-    { codigo: "RH001", descricao: "Folha de Pagamento - Educação" },
-    { codigo: "RH002", descricao: "Folha de Pagamento - Saúde" },
-    { codigo: "RH003", descricao: "Folha de Pagamento - Administrativo" },
-  ],
-  CP: [
-    { codigo: "CP001", descricao: "Contabilidade - Educação" },
-    { codigo: "CP002", descricao: "Contabilidade - Saúde" },
-    { codigo: "CP003", descricao: "Contabilidade - Infraestrutura" },
-  ],
-};
+const acumuladoresDisponiveis = [
+  { id: "DEP", label: "Depreciação" },
+  { id: "AMO", label: "Amortização" },
+  { id: "EXA", label: "Exaustão" },
+  { id: "RED", label: "Redução ao Valor Recuperável" },
+  { id: "REA", label: "Reavaliação" },
+];
 
 export const VinculoSistemasDialog = ({
   open,
@@ -93,6 +85,8 @@ export const VinculoSistemasDialog = ({
   const [subView, setSubView] = useState<"list" | "add" | "advanced">("list");
   const [selectedSistema, setSelectedSistema] = useState("");
   const [selectedCodigo, setSelectedCodigo] = useState("");
+  const [selectedDescricao, setSelectedDescricao] = useState("");
+  const [selectedAcumuladores, setSelectedAcumuladores] = useState<string[]>([]);
   const [advancedWarning, setAdvancedWarning] = useState<{ requires: boolean; reason: string }>({ requires: false, reason: "" });
   const [editingVinculoId, setEditingVinculoId] = useState<string | null>(null);
   const [regraAvancada, setRegraAvancada] = useState<RegraAvancada>({
@@ -104,6 +98,8 @@ export const VinculoSistemasDialog = ({
   const resetAddForm = () => {
     setSelectedSistema("");
     setSelectedCodigo("");
+    setSelectedDescricao("");
+    setSelectedAcumuladores([]);
     setAdvancedWarning({ requires: false, reason: "" });
     setEditingVinculoId(null);
     setRegraAvancada({
@@ -125,17 +121,17 @@ export const VinculoSistemasDialog = ({
 
   const handleSaveDirect = () => {
     if (!selectedSistema || !selectedCodigo) {
-      toast.error("Selecione o sistema e o código.");
+      toast.error("Selecione o sistema e informe o código.");
       return;
     }
-    const codigoInfo = codigosPorSistema[selectedSistema]?.find(c => c.codigo === selectedCodigo);
     const newVinculo: VinculoSistema = {
       id: editingVinculoId || crypto.randomUUID(),
       sistema: selectedSistema,
       codigoNoSistema: selectedCodigo,
-      descricaoNoSistema: codigoInfo?.descricao || selectedCodigo,
+      descricaoNoSistema: selectedDescricao,
       tipoVinculo: "direto",
       status: advancedWarning.requires ? "requer_regra" : "valido",
+      acumuladores: selectedAcumuladores,
     };
 
     if (editingVinculoId) {
@@ -150,17 +146,17 @@ export const VinculoSistemasDialog = ({
 
   const handleSaveAdvanced = () => {
     if (!selectedSistema || !selectedCodigo) {
-      toast.error("Selecione o sistema e o código.");
+      toast.error("Selecione o sistema e informe o código.");
       return;
     }
-    const codigoInfo = codigosPorSistema[selectedSistema]?.find(c => c.codigo === selectedCodigo);
     const newVinculo: VinculoSistema = {
       id: editingVinculoId || crypto.randomUUID(),
       sistema: selectedSistema,
       codigoNoSistema: selectedCodigo,
-      descricaoNoSistema: codigoInfo?.descricao || selectedCodigo,
+      descricaoNoSistema: selectedDescricao,
       tipoVinculo: "avancado",
       status: "valido",
+      acumuladores: selectedAcumuladores,
       regraAvancada,
     };
 
@@ -182,6 +178,8 @@ export const VinculoSistemasDialog = ({
   const handleEdit = (vinculo: VinculoSistema) => {
     setSelectedSistema(vinculo.sistema);
     setSelectedCodigo(vinculo.codigoNoSistema);
+    setSelectedDescricao(vinculo.descricaoNoSistema);
+    setSelectedAcumuladores(vinculo.acumuladores || []);
     setEditingVinculoId(vinculo.id);
     const detection = detectRequiresAdvancedRule(vinculo.sistema, vinculo.codigoNoSistema);
     setAdvancedWarning(detection);
@@ -209,7 +207,12 @@ export const VinculoSistemasDialog = ({
     onOpenChange(value);
   };
 
-  const codigosDoSistema = selectedSistema ? (codigosPorSistema[selectedSistema] || []) : [];
+  const toggleAcumulador = (id: string) => {
+    setSelectedAcumuladores(prev =>
+      prev.includes(id) ? prev.filter(a => a !== id) : [...prev, id]
+    );
+  };
+
 
   return (
     <Dialog open={open} onOpenChange={handleOpenChange}>
@@ -247,6 +250,7 @@ export const VinculoSistemasDialog = ({
                       <TableHead className="text-xs">Sistema</TableHead>
                       <TableHead className="text-xs">Código</TableHead>
                       <TableHead className="text-xs hidden sm:table-cell">Descrição</TableHead>
+                      <TableHead className="text-xs hidden sm:table-cell">Acumuladores</TableHead>
                       <TableHead className="text-xs">Tipo</TableHead>
                       <TableHead className="text-xs">Status</TableHead>
                       <TableHead className="text-xs text-right">Ações</TableHead>
@@ -261,6 +265,17 @@ export const VinculoSistemasDialog = ({
                         <TableCell className="text-xs font-mono">{vinculo.codigoNoSistema}</TableCell>
                         <TableCell className="text-xs hidden sm:table-cell text-muted-foreground">
                           {vinculo.descricaoNoSistema}
+                        </TableCell>
+                        <TableCell className="text-xs hidden sm:table-cell">
+                          {vinculo.acumuladores && vinculo.acumuladores.length > 0 ? (
+                            <div className="flex flex-wrap gap-1">
+                              {vinculo.acumuladores.map(ac => (
+                                <Badge key={ac} variant="outline" className="text-[10px]">{ac}</Badge>
+                              ))}
+                            </div>
+                          ) : (
+                            <span className="text-muted-foreground">—</span>
+                          )}
                         </TableCell>
                         <TableCell className="text-xs">
                           <Badge
@@ -339,10 +354,10 @@ export const VinculoSistemasDialog = ({
                 </CardTitle>
               </CardHeader>
               <CardContent className="p-4 pt-2 space-y-4">
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
                   <div className="space-y-2">
                     <Label className="text-xs">Sistema de origem</Label>
-                    <Select value={selectedSistema} onValueChange={(v) => { setSelectedSistema(v); setSelectedCodigo(""); setAdvancedWarning({ requires: false, reason: "" }); }}>
+                    <Select value={selectedSistema} onValueChange={(v) => { setSelectedSistema(v); setSelectedCodigo(""); setSelectedDescricao(""); setAdvancedWarning({ requires: false, reason: "" }); }}>
                       <SelectTrigger className="text-xs">
                         <SelectValue placeholder="Selecione o sistema..." />
                       </SelectTrigger>
@@ -356,18 +371,44 @@ export const VinculoSistemasDialog = ({
 
                   <div className="space-y-2">
                     <Label className="text-xs">Código no sistema</Label>
-                    <Select value={selectedCodigo} onValueChange={handleCodigoChange} disabled={!selectedSistema}>
-                      <SelectTrigger className="text-xs">
-                        <SelectValue placeholder={selectedSistema ? "Selecione o código..." : "Selecione um sistema primeiro"} />
-                      </SelectTrigger>
-                      <SelectContent>
-                        {codigosDoSistema.map(c => (
-                          <SelectItem key={c.codigo} value={c.codigo}>
-                            {c.codigo} — {c.descricao}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
+                    <Input
+                      value={selectedCodigo}
+                      onChange={(e) => handleCodigoChange(e.target.value)}
+                      className="text-xs h-10"
+                      placeholder="Ex: AM001"
+                      disabled={!selectedSistema}
+                    />
+                  </div>
+
+                  <div className="space-y-2">
+                    <Label className="text-xs">Descrição</Label>
+                    <Input
+                      value={selectedDescricao}
+                      onChange={(e) => setSelectedDescricao(e.target.value)}
+                      className="text-xs h-10"
+                      placeholder="Ex: Almoxarifado Central"
+                      disabled={!selectedSistema}
+                    />
+                  </div>
+                </div>
+
+                {/* Acumuladores */}
+                <div className="space-y-2">
+                  <Label className="text-xs flex items-center gap-1.5">
+                    <Layers className="h-3.5 w-3.5" />
+                    Acumuladores
+                  </Label>
+                  <p className="text-[11px] text-muted-foreground">Selecione os acumuladores aplicáveis a este vínculo.</p>
+                  <div className="flex flex-wrap gap-3 pt-1">
+                    {acumuladoresDisponiveis.map(ac => (
+                      <label key={ac.id} className="flex items-center gap-2 cursor-pointer">
+                        <Checkbox
+                          checked={selectedAcumuladores.includes(ac.id)}
+                          onCheckedChange={() => toggleAcumulador(ac.id)}
+                        />
+                        <span className="text-xs">{ac.label}</span>
+                      </label>
+                    ))}
                   </div>
                 </div>
 
