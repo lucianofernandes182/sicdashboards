@@ -11,6 +11,15 @@ import { Server, Plus, Trash2, Edit, Settings2, AlertTriangle, CheckCircle2, Inf
 import { Checkbox } from "@/components/ui/checkbox";
 import { toast } from "sonner";
 
+export interface AcumuladorEquipamento {
+  id: string;
+  modelo: string;
+  funcao: string;
+  objetoCustos: string;
+  unidadeCustos: string;
+  centroCustos: string;
+}
+
 export interface VinculoSistema {
   id: string;
   sistema: string;
@@ -18,7 +27,7 @@ export interface VinculoSistema {
   descricaoNoSistema: string;
   tipoVinculo: "direto" | "avancado";
   status: "valido" | "requer_regra";
-  acumuladores: string[];
+  acumuladores: AcumuladorEquipamento[];
   regraAvancada?: RegraAvancada;
 }
 
@@ -65,12 +74,13 @@ const sistemasDisponiveis = [
   { id: "CP", name: "CP - Contabilidade Pública" },
 ];
 
-const acumuladoresDisponiveis = [
-  { id: "DEP", label: "Depreciação" },
-  { id: "AMO", label: "Amortização" },
-  { id: "EXA", label: "Exaustão" },
-  { id: "RED", label: "Redução ao Valor Recuperável" },
-  { id: "REA", label: "Reavaliação" },
+// Mock: acumuladores (equipamentos existentes) disponíveis para associação
+const acumuladoresEquipamentosDisponiveis: AcumuladorEquipamento[] = [
+  { id: "1", modelo: "1", funcao: "02", objetoCustos: "001", unidadeCustos: "001", centroCustos: "006" },
+  { id: "2", modelo: "1", funcao: "02", objetoCustos: "002", unidadeCustos: "002", centroCustos: "007" },
+  { id: "3", modelo: "1", funcao: "02", objetoCustos: "004", unidadeCustos: "004", centroCustos: "009" },
+  { id: "4", modelo: "1", funcao: "02", objetoCustos: "003", unidadeCustos: "003", centroCustos: "008" },
+  { id: "5", modelo: "1", funcao: "02", objetoCustos: "006", unidadeCustos: "005", centroCustos: "010" },
 ];
 
 export const VinculoSistemasDialog = ({
@@ -86,7 +96,7 @@ export const VinculoSistemasDialog = ({
   const [selectedSistema, setSelectedSistema] = useState("");
   const [selectedCodigo, setSelectedCodigo] = useState("");
   const [selectedDescricao, setSelectedDescricao] = useState("");
-  const [selectedAcumuladores, setSelectedAcumuladores] = useState<string[]>([]);
+  const [selectedAcumuladorIds, setSelectedAcumuladorIds] = useState<string[]>([]);
   const [advancedWarning, setAdvancedWarning] = useState<{ requires: boolean; reason: string }>({ requires: false, reason: "" });
   const [editingVinculoId, setEditingVinculoId] = useState<string | null>(null);
   const [regraAvancada, setRegraAvancada] = useState<RegraAvancada>({
@@ -99,7 +109,7 @@ export const VinculoSistemasDialog = ({
     setSelectedSistema("");
     setSelectedCodigo("");
     setSelectedDescricao("");
-    setSelectedAcumuladores([]);
+    setSelectedAcumuladorIds([]);
     setAdvancedWarning({ requires: false, reason: "" });
     setEditingVinculoId(null);
     setRegraAvancada({
@@ -131,7 +141,7 @@ export const VinculoSistemasDialog = ({
       descricaoNoSistema: selectedDescricao,
       tipoVinculo: "direto",
       status: advancedWarning.requires ? "requer_regra" : "valido",
-      acumuladores: selectedAcumuladores,
+      acumuladores: acumuladoresEquipamentosDisponiveis.filter(a => selectedAcumuladorIds.includes(a.id)),
     };
 
     if (editingVinculoId) {
@@ -156,7 +166,7 @@ export const VinculoSistemasDialog = ({
       descricaoNoSistema: selectedDescricao,
       tipoVinculo: "avancado",
       status: "valido",
-      acumuladores: selectedAcumuladores,
+      acumuladores: acumuladoresEquipamentosDisponiveis.filter(a => selectedAcumuladorIds.includes(a.id)),
       regraAvancada,
     };
 
@@ -179,7 +189,7 @@ export const VinculoSistemasDialog = ({
     setSelectedSistema(vinculo.sistema);
     setSelectedCodigo(vinculo.codigoNoSistema);
     setSelectedDescricao(vinculo.descricaoNoSistema);
-    setSelectedAcumuladores(vinculo.acumuladores || []);
+    setSelectedAcumuladorIds(vinculo.acumuladores?.map(a => a.id) || []);
     setEditingVinculoId(vinculo.id);
     const detection = detectRequiresAdvancedRule(vinculo.sistema, vinculo.codigoNoSistema);
     setAdvancedWarning(detection);
@@ -208,9 +218,17 @@ export const VinculoSistemasDialog = ({
   };
 
   const toggleAcumulador = (id: string) => {
-    setSelectedAcumuladores(prev =>
+    setSelectedAcumuladorIds(prev =>
       prev.includes(id) ? prev.filter(a => a !== id) : [...prev, id]
     );
+  };
+
+  const toggleAllAcumuladores = () => {
+    if (selectedAcumuladorIds.length === acumuladoresEquipamentosDisponiveis.length) {
+      setSelectedAcumuladorIds([]);
+    } else {
+      setSelectedAcumuladorIds(acumuladoresEquipamentosDisponiveis.map(a => a.id));
+    }
   };
 
 
@@ -268,11 +286,9 @@ export const VinculoSistemasDialog = ({
                         </TableCell>
                         <TableCell className="text-xs hidden sm:table-cell">
                           {vinculo.acumuladores && vinculo.acumuladores.length > 0 ? (
-                            <div className="flex flex-wrap gap-1">
-                              {vinculo.acumuladores.map(ac => (
-                                <Badge key={ac} variant="outline" className="text-[10px]">{ac}</Badge>
-                              ))}
-                            </div>
+                            <Badge variant="outline" className="text-[10px]">
+                              {vinculo.acumuladores.length} acumulador(es)
+                            </Badge>
                           ) : (
                             <span className="text-muted-foreground">—</span>
                           )}
@@ -392,24 +408,74 @@ export const VinculoSistemasDialog = ({
                   </div>
                 </div>
 
-                {/* Acumuladores */}
+                {/* Acumuladores - Tabela de equipamentos existentes */}
                 <div className="space-y-2">
                   <Label className="text-xs flex items-center gap-1.5">
                     <Layers className="h-3.5 w-3.5" />
-                    Acumuladores
+                    Acumuladores do Equipamento Público
                   </Label>
-                  <p className="text-[11px] text-muted-foreground">Selecione os acumuladores aplicáveis a este vínculo.</p>
-                  <div className="flex flex-wrap gap-3 pt-1">
-                    {acumuladoresDisponiveis.map(ac => (
-                      <label key={ac.id} className="flex items-center gap-2 cursor-pointer">
-                        <Checkbox
-                          checked={selectedAcumuladores.includes(ac.id)}
-                          onCheckedChange={() => toggleAcumulador(ac.id)}
-                        />
-                        <span className="text-xs">{ac.label}</span>
-                      </label>
-                    ))}
+                  <p className="text-[11px] text-muted-foreground">
+                    Selecione os acumuladores existentes que deseja associar a este vínculo.
+                  </p>
+
+                  <div className="rounded-md border bg-muted/20 p-3 space-y-2">
+                    <div className="grid grid-cols-2 gap-2 text-xs">
+                      <div>
+                        <span className="text-muted-foreground">Código do Equipamento:</span>{" "}
+                        <span className="font-mono font-medium">{equipamentoUG}</span>
+                      </div>
+                      <div>
+                        <span className="text-muted-foreground">Descrição:</span>{" "}
+                        <span className="font-medium">{equipamentoDescricao}</span>
+                      </div>
+                    </div>
                   </div>
+
+                  <div className="rounded-md border max-h-48 overflow-y-auto">
+                    <Table>
+                      <TableHeader>
+                        <TableRow>
+                          <TableHead className="text-[11px] w-10">
+                            <Checkbox
+                              checked={selectedAcumuladorIds.length === acumuladoresEquipamentosDisponiveis.length && acumuladoresEquipamentosDisponiveis.length > 0}
+                              onCheckedChange={toggleAllAcumuladores}
+                            />
+                          </TableHead>
+                          <TableHead className="text-[11px]">Modelo</TableHead>
+                          <TableHead className="text-[11px]">Função</TableHead>
+                          <TableHead className="text-[11px]">Objeto de Custos</TableHead>
+                          <TableHead className="text-[11px]">Unidade de Custos</TableHead>
+                          <TableHead className="text-[11px]">Centro de Custos</TableHead>
+                        </TableRow>
+                      </TableHeader>
+                      <TableBody>
+                        {acumuladoresEquipamentosDisponiveis.map(ac => (
+                          <TableRow
+                            key={ac.id}
+                            className="cursor-pointer"
+                            onClick={() => toggleAcumulador(ac.id)}
+                          >
+                            <TableCell className="py-2">
+                              <Checkbox
+                                checked={selectedAcumuladorIds.includes(ac.id)}
+                                onCheckedChange={() => toggleAcumulador(ac.id)}
+                              />
+                            </TableCell>
+                            <TableCell className="text-xs py-2">{ac.modelo}</TableCell>
+                            <TableCell className="text-xs py-2">{ac.funcao}</TableCell>
+                            <TableCell className="text-xs py-2">{ac.objetoCustos}</TableCell>
+                            <TableCell className="text-xs py-2">{ac.unidadeCustos}</TableCell>
+                            <TableCell className="text-xs py-2">{ac.centroCustos}</TableCell>
+                          </TableRow>
+                        ))}
+                      </TableBody>
+                    </Table>
+                  </div>
+                  {selectedAcumuladorIds.length > 0 && (
+                    <p className="text-[11px] text-muted-foreground">
+                      {selectedAcumuladorIds.length} acumulador(es) selecionado(s)
+                    </p>
+                  )}
                 </div>
 
                 {/* Advanced warning */}
