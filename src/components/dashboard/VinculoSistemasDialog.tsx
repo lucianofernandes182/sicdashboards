@@ -7,8 +7,8 @@ import { Label } from "@/components/ui/label";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Badge } from "@/components/ui/badge";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { Server, Plus, Trash2, Edit, Settings2, AlertTriangle, CheckCircle2, Info, ArrowLeft, Save, Layers } from "lucide-react";
-import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+import { Server, Plus, Trash2, Edit, Settings2, AlertTriangle, CheckCircle2, Info, ArrowLeft, Save, Layers, Search, X } from "lucide-react";
+
 import { toast } from "sonner";
 
 export interface AcumuladorEquipamento {
@@ -97,6 +97,8 @@ export const VinculoSistemasDialog = ({
   const [selectedCodigo, setSelectedCodigo] = useState("");
   const [selectedDescricao, setSelectedDescricao] = useState("");
   const [selectedAcumuladorId, setSelectedAcumuladorId] = useState<string>("");
+  const [acumuladorSearch, setAcumuladorSearch] = useState("");
+  const [showAcumuladorResults, setShowAcumuladorResults] = useState(false);
   const [advancedWarning, setAdvancedWarning] = useState<{ requires: boolean; reason: string }>({ requires: false, reason: "" });
   const [editingVinculoId, setEditingVinculoId] = useState<string | null>(null);
   const [regraAvancada, setRegraAvancada] = useState<RegraAvancada>({
@@ -110,6 +112,8 @@ export const VinculoSistemasDialog = ({
     setSelectedCodigo("");
     setSelectedDescricao("");
     setSelectedAcumuladorId("");
+    setAcumuladorSearch("");
+    setShowAcumuladorResults(false);
     setAdvancedWarning({ requires: false, reason: "" });
     setEditingVinculoId(null);
     setRegraAvancada({
@@ -395,22 +399,59 @@ export const VinculoSistemasDialog = ({
                   </div>
                 </div>
 
-                {/* Acumuladores - Tabela de equipamentos existentes */}
+                {/* Acumuladores - Pesquisa e seleção única */}
                 <div className="space-y-2">
                   <Label className="text-xs flex items-center gap-1.5">
                     <Layers className="h-3.5 w-3.5" />
-                    Acumuladores do Equipamento Público
+                    Acumulador do Equipamento Público
                   </Label>
                   <p className="text-[11px] text-muted-foreground">
-                    Selecione o acumulador que deseja associar a este vínculo.
+                    Pesquise e selecione o acumulador que deseja associar a este vínculo.
                   </p>
 
-                  <RadioGroup value={selectedAcumuladorId} onValueChange={setSelectedAcumuladorId}>
-                    <div className="rounded-md border max-h-48 overflow-y-auto">
+                  {/* Acumulador selecionado */}
+                  {selectedAcumuladorId && (() => {
+                    const sel = acumuladoresEquipamentosDisponiveis.find(a => a.id === selectedAcumuladorId);
+                    if (!sel) return null;
+                    return (
+                      <div className="rounded-md border bg-muted/30 p-3">
+                        <div className="flex items-center justify-between mb-2">
+                          <span className="text-xs font-medium">Acumulador selecionado</span>
+                          <Button variant="ghost" size="icon" className="h-6 w-6" onClick={() => setSelectedAcumuladorId("")}>
+                            <X className="h-3 w-3" />
+                          </Button>
+                        </div>
+                        <div className="grid grid-cols-5 gap-2 text-[11px]">
+                          <div><span className="text-muted-foreground">Modelo:</span> <span className="font-mono">{sel.modelo}</span></div>
+                          <div><span className="text-muted-foreground">Função:</span> <span className="font-mono">{sel.funcao}</span></div>
+                          <div><span className="text-muted-foreground">Obj. Custos:</span> <span className="font-mono">{sel.objetoCustos}</span></div>
+                          <div><span className="text-muted-foreground">Und. Custos:</span> <span className="font-mono">{sel.unidadeCustos}</span></div>
+                          <div><span className="text-muted-foreground">C. Custos:</span> <span className="font-mono">{sel.centroCustos}</span></div>
+                        </div>
+                      </div>
+                    );
+                  })()}
+
+                  {/* Campo de pesquisa */}
+                  {!selectedAcumuladorId && (
+                    <div className="relative">
+                      <Search className="absolute left-2.5 top-2.5 h-3.5 w-3.5 text-muted-foreground" />
+                      <Input
+                        value={acumuladorSearch}
+                        onChange={(e) => { setAcumuladorSearch(e.target.value); setShowAcumuladorResults(true); }}
+                        onFocus={() => setShowAcumuladorResults(true)}
+                        className="text-xs h-9 pl-8"
+                        placeholder="Pesquisar por modelo, função, objeto, unidade ou centro de custos..."
+                      />
+                    </div>
+                  )}
+
+                  {/* Resultados da pesquisa */}
+                  {!selectedAcumuladorId && showAcumuladorResults && (
+                    <div className="rounded-md border max-h-40 overflow-y-auto">
                       <Table>
                         <TableHeader>
                           <TableRow>
-                            <TableHead className="text-[11px] w-10"></TableHead>
                             <TableHead className="text-[11px]">Modelo</TableHead>
                             <TableHead className="text-[11px]">Função</TableHead>
                             <TableHead className="text-[11px]">Objeto de Custos</TableHead>
@@ -419,30 +460,45 @@ export const VinculoSistemasDialog = ({
                           </TableRow>
                         </TableHeader>
                         <TableBody>
-                          {acumuladoresEquipamentosDisponiveis.map(ac => (
-                            <TableRow
-                              key={ac.id}
-                              className={`cursor-pointer ${selectedAcumuladorId === ac.id ? "bg-muted/50" : ""}`}
-                              onClick={() => setSelectedAcumuladorId(ac.id)}
-                            >
-                              <TableCell className="py-2">
-                                <RadioGroupItem value={ac.id} id={`ac-${ac.id}`} />
+                          {acumuladoresEquipamentosDisponiveis
+                            .filter(ac => {
+                              if (!acumuladorSearch) return true;
+                              const q = acumuladorSearch.toLowerCase();
+                              return [ac.modelo, ac.funcao, ac.objetoCustos, ac.unidadeCustos, ac.centroCustos]
+                                .some(v => v.toLowerCase().includes(q));
+                            })
+                            .map(ac => (
+                              <TableRow
+                                key={ac.id}
+                                className="cursor-pointer hover:bg-muted/50"
+                                onClick={() => {
+                                  setSelectedAcumuladorId(ac.id);
+                                  setAcumuladorSearch("");
+                                  setShowAcumuladorResults(false);
+                                }}
+                              >
+                                <TableCell className="text-xs py-2">{ac.modelo}</TableCell>
+                                <TableCell className="text-xs py-2">{ac.funcao}</TableCell>
+                                <TableCell className="text-xs py-2">{ac.objetoCustos}</TableCell>
+                                <TableCell className="text-xs py-2">{ac.unidadeCustos}</TableCell>
+                                <TableCell className="text-xs py-2">{ac.centroCustos}</TableCell>
+                              </TableRow>
+                            ))}
+                          {acumuladoresEquipamentosDisponiveis.filter(ac => {
+                            if (!acumuladorSearch) return true;
+                            const q = acumuladorSearch.toLowerCase();
+                            return [ac.modelo, ac.funcao, ac.objetoCustos, ac.unidadeCustos, ac.centroCustos]
+                              .some(v => v.toLowerCase().includes(q));
+                          }).length === 0 && (
+                            <TableRow>
+                              <TableCell colSpan={5} className="text-xs text-center text-muted-foreground py-4">
+                                Nenhum acumulador encontrado
                               </TableCell>
-                              <TableCell className="text-xs py-2">{ac.modelo}</TableCell>
-                              <TableCell className="text-xs py-2">{ac.funcao}</TableCell>
-                              <TableCell className="text-xs py-2">{ac.objetoCustos}</TableCell>
-                              <TableCell className="text-xs py-2">{ac.unidadeCustos}</TableCell>
-                              <TableCell className="text-xs py-2">{ac.centroCustos}</TableCell>
                             </TableRow>
-                          ))}
+                          )}
                         </TableBody>
                       </Table>
                     </div>
-                  </RadioGroup>
-                  {selectedAcumuladorId && (
-                    <p className="text-[11px] text-muted-foreground">
-                      1 acumulador selecionado
-                    </p>
                   )}
                 </div>
 
