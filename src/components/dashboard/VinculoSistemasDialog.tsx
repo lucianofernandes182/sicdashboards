@@ -8,7 +8,7 @@ import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } f
 import { Badge } from "@/components/ui/badge";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Server, Plus, Trash2, Edit, Settings2, AlertTriangle, CheckCircle2, Info, ArrowLeft, Save, Layers } from "lucide-react";
-import { Checkbox } from "@/components/ui/checkbox";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { toast } from "sonner";
 
 export interface AcumuladorEquipamento {
@@ -27,7 +27,7 @@ export interface VinculoSistema {
   descricaoNoSistema: string;
   tipoVinculo: "direto" | "avancado";
   status: "valido" | "requer_regra";
-  acumuladores: AcumuladorEquipamento[];
+  acumulador?: AcumuladorEquipamento;
   regraAvancada?: RegraAvancada;
 }
 
@@ -96,7 +96,7 @@ export const VinculoSistemasDialog = ({
   const [selectedSistema, setSelectedSistema] = useState("");
   const [selectedCodigo, setSelectedCodigo] = useState("");
   const [selectedDescricao, setSelectedDescricao] = useState("");
-  const [selectedAcumuladorIds, setSelectedAcumuladorIds] = useState<string[]>([]);
+  const [selectedAcumuladorId, setSelectedAcumuladorId] = useState<string>("");
   const [advancedWarning, setAdvancedWarning] = useState<{ requires: boolean; reason: string }>({ requires: false, reason: "" });
   const [editingVinculoId, setEditingVinculoId] = useState<string | null>(null);
   const [regraAvancada, setRegraAvancada] = useState<RegraAvancada>({
@@ -109,7 +109,7 @@ export const VinculoSistemasDialog = ({
     setSelectedSistema("");
     setSelectedCodigo("");
     setSelectedDescricao("");
-    setSelectedAcumuladorIds([]);
+    setSelectedAcumuladorId("");
     setAdvancedWarning({ requires: false, reason: "" });
     setEditingVinculoId(null);
     setRegraAvancada({
@@ -141,7 +141,7 @@ export const VinculoSistemasDialog = ({
       descricaoNoSistema: selectedDescricao,
       tipoVinculo: "direto",
       status: advancedWarning.requires ? "requer_regra" : "valido",
-      acumuladores: acumuladoresEquipamentosDisponiveis.filter(a => selectedAcumuladorIds.includes(a.id)),
+      acumulador: acumuladoresEquipamentosDisponiveis.find(a => a.id === selectedAcumuladorId),
     };
 
     if (editingVinculoId) {
@@ -166,7 +166,7 @@ export const VinculoSistemasDialog = ({
       descricaoNoSistema: selectedDescricao,
       tipoVinculo: "avancado",
       status: "valido",
-      acumuladores: acumuladoresEquipamentosDisponiveis.filter(a => selectedAcumuladorIds.includes(a.id)),
+      acumulador: acumuladoresEquipamentosDisponiveis.find(a => a.id === selectedAcumuladorId),
       regraAvancada,
     };
 
@@ -189,7 +189,7 @@ export const VinculoSistemasDialog = ({
     setSelectedSistema(vinculo.sistema);
     setSelectedCodigo(vinculo.codigoNoSistema);
     setSelectedDescricao(vinculo.descricaoNoSistema);
-    setSelectedAcumuladorIds(vinculo.acumuladores?.map(a => a.id) || []);
+    setSelectedAcumuladorId(vinculo.acumulador?.id || "");
     setEditingVinculoId(vinculo.id);
     const detection = detectRequiresAdvancedRule(vinculo.sistema, vinculo.codigoNoSistema);
     setAdvancedWarning(detection);
@@ -217,19 +217,6 @@ export const VinculoSistemasDialog = ({
     onOpenChange(value);
   };
 
-  const toggleAcumulador = (id: string) => {
-    setSelectedAcumuladorIds(prev =>
-      prev.includes(id) ? prev.filter(a => a !== id) : [...prev, id]
-    );
-  };
-
-  const toggleAllAcumuladores = () => {
-    if (selectedAcumuladorIds.length === acumuladoresEquipamentosDisponiveis.length) {
-      setSelectedAcumuladorIds([]);
-    } else {
-      setSelectedAcumuladorIds(acumuladoresEquipamentosDisponiveis.map(a => a.id));
-    }
-  };
 
 
   return (
@@ -285,9 +272,9 @@ export const VinculoSistemasDialog = ({
                           {vinculo.descricaoNoSistema}
                         </TableCell>
                         <TableCell className="text-xs hidden sm:table-cell">
-                          {vinculo.acumuladores && vinculo.acumuladores.length > 0 ? (
+                          {vinculo.acumulador ? (
                             <Badge variant="outline" className="text-[10px]">
-                              {vinculo.acumuladores.length} acumulador(es)
+                              1 acumulador
                             </Badge>
                           ) : (
                             <span className="text-muted-foreground">—</span>
@@ -415,65 +402,46 @@ export const VinculoSistemasDialog = ({
                     Acumuladores do Equipamento Público
                   </Label>
                   <p className="text-[11px] text-muted-foreground">
-                    Selecione os acumuladores existentes que deseja associar a este vínculo.
+                    Selecione o acumulador que deseja associar a este vínculo.
                   </p>
 
-                  <div className="rounded-md border bg-muted/20 p-3 space-y-2">
-                    <div className="grid grid-cols-2 gap-2 text-xs">
-                      <div>
-                        <span className="text-muted-foreground">Código do Equipamento:</span>{" "}
-                        <span className="font-mono font-medium">{equipamentoUG}</span>
-                      </div>
-                      <div>
-                        <span className="text-muted-foreground">Descrição:</span>{" "}
-                        <span className="font-medium">{equipamentoDescricao}</span>
-                      </div>
-                    </div>
-                  </div>
-
-                  <div className="rounded-md border max-h-48 overflow-y-auto">
-                    <Table>
-                      <TableHeader>
-                        <TableRow>
-                          <TableHead className="text-[11px] w-10">
-                            <Checkbox
-                              checked={selectedAcumuladorIds.length === acumuladoresEquipamentosDisponiveis.length && acumuladoresEquipamentosDisponiveis.length > 0}
-                              onCheckedChange={toggleAllAcumuladores}
-                            />
-                          </TableHead>
-                          <TableHead className="text-[11px]">Modelo</TableHead>
-                          <TableHead className="text-[11px]">Função</TableHead>
-                          <TableHead className="text-[11px]">Objeto de Custos</TableHead>
-                          <TableHead className="text-[11px]">Unidade de Custos</TableHead>
-                          <TableHead className="text-[11px]">Centro de Custos</TableHead>
-                        </TableRow>
-                      </TableHeader>
-                      <TableBody>
-                        {acumuladoresEquipamentosDisponiveis.map(ac => (
-                          <TableRow
-                            key={ac.id}
-                            className="cursor-pointer"
-                            onClick={() => toggleAcumulador(ac.id)}
-                          >
-                            <TableCell className="py-2">
-                              <Checkbox
-                                checked={selectedAcumuladorIds.includes(ac.id)}
-                                onCheckedChange={() => toggleAcumulador(ac.id)}
-                              />
-                            </TableCell>
-                            <TableCell className="text-xs py-2">{ac.modelo}</TableCell>
-                            <TableCell className="text-xs py-2">{ac.funcao}</TableCell>
-                            <TableCell className="text-xs py-2">{ac.objetoCustos}</TableCell>
-                            <TableCell className="text-xs py-2">{ac.unidadeCustos}</TableCell>
-                            <TableCell className="text-xs py-2">{ac.centroCustos}</TableCell>
+                  <RadioGroup value={selectedAcumuladorId} onValueChange={setSelectedAcumuladorId}>
+                    <div className="rounded-md border max-h-48 overflow-y-auto">
+                      <Table>
+                        <TableHeader>
+                          <TableRow>
+                            <TableHead className="text-[11px] w-10"></TableHead>
+                            <TableHead className="text-[11px]">Modelo</TableHead>
+                            <TableHead className="text-[11px]">Função</TableHead>
+                            <TableHead className="text-[11px]">Objeto de Custos</TableHead>
+                            <TableHead className="text-[11px]">Unidade de Custos</TableHead>
+                            <TableHead className="text-[11px]">Centro de Custos</TableHead>
                           </TableRow>
-                        ))}
-                      </TableBody>
-                    </Table>
-                  </div>
-                  {selectedAcumuladorIds.length > 0 && (
+                        </TableHeader>
+                        <TableBody>
+                          {acumuladoresEquipamentosDisponiveis.map(ac => (
+                            <TableRow
+                              key={ac.id}
+                              className={`cursor-pointer ${selectedAcumuladorId === ac.id ? "bg-muted/50" : ""}`}
+                              onClick={() => setSelectedAcumuladorId(ac.id)}
+                            >
+                              <TableCell className="py-2">
+                                <RadioGroupItem value={ac.id} id={`ac-${ac.id}`} />
+                              </TableCell>
+                              <TableCell className="text-xs py-2">{ac.modelo}</TableCell>
+                              <TableCell className="text-xs py-2">{ac.funcao}</TableCell>
+                              <TableCell className="text-xs py-2">{ac.objetoCustos}</TableCell>
+                              <TableCell className="text-xs py-2">{ac.unidadeCustos}</TableCell>
+                              <TableCell className="text-xs py-2">{ac.centroCustos}</TableCell>
+                            </TableRow>
+                          ))}
+                        </TableBody>
+                      </Table>
+                    </div>
+                  </RadioGroup>
+                  {selectedAcumuladorId && (
                     <p className="text-[11px] text-muted-foreground">
-                      {selectedAcumuladorIds.length} acumulador(es) selecionado(s)
+                      1 acumulador selecionado
                     </p>
                   )}
                 </div>
