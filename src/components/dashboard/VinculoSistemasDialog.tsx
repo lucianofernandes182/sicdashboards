@@ -13,16 +13,11 @@ import { toast } from "sonner";
 
 export interface AcumuladorEquipamento {
   id: string;
-  codigoModelo: string;
-  descricaoModelo: string;
-  codigoFuncao: string;
-  descricaoFuncao: string;
-  codigoObjetoCustos: string;
-  descricaoObjetoCustos: string;
-  codigoUnidadeCustos: string;
-  descricaoUnidadeCustos: string;
-  codigoCentroCustos: string;
-  descricaoCentroCustos: string;
+  modelo: string;
+  funcao: string;
+  objetoCustos: string;
+  unidadeCustos: string;
+  centroCustos: string;
 }
 
 export interface VinculoSistema {
@@ -32,7 +27,7 @@ export interface VinculoSistema {
   descricaoNoSistema: string;
   tipoVinculo: "direto" | "avancado";
   status: "valido" | "requer_regra";
-  acumulador?: AcumuladorEquipamento;
+  acumuladores: AcumuladorEquipamento[];
   regraAvancada?: RegraAvancada;
 }
 
@@ -81,11 +76,11 @@ const sistemasDisponiveis = [
 
 // Mock: acumuladores (equipamentos existentes) disponíveis para associação
 const acumuladoresEquipamentosDisponiveis: AcumuladorEquipamento[] = [
-  { id: "1", codigoModelo: "1", descricaoModelo: "Depreciação", codigoFuncao: "02", descricaoFuncao: "Operacional", codigoObjetoCustos: "001", descricaoObjetoCustos: "Veículos", codigoUnidadeCustos: "001", descricaoUnidadeCustos: "Sede", codigoCentroCustos: "006", descricaoCentroCustos: "Transporte" },
-  { id: "2", codigoModelo: "1", descricaoModelo: "Depreciação", codigoFuncao: "02", descricaoFuncao: "Operacional", codigoObjetoCustos: "002", descricaoObjetoCustos: "Imóveis", codigoUnidadeCustos: "002", descricaoUnidadeCustos: "Filial Norte", codigoCentroCustos: "007", descricaoCentroCustos: "Infraestrutura" },
-  { id: "3", codigoModelo: "1", descricaoModelo: "Depreciação", codigoFuncao: "02", descricaoFuncao: "Operacional", codigoObjetoCustos: "004", descricaoObjetoCustos: "Equipamentos", codigoUnidadeCustos: "004", descricaoUnidadeCustos: "Filial Sul", codigoCentroCustos: "009", descricaoCentroCustos: "TI" },
-  { id: "4", codigoModelo: "1", descricaoModelo: "Depreciação", codigoFuncao: "02", descricaoFuncao: "Operacional", codigoObjetoCustos: "003", descricaoObjetoCustos: "Mobiliário", codigoUnidadeCustos: "003", descricaoUnidadeCustos: "Filial Leste", codigoCentroCustos: "008", descricaoCentroCustos: "Administrativo" },
-  { id: "5", codigoModelo: "1", descricaoModelo: "Depreciação", codigoFuncao: "02", descricaoFuncao: "Operacional", codigoObjetoCustos: "006", descricaoObjetoCustos: "Máquinas", codigoUnidadeCustos: "005", descricaoUnidadeCustos: "Filial Oeste", codigoCentroCustos: "010", descricaoCentroCustos: "Produção" },
+  { id: "1", modelo: "1", funcao: "02", objetoCustos: "001", unidadeCustos: "001", centroCustos: "006" },
+  { id: "2", modelo: "1", funcao: "02", objetoCustos: "002", unidadeCustos: "002", centroCustos: "007" },
+  { id: "3", modelo: "1", funcao: "02", objetoCustos: "004", unidadeCustos: "004", centroCustos: "009" },
+  { id: "4", modelo: "1", funcao: "02", objetoCustos: "003", unidadeCustos: "003", centroCustos: "008" },
+  { id: "5", modelo: "1", funcao: "02", objetoCustos: "006", unidadeCustos: "005", centroCustos: "010" },
 ];
 
 export const VinculoSistemasDialog = ({
@@ -102,7 +97,7 @@ export const VinculoSistemasDialog = ({
   const [selectedCodigo, setSelectedCodigo] = useState("");
   const [acumuladorSearch, setAcumuladorSearch] = useState("");
   const [selectedDescricao, setSelectedDescricao] = useState("");
-  const [selectedAcumuladorId, setSelectedAcumuladorId] = useState<string | null>(null);
+  const [selectedAcumuladorIds, setSelectedAcumuladorIds] = useState<string[]>([]);
   const [advancedWarning, setAdvancedWarning] = useState<{ requires: boolean; reason: string }>({ requires: false, reason: "" });
   const [editingVinculoId, setEditingVinculoId] = useState<string | null>(null);
   const [regraAvancada, setRegraAvancada] = useState<RegraAvancada>({
@@ -115,7 +110,7 @@ export const VinculoSistemasDialog = ({
     setSelectedSistema("");
     setSelectedCodigo("");
     setSelectedDescricao("");
-    setSelectedAcumuladorId(null);
+    setSelectedAcumuladorIds([]);
     setAcumuladorSearch("");
     setAdvancedWarning({ requires: false, reason: "" });
     setEditingVinculoId(null);
@@ -148,7 +143,7 @@ export const VinculoSistemasDialog = ({
       descricaoNoSistema: selectedDescricao,
       tipoVinculo: "direto",
       status: advancedWarning.requires ? "requer_regra" : "valido",
-      acumulador: selectedAcumuladorId ? acumuladoresEquipamentosDisponiveis.find(a => a.id === selectedAcumuladorId) : undefined,
+      acumuladores: acumuladoresEquipamentosDisponiveis.filter(a => selectedAcumuladorIds.includes(a.id)),
     };
 
     if (editingVinculoId) {
@@ -173,7 +168,7 @@ export const VinculoSistemasDialog = ({
       descricaoNoSistema: selectedDescricao,
       tipoVinculo: "avancado",
       status: "valido",
-      acumulador: selectedAcumuladorId ? acumuladoresEquipamentosDisponiveis.find(a => a.id === selectedAcumuladorId) : undefined,
+      acumuladores: acumuladoresEquipamentosDisponiveis.filter(a => selectedAcumuladorIds.includes(a.id)),
       regraAvancada,
     };
 
@@ -196,7 +191,7 @@ export const VinculoSistemasDialog = ({
     setSelectedSistema(vinculo.sistema);
     setSelectedCodigo(vinculo.codigoNoSistema);
     setSelectedDescricao(vinculo.descricaoNoSistema);
-    setSelectedAcumuladorId(vinculo.acumulador?.id || null);
+    setSelectedAcumuladorIds(vinculo.acumuladores?.map(a => a.id) || []);
     setEditingVinculoId(vinculo.id);
     const detection = detectRequiresAdvancedRule(vinculo.sistema, vinculo.codigoNoSistema);
     setAdvancedWarning(detection);
@@ -224,8 +219,18 @@ export const VinculoSistemasDialog = ({
     onOpenChange(value);
   };
 
-  const selectAcumulador = (id: string) => {
-    setSelectedAcumuladorId(prev => prev === id ? null : id);
+  const toggleAcumulador = (id: string) => {
+    setSelectedAcumuladorIds(prev =>
+      prev.includes(id) ? prev.filter(a => a !== id) : [...prev, id]
+    );
+  };
+
+  const toggleAllAcumuladores = () => {
+    if (selectedAcumuladorIds.length === acumuladoresEquipamentosDisponiveis.length) {
+      setSelectedAcumuladorIds([]);
+    } else {
+      setSelectedAcumuladorIds(acumuladoresEquipamentosDisponiveis.map(a => a.id));
+    }
   };
 
 
@@ -282,9 +287,9 @@ export const VinculoSistemasDialog = ({
                           {vinculo.descricaoNoSistema}
                         </TableCell>
                         <TableCell className="text-xs hidden sm:table-cell">
-                          {vinculo.acumulador ? (
+                          {vinculo.acumuladores && vinculo.acumuladores.length > 0 ? (
                             <Badge variant="outline" className="text-[10px]">
-                              OC:{vinculo.acumulador.codigoObjetoCustos} CC:{vinculo.acumulador.codigoCentroCustos}
+                              {vinculo.acumuladores.length} acumulador(es)
                             </Badge>
                           ) : (
                             <span className="text-muted-foreground">—</span>
@@ -412,7 +417,7 @@ export const VinculoSistemasDialog = ({
                     Acumuladores do Equipamento Público
                   </Label>
                   <p className="text-[11px] text-muted-foreground">
-                    Selecione o acumulador que deseja associar a este vínculo.
+                    Selecione os acumuladores existentes que deseja associar a este vínculo.
                   </p>
 
                   {/* Search */}
@@ -427,39 +432,40 @@ export const VinculoSistemasDialog = ({
                   </div>
 
                   {/* Selected summary */}
-                  {selectedAcumuladorId && (() => {
-                    const ac = acumuladoresEquipamentosDisponiveis.find(a => a.id === selectedAcumuladorId);
-                    return ac ? (
-                      <div className="flex flex-wrap gap-1.5">
-                        <Badge variant="secondary" className="text-[10px] gap-1">
-                          M:{ac.codigoModelo} F:{ac.codigoFuncao} OC:{ac.codigoObjetoCustos} UC:{ac.codigoUnidadeCustos} CC:{ac.codigoCentroCustos}
-                          <button
-                            type="button"
-                            className="ml-0.5 hover:text-destructive"
-                            onClick={(e) => { e.stopPropagation(); setSelectedAcumuladorId(null); }}
-                          >
-                            ×
-                          </button>
-                        </Badge>
-                      </div>
-                    ) : null;
-                  })()}
+                  {selectedAcumuladorIds.length > 0 && (
+                    <div className="flex flex-wrap gap-1.5">
+                      {acumuladoresEquipamentosDisponiveis
+                        .filter(a => selectedAcumuladorIds.includes(a.id))
+                        .map(ac => (
+                          <Badge key={ac.id} variant="secondary" className="text-[10px] gap-1">
+                            M:{ac.modelo} F:{ac.funcao} OC:{ac.objetoCustos} UC:{ac.unidadeCustos} CC:{ac.centroCustos}
+                            <button
+                              type="button"
+                              className="ml-0.5 hover:text-destructive"
+                              onClick={(e) => { e.stopPropagation(); toggleAcumulador(ac.id); }}
+                            >
+                              ×
+                            </button>
+                          </Badge>
+                        ))}
+                    </div>
+                  )}
 
                   <div className="rounded-md border max-h-48 overflow-y-auto">
                     <Table>
                       <TableHeader>
                         <TableRow>
-                          <TableHead className="text-[11px] w-10"></TableHead>
-                          <TableHead className="text-[11px]">Cód. Modelo</TableHead>
-                          <TableHead className="text-[11px]">Desc. Modelo</TableHead>
-                          <TableHead className="text-[11px]">Cód. Função</TableHead>
-                          <TableHead className="text-[11px]">Desc. Função</TableHead>
-                          <TableHead className="text-[11px]">Cód. Obj. Custos</TableHead>
-                          <TableHead className="text-[11px]">Desc. Obj. Custos</TableHead>
-                          <TableHead className="text-[11px]">Cód. Unid. Custos</TableHead>
-                          <TableHead className="text-[11px]">Desc. Unid. Custos</TableHead>
-                          <TableHead className="text-[11px]">Cód. Centro Custos</TableHead>
-                          <TableHead className="text-[11px]">Desc. Centro Custos</TableHead>
+                          <TableHead className="text-[11px] w-10">
+                            <Checkbox
+                              checked={selectedAcumuladorIds.length === acumuladoresEquipamentosDisponiveis.length && acumuladoresEquipamentosDisponiveis.length > 0}
+                              onCheckedChange={toggleAllAcumuladores}
+                            />
+                          </TableHead>
+                          <TableHead className="text-[11px]">Modelo</TableHead>
+                          <TableHead className="text-[11px]">Função</TableHead>
+                          <TableHead className="text-[11px]">Objeto de Custos</TableHead>
+                          <TableHead className="text-[11px]">Unidade de Custos</TableHead>
+                          <TableHead className="text-[11px]">Centro de Custos</TableHead>
                         </TableRow>
                       </TableHeader>
                       <TableBody>
@@ -467,34 +473,26 @@ export const VinculoSistemasDialog = ({
                           .filter(ac => {
                             if (!acumuladorSearch) return true;
                             const q = acumuladorSearch.toLowerCase();
-                            return [ac.codigoModelo, ac.descricaoModelo, ac.codigoFuncao, ac.descricaoFuncao, ac.codigoObjetoCustos, ac.descricaoObjetoCustos, ac.codigoUnidadeCustos, ac.descricaoUnidadeCustos, ac.codigoCentroCustos, ac.descricaoCentroCustos]
+                            return [ac.modelo, ac.funcao, ac.objetoCustos, ac.unidadeCustos, ac.centroCustos]
                               .some(v => v.toLowerCase().includes(q));
                           })
                           .map(ac => (
                           <TableRow
                             key={ac.id}
-                            className={`cursor-pointer ${selectedAcumuladorId === ac.id ? "bg-muted/50" : ""}`}
-                            onClick={() => selectAcumulador(ac.id)}
+                            className={`cursor-pointer ${selectedAcumuladorIds.includes(ac.id) ? "bg-muted/50" : ""}`}
+                            onClick={() => toggleAcumulador(ac.id)}
                           >
                             <TableCell className="py-2">
-                              <input
-                                type="radio"
-                                name="acumulador"
-                                checked={selectedAcumuladorId === ac.id}
-                                onChange={() => selectAcumulador(ac.id)}
-                                className="h-3.5 w-3.5 accent-primary"
+                              <Checkbox
+                                checked={selectedAcumuladorIds.includes(ac.id)}
+                                onCheckedChange={() => toggleAcumulador(ac.id)}
                               />
                             </TableCell>
-                            <TableCell className="text-xs py-2">{ac.codigoModelo}</TableCell>
-                            <TableCell className="text-xs py-2">{ac.descricaoModelo}</TableCell>
-                            <TableCell className="text-xs py-2">{ac.codigoFuncao}</TableCell>
-                            <TableCell className="text-xs py-2">{ac.descricaoFuncao}</TableCell>
-                            <TableCell className="text-xs py-2">{ac.codigoObjetoCustos}</TableCell>
-                            <TableCell className="text-xs py-2">{ac.descricaoObjetoCustos}</TableCell>
-                            <TableCell className="text-xs py-2">{ac.codigoUnidadeCustos}</TableCell>
-                            <TableCell className="text-xs py-2">{ac.descricaoUnidadeCustos}</TableCell>
-                            <TableCell className="text-xs py-2">{ac.codigoCentroCustos}</TableCell>
-                            <TableCell className="text-xs py-2">{ac.descricaoCentroCustos}</TableCell>
+                            <TableCell className="text-xs py-2">{ac.modelo}</TableCell>
+                            <TableCell className="text-xs py-2">{ac.funcao}</TableCell>
+                            <TableCell className="text-xs py-2">{ac.objetoCustos}</TableCell>
+                            <TableCell className="text-xs py-2">{ac.unidadeCustos}</TableCell>
+                            <TableCell className="text-xs py-2">{ac.centroCustos}</TableCell>
                           </TableRow>
                         ))}
                       </TableBody>
