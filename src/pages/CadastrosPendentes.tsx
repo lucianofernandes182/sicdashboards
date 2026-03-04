@@ -172,35 +172,58 @@ export default function CadastrosPendentes() {
   const tipoSelecionado = registrosSelecionadosArray.length > 0 ? registrosSelecionadosArray[0].tipo : null;
   const totalValorSelecionado = registrosSelecionadosArray.reduce((acc, r) => acc + r.valor, 0);
 
-  const handleToggleSelecao = (id: string, tipo: "EP" | "VPD") => {
+  // Estado para revalidação em massa
+  const [isRevalidacaoMassaModalOpen, setIsRevalidacaoMassaModalOpen] = useState(false);
+  const [isRevalidandoMassa, setIsRevalidandoMassa] = useState(false);
+  const [resultadosMassa, setResultadosMassa] = useState<{registro: RegistroPendente; resultado: RevalidacaoStatus}[]>([]);
+
+  const handleToggleSelecao = (id: string) => {
     setRegistrosSelecionados((prev) => {
       const next = new Set(prev);
-      if (next.has(id)) {
-        next.delete(id);
-      } else {
-        if (next.size === 0 || tipoSelecionado === tipo) {
-          next.add(id);
-        } else {
-          toast.error("Só é possível vincular registros do mesmo tipo (EP ou VPD)");
-          return prev;
-        }
-      }
+      if (next.has(id)) next.delete(id);
+      else next.add(id);
       return next;
     });
   };
 
   const handleSelecionarTodos = () => {
-    const registrosDoTipo = registrosFiltrados.filter((r) =>
-    filtroTipo === "todos" ? r.tipo === (registrosFiltrados[0]?.tipo || "EP") : true
-    );
-    if (
-    registrosSelecionados.size === registrosDoTipo.length &&
-    registrosDoTipo.every((r) => registrosSelecionados.has(r.id)))
-    {
+    if (registrosFiltrados.every((r) => registrosSelecionados.has(r.id))) {
       setRegistrosSelecionados(new Set());
     } else {
-      setRegistrosSelecionados(new Set(registrosDoTipo.map((r) => r.id)));
+      setRegistrosSelecionados(new Set(registrosFiltrados.map((r) => r.id)));
     }
+  };
+
+  const handleRevalidarEmMassa = () => {
+    setIsRevalidandoMassa(true);
+    setResultadosMassa([]);
+    setIsRevalidacaoMassaModalOpen(true);
+
+    setTimeout(() => {
+      const selecionados = registrosPendentes.filter((r) => registrosSelecionados.has(r.id));
+      const resultados = selecionados.map((reg) => ({
+        registro: reg,
+        resultado: simularRevalidacao(reg),
+      }));
+      setResultadosMassa(resultados);
+      setIsRevalidandoMassa(false);
+
+      const idsValidados = resultados
+        .filter((r) => r.resultado === "VALIDADO" || r.resultado === "VPD_NULL_PERMITIDO")
+        .map((r) => r.registro.id);
+
+      if (idsValidados.length > 0) {
+        setTimeout(() => {
+          setRegistrosPendentes((prev) => prev.filter((r) => !idsValidados.includes(r.id)));
+          setRegistrosSelecionados((prev) => {
+            const next = new Set(prev);
+            idsValidados.forEach((id) => next.delete(id));
+            return next;
+          });
+          toast.success(`${idsValidados.length} registro(s) validado(s) e removido(s) da listagem.`);
+        }, 2000);
+      }
+    }, 1500);
   };
 
   const handleLimparSelecao = () => setRegistrosSelecionados(new Set());
@@ -250,7 +273,7 @@ export default function CadastrosPendentes() {
 
   const formatDate = (dateStr: string) => new Date(dateStr).toLocaleDateString("pt-BR");
 
-  const podeSelecionar = (tipo: "EP" | "VPD") => registrosSelecionados.size === 0 || tipoSelecionado === tipo;
+  
 
   const getResultMessage = (): {icon: React.ReactNode;text: string;variant: "success" | "error" | "warning";} | null => {
     if (!registroEmValidacao || !revalidacaoResultado) return null;
@@ -285,9 +308,9 @@ export default function CadastrosPendentes() {
               Voltar
             </Button>
             <div>
-              <h1 className="text-2xl font-bold flex items-center gap-2">Cadastro de Pendentes
+              <h1 className="text-2xl font-bold flex items-center gap-2">
                 <ShieldCheck className="h-6 w-6 text-primary" />
-                Central de Revalidação
+                Cadastro de Pendentes
               </h1>
               <p className="text-muted-foreground text-sm">
                 Registros identificados nos sistemas externos que necessitam de validação de consistência cadastral
@@ -353,17 +376,24 @@ export default function CadastrosPendentes() {
                   <Badge variant="secondary" className="text-sm px-3 py-1">
                     {registrosSelecionados.size} registro{registrosSelecionados.size > 1 ? "s" : ""} selecionado{registrosSelecionados.size > 1 ? "s" : ""}
                   </Badge>
-                  <Badge
-                  variant="outline"
-                  className={cn(
-                    "text-xs",
-                    tipoSelecionado === "EP" ?
-                    "border-blue-500 text-blue-700 dark:text-blue-400" :
-                    "border-purple-500 text-purple-700 dark:text-purple-400"
-                  )}>
-                  
-                    {tipoSelecionado}
-                  </Badge>
+                  {(() => {
+                    const epCount = registrosSelecionadosArray.filter(r => r.tipo === "EP").length;
+                    const vpdCount = registrosSelecionadosArray.filter(r => r.tipo === "VPD").length;
+                    return (
+                      <div className="flex items-center gap-1.5">
+                        {epCount > 0 && (
+                          <Badge variant="outline" className="text-xs border-blue-500 text-blue-700 dark:text-blue-400">
+                            {epCount} EP
+                          </Badge>
+                        )}
+                        {vpdCount > 0 && (
+                          <Badge variant="outline" className="text-xs border-purple-500 text-purple-700 dark:text-purple-400">
+                            {vpdCount} VPD
+                          </Badge>
+                        )}
+                      </div>
+                    );
+                  })()}
                   {totalValorSelecionado > 0 &&
                 <span className="text-sm text-muted-foreground">
                       Total: <span className="font-semibold">{formatCurrency(totalValorSelecionado)}</span>
@@ -375,7 +405,11 @@ export default function CadastrosPendentes() {
                     <X className="h-3.5 w-3.5" />
                     Limpar
                   </Button>
-                  <Button size="sm" onClick={handleAbrirVinculacao} className="gap-1.5" disabled={registrosSelecionados.size < 2}>
+                  <Button size="sm" onClick={handleRevalidarEmMassa} className="gap-1.5">
+                    <RefreshCw className="h-3.5 w-3.5" />
+                    Revalidar em Massa
+                  </Button>
+                  <Button size="sm" variant="outline" onClick={handleAbrirVinculacao} className="gap-1.5" disabled={registrosSelecionados.size < 2}>
                     <Link2 className="h-3.5 w-3.5" />
                     Vincular a um Cadastro
                   </Button>
@@ -424,14 +458,8 @@ export default function CadastrosPendentes() {
                   <TableRow>
                     <TableHead className="w-[50px]">
                       <Checkbox
-                      checked={
-                      registrosFiltrados.length > 0 &&
-                      registrosFiltrados.every((r) => registrosSelecionados.has(r.id)) && (
-                      filtroTipo !== "todos" || registrosFiltrados.every((r) => r.tipo === registrosFiltrados[0].tipo))
-                      }
-                      onCheckedChange={handleSelecionarTodos}
-                      disabled={filtroTipo === "todos" && new Set(registrosFiltrados.map((r) => r.tipo)).size > 1} />
-                    
+                      checked={registrosFiltrados.length > 0 && registrosFiltrados.every((r) => registrosSelecionados.has(r.id))}
+                      onCheckedChange={handleSelecionarTodos} />
                     </TableHead>
                     <TableHead className="w-[80px]">Tipo</TableHead>
                     <TableHead>Código</TableHead>
@@ -453,8 +481,7 @@ export default function CadastrosPendentes() {
                         <TableCell>
                           <Checkbox
                           checked={registrosSelecionados.has(registro.id)}
-                          onCheckedChange={() => handleToggleSelecao(registro.id, registro.tipo)}
-                          disabled={!podeSelecionar(registro.tipo)} />
+                          onCheckedChange={() => handleToggleSelecao(registro.id)} />
                         
                         </TableCell>
                         <TableCell>
@@ -650,6 +677,93 @@ export default function CadastrosPendentes() {
             <Button onClick={handleSalvarVinculacao}>
               <Link2 className="h-4 w-4 mr-2" />
               Vincular e Salvar
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* Modal de Revalidação em Massa */}
+      <Dialog open={isRevalidacaoMassaModalOpen} onOpenChange={setIsRevalidacaoMassaModalOpen}>
+        <DialogContent className="max-w-2xl max-h-[90vh] overflow-hidden flex flex-col">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              <RefreshCw className="h-5 w-5 text-primary" />
+              Revalidação em Massa
+            </DialogTitle>
+            <DialogDescription>
+              Resultado da revalidação de {registrosSelecionadosArray.length} registro(s) selecionado(s).
+            </DialogDescription>
+          </DialogHeader>
+
+          {isRevalidandoMassa ? (
+            <div className="flex items-center gap-3 p-6 rounded-lg border border-primary/30 bg-primary/5 justify-center">
+              <RefreshCw className="h-5 w-5 text-primary animate-spin" />
+              <span className="text-sm text-primary font-medium">Validando registros...</span>
+            </div>
+          ) : resultadosMassa.length > 0 ? (
+            <ScrollArea className="flex-1 max-h-[60vh]">
+              <div className="space-y-5 pr-4">
+                {/* Agrupamento por tipo */}
+                {["EP", "VPD"].map((tipo) => {
+                  const doTipo = resultadosMassa.filter((r) => r.registro.tipo === tipo);
+                  if (doTipo.length === 0) return null;
+                  const validados = doTipo.filter((r) => r.resultado === "VALIDADO" || r.resultado === "VPD_NULL_PERMITIDO");
+                  const inconsistentes = doTipo.filter((r) => r.resultado !== "VALIDADO" && r.resultado !== "VPD_NULL_PERMITIDO");
+
+                  return (
+                    <div key={tipo} className="space-y-3">
+                      <div className="flex items-center gap-2">
+                        {tipo === "EP" ? <Building2 className="h-4 w-4 text-blue-500" /> : <FileText className="h-4 w-4 text-purple-500" />}
+                        <span className="font-semibold text-sm">{tipo === "EP" ? "Equipamentos Públicos" : "VPDs"}</span>
+                        <Badge variant="outline" className="text-xs">{doTipo.length} registro(s)</Badge>
+                      </div>
+
+                      {/* Validados */}
+                      {validados.length > 0 && (
+                        <div className="border border-green-500/30 bg-green-500/5 rounded-lg p-3 space-y-2">
+                          <div className="flex items-center gap-2 text-green-600 dark:text-green-400">
+                            <CheckCircle className="h-4 w-4" />
+                            <span className="text-xs font-semibold">{validados.length} Validado(s)</span>
+                          </div>
+                          {validados.map((r) => (
+                            <div key={r.registro.id} className="flex items-center justify-between text-sm pl-6">
+                              <span className="font-mono text-xs">{r.registro.codigo || "sem código"}</span>
+                              <span className="text-xs text-muted-foreground">{r.registro.origem}</span>
+                            </div>
+                          ))}
+                        </div>
+                      )}
+
+                      {/* Inconsistentes */}
+                      {inconsistentes.length > 0 && (
+                        <div className="border border-destructive/30 bg-destructive/5 rounded-lg p-3 space-y-2">
+                          <div className="flex items-center gap-2 text-destructive">
+                            <XCircle className="h-4 w-4" />
+                            <span className="text-xs font-semibold">{inconsistentes.length} Inconsistência(s)</span>
+                          </div>
+                          {inconsistentes.map((r) => (
+                            <div key={r.registro.id} className="flex items-center justify-between text-sm pl-6 gap-2">
+                              <div>
+                                <span className="font-mono text-xs">{r.registro.codigo || "sem código"}</span>
+                                <span className="text-xs text-muted-foreground ml-2">— {r.registro.origem}</span>
+                              </div>
+                              <span className="text-xs text-destructive shrink-0">
+                                {r.resultado === "ERRO_CADASTRO_NAO_EXISTE" ? "Cadastro não encontrado" : "Código inválido"}
+                              </span>
+                            </div>
+                          ))}
+                        </div>
+                      )}
+                    </div>
+                  );
+                })}
+              </div>
+            </ScrollArea>
+          ) : null}
+
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setIsRevalidacaoMassaModalOpen(false)}>
+              Fechar
             </Button>
           </DialogFooter>
         </DialogContent>
