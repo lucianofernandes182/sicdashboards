@@ -144,13 +144,13 @@ const inconsistenciaConfig: Record<InconsistenciaTipo, {label: string;color: str
 function simularRevalidacao(registro: RegistroPendente): RevalidacaoStatus {
   if (registro.inconsistencia === "AGUARDANDO_VALIDACAO") return "DADOS_COMPLETOS";
   if (registro.inconsistencia === "VPD_NULL_PERMITIDO") return "DADOS_COMPLETOS";
-  const temVpd = registro.inconsistencia === "VPD_INEXISTENTE";
+  const temVpd = registro.tipo === "VPD" && registro.inconsistencia === "VPD_INEXISTENTE";
   const temCodigo = registro.inconsistencia === "EP_SEM_CODIGO" || !registro.codigo;
   if (temVpd && temCodigo) return "VPD_E_CODIGO_PENDENTES";
   if (temVpd) return "VPD_PENDENTE";
   if (temCodigo) return "CODIGO_PENDENTE";
   // Simula: 30% de chance de ter sido corrigido
-  return Math.random() > 0.7 ? "DADOS_COMPLETOS" : "VPD_PENDENTE";
+  return Math.random() > 0.7 ? "DADOS_COMPLETOS" : "CODIGO_PENDENTE";
 }
 
 
