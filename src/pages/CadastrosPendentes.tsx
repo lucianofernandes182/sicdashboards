@@ -217,31 +217,25 @@ export default function CadastrosPendentes() {
     setRegistroEmValidacao(registro);
     setRevalidacaoResultado(null);
     setCodigoManual("");
-    setIsRevalidando(false);
-    setIsRevalidacaoModalOpen(true);
-  };
-
-  const handleExecutarRevalidacao = () => {
-    if (!registroEmValidacao) return;
     setIsRevalidando(true);
+    setIsRevalidacaoModalOpen(true);
 
-    // Simula delay de API
+    // Executa revalidação automaticamente ao abrir
     setTimeout(() => {
-      const resultado = simularRevalidacao(registroEmValidacao);
+      const resultado = simularRevalidacao(registro);
       setRevalidacaoResultado(resultado);
       setIsRevalidando(false);
 
       if (resultado === "VALIDADO" || resultado === "VPD_NULL_PERMITIDO") {
-        // Sucesso: remover da lista após um breve delay visual
         setTimeout(() => {
-          setRegistrosPendentes((prev) => prev.filter((r) => r.id !== registroEmValidacao.id));
+          setRegistrosPendentes((prev) => prev.filter((r) => r.id !== registro.id));
           toast.success("Registro validado com sucesso.");
           setIsRevalidacaoModalOpen(false);
           setRegistroEmValidacao(null);
           setRevalidacaoResultado(null);
-        }, 1200);
+        }, 1500);
       }
-    }, 1000);
+    }, 1200);
   };
 
   const handleAbrirVinculacao = () => {
@@ -283,14 +277,6 @@ export default function CadastrosPendentes() {
         step1,
         { title: "Validação em andamento...", description: "Verificando existência e consistência do cadastro", status: "current", icon: <RefreshCw className="h-4 w-4 animate-spin" /> },
         { title: "Resultado", description: "Aguardando conclusão", status: "pending", icon: <Clock className="h-4 w-4" /> },
-      ];
-    }
-
-    if (!revalidacaoResultado) {
-      return [
-        step1,
-        { title: "Validação pendente", description: "Clique em 'Revalidar Registro' para executar", status: "pending", icon: <ShieldCheck className="h-4 w-4" /> },
-        { title: "Resultado", description: "Aguardando validação", status: "pending", icon: <Clock className="h-4 w-4" /> },
       ];
     }
 
@@ -631,21 +617,6 @@ export default function CadastrosPendentes() {
                   </div>
                 )}
 
-                {/* Campo para informar código manual (EP sem código) */}
-                {registroEmValidacao.inconsistencia === "EP_SEM_CODIGO" && !revalidacaoResultado && (
-                  <div className="space-y-2">
-                    <Label htmlFor="codigo-manual" className="text-sm">Informar código do EP</Label>
-                    <Input
-                      id="codigo-manual"
-                      placeholder="Ex: EP-2025-001"
-                      value={codigoManual}
-                      onChange={(e) => setCodigoManual(e.target.value)}
-                    />
-                    <p className="text-xs text-muted-foreground">
-                      Informe o código correto do Equipamento Público ou acesse a tela de cadastro.
-                    </p>
-                  </div>
-                )}
 
                 <Separator />
 
@@ -701,35 +672,18 @@ export default function CadastrosPendentes() {
           )}
 
           <DialogFooter className="gap-2 sm:gap-0 flex-shrink-0 pt-4 border-t">
-            {revalidacaoResultado && (revalidacaoResultado === "ERRO_CADASTRO_NAO_EXISTE" || revalidacaoResultado === "ERRO_CODIGO_INVALIDO") && (
+            {revalidacaoResultado && (revalidacaoResultado === "ERRO_CADASTRO_NAO_EXISTE" || revalidacaoResultado === "ERRO_CODIGO_INVALIDO") && registroEmValidacao?.tipo === "EP" && (
               <Button
                 variant="outline"
-                onClick={() => {
-                  const route = registroEmValidacao?.tipo === "EP" ? "/equipamentos-publicos" : "/comparacao-vpds";
-                  navigate(route);
-                }}
+                onClick={() => navigate("/equipamentos-publicos")}
                 className="gap-1.5"
               >
                 <ExternalLink className="h-4 w-4" />
-                Ir para Cadastro
+                Ir para Cadastro de EP
               </Button>
             )}
             <Button variant="outline" onClick={() => setIsRevalidacaoModalOpen(false)}>
-              Cancelar
-            </Button>
-            <Button
-              onClick={handleExecutarRevalidacao}
-              disabled={isRevalidando || revalidacaoResultado === "VALIDADO" || revalidacaoResultado === "VPD_NULL_PERMITIDO"}
-              className="gap-1.5"
-            >
-              {isRevalidando ? (
-                <RefreshCw className="h-4 w-4 animate-spin" />
-              ) : (
-                <ShieldCheck className="h-4 w-4" />
-              )}
-              {revalidacaoResultado && revalidacaoResultado !== "VALIDADO" && revalidacaoResultado !== "VPD_NULL_PERMITIDO"
-                ? "Revalidar Novamente"
-                : "Revalidar Registro"}
+              {revalidacaoResultado && revalidacaoResultado !== "VALIDADO" && revalidacaoResultado !== "VPD_NULL_PERMITIDO" ? "Fechar" : "Cancelar"}
             </Button>
           </DialogFooter>
         </DialogContent>
