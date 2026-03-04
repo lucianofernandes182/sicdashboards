@@ -23,10 +23,10 @@ type InconsistenciaTipo =
 "AGUARDANDO_VALIDACAO";
 
 type RevalidacaoStatus =
-"VALIDADO" |
-"ERRO_CADASTRO_NAO_EXISTE" |
-"ERRO_CODIGO_INVALIDO" |
-"VPD_NULL_PERMITIDO";
+"DADOS_COMPLETOS" |
+"VPD_PENDENTE" |
+"CODIGO_PENDENTE" |
+"VPD_E_CODIGO_PENDENTES";
 
 interface RegistroPendente {
   id: string;
@@ -142,11 +142,15 @@ const inconsistenciaConfig: Record<InconsistenciaTipo, {label: string;color: str
 
 // Simula resultado da revalidação
 function simularRevalidacao(registro: RegistroPendente): RevalidacaoStatus {
-  if (registro.inconsistencia === "VPD_NULL_PERMITIDO") return "VPD_NULL_PERMITIDO";
-  if (registro.inconsistencia === "AGUARDANDO_VALIDACAO") return "VALIDADO";
-  if (registro.inconsistencia === "EP_SEM_CODIGO" && !registro.codigo) return "ERRO_CODIGO_INVALIDO";
+  if (registro.inconsistencia === "AGUARDANDO_VALIDACAO") return "DADOS_COMPLETOS";
+  if (registro.inconsistencia === "VPD_NULL_PERMITIDO") return "DADOS_COMPLETOS";
+  const temVpd = registro.inconsistencia === "VPD_INEXISTENTE";
+  const temCodigo = registro.inconsistencia === "EP_SEM_CODIGO" || !registro.codigo;
+  if (temVpd && temCodigo) return "VPD_E_CODIGO_PENDENTES";
+  if (temVpd) return "VPD_PENDENTE";
+  if (temCodigo) return "CODIGO_PENDENTE";
   // Simula: 30% de chance de ter sido corrigido
-  return Math.random() > 0.7 ? "VALIDADO" : "ERRO_CADASTRO_NAO_EXISTE";
+  return Math.random() > 0.7 ? "DADOS_COMPLETOS" : "VPD_PENDENTE";
 }
 
 
@@ -209,7 +213,7 @@ export default function CadastrosPendentes() {
       setIsRevalidandoMassa(false);
 
       const idsValidados = resultados
-        .filter((r) => r.resultado === "VALIDADO" || r.resultado === "VPD_NULL_PERMITIDO")
+        .filter((r) => r.resultado === "DADOS_COMPLETOS")
         .map((r) => r.registro.id);
 
       if (idsValidados.length > 0) {
@@ -241,7 +245,7 @@ export default function CadastrosPendentes() {
       setRevalidacaoResultado(resultado);
       setIsRevalidando(false);
 
-      if (resultado === "VALIDADO" || resultado === "VPD_NULL_PERMITIDO") {
+      if (resultado === "DADOS_COMPLETOS") {
         setTimeout(() => {
           setRegistrosPendentes((prev) => prev.filter((r) => r.id !== registro.id));
           toast.success("Registro validado com sucesso.");
@@ -275,24 +279,16 @@ export default function CadastrosPendentes() {
 
   
 
+  const statusLabels: Record<RevalidacaoStatus, { icon: React.ReactNode; text: string; variant: "success" | "error" | "warning" }> = {
+    DADOS_COMPLETOS: { icon: <CheckCircle className="h-5 w-5 text-green-500" />, text: "Dados completos — registro consistente.", variant: "success" },
+    VPD_PENDENTE: { icon: <XCircle className="h-5 w-5 text-destructive" />, text: "VPD pendente — código de VPD não localizado no sistema.", variant: "error" },
+    CODIGO_PENDENTE: { icon: <AlertTriangle className="h-5 w-5 text-yellow-500" />, text: "Código pendente — registro sem código válido.", variant: "warning" },
+    VPD_E_CODIGO_PENDENTES: { icon: <XCircle className="h-5 w-5 text-destructive" />, text: "VPD e Código pendentes — ambos os dados estão ausentes.", variant: "error" },
+  };
+
   const getResultMessage = (): {icon: React.ReactNode;text: string;variant: "success" | "error" | "warning";} | null => {
     if (!registroEmValidacao || !revalidacaoResultado) return null;
-    const reg = registroEmValidacao;
-
-    switch (revalidacaoResultado) {
-      case "VALIDADO":
-        return { icon: <CheckCircle className="h-5 w-5 text-green-500" />, text: "Registro consistente — será removido da listagem.", variant: "success" };
-      case "VPD_NULL_PERMITIDO":
-        return { icon: <CheckCircle className="h-5 w-5 text-green-500" />, text: "VPD nulo permitido pela regra contábil — registro validado.", variant: "success" };
-      case "ERRO_CADASTRO_NAO_EXISTE":
-        return reg.tipo === "EP" ?
-        { icon: <XCircle className="h-5 w-5 text-destructive" />, text: `A contabilização informa o código ${reg.codigo || "(sem código)"}, porém não existe cadastro correspondente no sistema.`, variant: "error" } :
-        { icon: <XCircle className="h-5 w-5 text-destructive" />, text: `O código de VPD ${reg.codigo || "(nulo)"} não foi encontrado no sistema.`, variant: "error" };
-      case "ERRO_CODIGO_INVALIDO":
-        return { icon: <AlertTriangle className="h-5 w-5 text-yellow-500" />, text: "Registro recebido sem código válido.", variant: "warning" };
-      default:
-        return null;
-    }
+    return statusLabels[revalidacaoResultado] || null;
   };
 
   const resultMessage = getResultMessage();
@@ -600,7 +596,7 @@ export default function CadastrosPendentes() {
           }
 
           <DialogFooter className="gap-2 sm:gap-0">
-            {revalidacaoResultado && (revalidacaoResultado === "ERRO_CADASTRO_NAO_EXISTE" || revalidacaoResultado === "ERRO_CODIGO_INVALIDO") && registroEmValidacao?.tipo === "EP" &&
+            {revalidacaoResultado && revalidacaoResultado !== "DADOS_COMPLETOS" && registroEmValidacao?.tipo === "EP" &&
             <Button
               variant="outline"
               onClick={() => navigate("/equipamentos-publicos")}
@@ -707,8 +703,8 @@ export default function CadastrosPendentes() {
                 {["EP", "VPD"].map((tipo) => {
                   const doTipo = resultadosMassa.filter((r) => r.registro.tipo === tipo);
                   if (doTipo.length === 0) return null;
-                  const validados = doTipo.filter((r) => r.resultado === "VALIDADO" || r.resultado === "VPD_NULL_PERMITIDO");
-                  const inconsistentes = doTipo.filter((r) => r.resultado !== "VALIDADO" && r.resultado !== "VPD_NULL_PERMITIDO");
+                  const validados = doTipo.filter((r) => r.resultado === "DADOS_COMPLETOS");
+                  const inconsistentes = doTipo.filter((r) => r.resultado !== "DADOS_COMPLETOS");
 
                   return (
                     <div key={tipo} className="space-y-3">
@@ -723,12 +719,12 @@ export default function CadastrosPendentes() {
                         <div className="border border-green-500/30 bg-green-500/5 rounded-lg p-3 space-y-2">
                           <div className="flex items-center gap-2 text-green-600 dark:text-green-400">
                             <CheckCircle className="h-4 w-4" />
-                            <span className="text-xs font-semibold">{validados.length} Validado(s)</span>
+                            <span className="text-xs font-semibold">{validados.length} Dados completos</span>
                           </div>
                           {validados.map((r) => (
                             <div key={r.registro.id} className="flex items-center justify-between text-sm pl-6">
                               <span className="font-mono text-xs">{r.registro.codigo || "sem código"}</span>
-                              <span className="text-xs text-muted-foreground">{r.registro.origem}</span>
+                              <span className="text-xs text-green-600 dark:text-green-400 shrink-0">Dados completos</span>
                             </div>
                           ))}
                         </div>
@@ -748,7 +744,9 @@ export default function CadastrosPendentes() {
                                 <span className="text-xs text-muted-foreground ml-2">— {r.registro.origem}</span>
                               </div>
                               <span className="text-xs text-destructive shrink-0">
-                                Cadastro inconsistente
+                                {r.resultado === "VPD_PENDENTE" && "VPD pendente"}
+                                {r.resultado === "CODIGO_PENDENTE" && "Código pendente"}
+                                {r.resultado === "VPD_E_CODIGO_PENDENTES" && "VPD e Código pendentes"}
                               </span>
                             </div>
                           ))}
