@@ -748,7 +748,7 @@ export default function CadastrosPendentes() {
                                 <span className="text-xs text-muted-foreground ml-2">— {r.registro.origem}</span>
                               </div>
                               <span className="text-xs text-destructive shrink-0">
-                                {r.resultado === "ERRO_CADASTRO_NAO_EXISTE" ? "Cadastro não encontrado" : "Código inválido"}
+                                Cadastro inconsistente
                               </span>
                             </div>
                           ))}
