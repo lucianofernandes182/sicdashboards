@@ -175,34 +175,26 @@ export default function CadastrosPendentes() {
   const tipoSelecionado = registrosSelecionadosArray.length > 0 ? registrosSelecionadosArray[0].tipo : null;
   const totalValorSelecionado = registrosSelecionadosArray.reduce((acc, r) => acc + r.valor, 0);
 
-  const handleToggleSelecao = (id: string, tipo: "EP" | "VPD") => {
+  const handleToggleSelecao = (id: string) => {
     setRegistrosSelecionados((prev) => {
       const next = new Set(prev);
       if (next.has(id)) {
         next.delete(id);
       } else {
-        if (next.size === 0 || tipoSelecionado === tipo) {
-          next.add(id);
-        } else {
-          toast.error("Só é possível vincular registros do mesmo tipo (EP ou VPD)");
-          return prev;
-        }
+        next.add(id);
       }
       return next;
     });
   };
 
   const handleSelecionarTodos = () => {
-    const registrosDoTipo = registrosFiltrados.filter((r) =>
-      filtroTipo === "todos" ? r.tipo === (registrosFiltrados[0]?.tipo || "EP") : true
-    );
     if (
-      registrosSelecionados.size === registrosDoTipo.length &&
-      registrosDoTipo.every((r) => registrosSelecionados.has(r.id))
+      registrosFiltrados.length > 0 &&
+      registrosFiltrados.every((r) => registrosSelecionados.has(r.id))
     ) {
       setRegistrosSelecionados(new Set());
     } else {
-      setRegistrosSelecionados(new Set(registrosDoTipo.map((r) => r.id)));
+      setRegistrosSelecionados(new Set(registrosFiltrados.map((r) => r.id)));
     }
   };
 
@@ -290,7 +282,7 @@ export default function CadastrosPendentes() {
 
   const formatDate = (dateStr: string) => new Date(dateStr).toLocaleDateString("pt-BR");
 
-  const podeSelecionar = (tipo: "EP" | "VPD") => registrosSelecionados.size === 0 || tipoSelecionado === tipo;
+  const podeSelecionar = () => true;
 
   const getResultMessage = (): { icon: React.ReactNode; text: string; variant: "success" | "error" | "warning" } | null => {
     if (!registroEmValidacao || !revalidacaoResultado) return null;
@@ -470,11 +462,9 @@ export default function CadastrosPendentes() {
                       <Checkbox
                         checked={
                           registrosFiltrados.length > 0 &&
-                          registrosFiltrados.every((r) => registrosSelecionados.has(r.id)) &&
-                          (filtroTipo !== "todos" || registrosFiltrados.every((r) => r.tipo === registrosFiltrados[0].tipo))
+                          registrosFiltrados.every((r) => registrosSelecionados.has(r.id))
                         }
                         onCheckedChange={handleSelecionarTodos}
-                        disabled={filtroTipo === "todos" && new Set(registrosFiltrados.map((r) => r.tipo)).size > 1}
                       />
                     </TableHead>
                     <TableHead className="w-[80px]">Tipo</TableHead>
@@ -497,8 +487,7 @@ export default function CadastrosPendentes() {
                         <TableCell>
                           <Checkbox
                             checked={registrosSelecionados.has(registro.id)}
-                            onCheckedChange={() => handleToggleSelecao(registro.id, registro.tipo)}
-                            disabled={!podeSelecionar(registro.tipo)}
+                            onCheckedChange={() => handleToggleSelecao(registro.id)}
                           />
                         </TableCell>
                         <TableCell>
