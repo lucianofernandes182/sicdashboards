@@ -161,6 +161,9 @@ export default function CadastrosPendentes() {
   const [codigoManual, setCodigoManual] = useState("");
   const [revalidacaoResultado, setRevalidacaoResultado] = useState<RevalidacaoStatus | null>(null);
   const [isRevalidando, setIsRevalidando] = useState(false);
+  const [isRevalidacaoMassaModalOpen, setIsRevalidacaoMassaModalOpen] = useState(false);
+  const [isRevalidandoMassa, setIsRevalidandoMassa] = useState(false);
+  const [resultadosMassa, setResultadosMassa] = useState<{ registro: RegistroPendente; resultado: RevalidacaoStatus }[]>([]);
 
   const pendentesEP = registrosPendentes.filter((r) => r.tipo === "EP").length;
   const pendentesVPD = registrosPendentes.filter((r) => r.tipo === "VPD").length;
@@ -228,6 +231,43 @@ export default function CadastrosPendentes() {
         }, 1500);
       }
     }, 1200);
+  };
+
+  const handleRevalidarEmMassa = () => {
+    if (registrosSelecionados.size === 0) {
+      toast.error("Selecione pelo menos 1 registro para revalidar em massa");
+      return;
+    }
+    setResultadosMassa([]);
+    setIsRevalidandoMassa(true);
+    setIsRevalidacaoMassaModalOpen(true);
+
+    const selecionados = registrosPendentes.filter((r) => registrosSelecionados.has(r.id));
+
+    setTimeout(() => {
+      const resultados = selecionados.map((reg) => ({
+        registro: reg,
+        resultado: simularRevalidacao(reg),
+      }));
+      setResultadosMassa(resultados);
+      setIsRevalidandoMassa(false);
+
+      // Remove os validados da lista
+      const idsValidados = resultados
+        .filter((r) => r.resultado === "VALIDADO" || r.resultado === "VPD_NULL_PERMITIDO")
+        .map((r) => r.registro.id);
+
+      if (idsValidados.length > 0) {
+        setTimeout(() => {
+          setRegistrosPendentes((prev) => prev.filter((r) => !idsValidados.includes(r.id)));
+          setRegistrosSelecionados((prev) => {
+            const next = new Set(prev);
+            idsValidados.forEach((id) => next.delete(id));
+            return next;
+          });
+        }, 1500);
+      }
+    }, 1500);
   };
 
   const handleAbrirVinculacao = () => {
@@ -374,6 +414,10 @@ export default function CadastrosPendentes() {
                   <Button variant="outline" size="sm" onClick={handleLimparSelecao} className="gap-1.5">
                     <X className="h-3.5 w-3.5" />
                     Limpar
+                  </Button>
+                  <Button variant="secondary" size="sm" onClick={handleRevalidarEmMassa} className="gap-1.5">
+                    <RefreshCw className="h-3.5 w-3.5" />
+                    Revalidar em Massa
                   </Button>
                   <Button size="sm" onClick={handleAbrirVinculacao} className="gap-1.5" disabled={registrosSelecionados.size < 2}>
                     <Link2 className="h-3.5 w-3.5" />
@@ -650,6 +694,120 @@ export default function CadastrosPendentes() {
             <Button onClick={handleSalvarVinculacao}>
               <Link2 className="h-4 w-4 mr-2" />
               Vincular e Salvar
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+      {/* Modal de Revalidação em Massa */}
+      <Dialog open={isRevalidacaoMassaModalOpen} onOpenChange={setIsRevalidacaoMassaModalOpen}>
+        <DialogContent className="max-w-2xl max-h-[85vh] overflow-hidden flex flex-col">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              <RefreshCw className="h-5 w-5 text-primary" />
+              Revalidação em Massa
+            </DialogTitle>
+            <DialogDescription>
+              {isRevalidandoMassa
+                ? `Validando ${registrosSelecionados.size} registro(s)...`
+                : `Resultado da revalidação de ${resultadosMassa.length} registro(s).`}
+            </DialogDescription>
+          </DialogHeader>
+
+          {isRevalidandoMassa ? (
+            <div className="flex items-center justify-center gap-3 py-12">
+              <RefreshCw className="h-6 w-6 text-primary animate-spin" />
+              <span className="text-sm text-muted-foreground">Processando registros...</span>
+            </div>
+          ) : (
+            <ScrollArea className="flex-1 max-h-[60vh]">
+              <div className="space-y-4 pr-4">
+                {/* Validados */}
+                {resultadosMassa.filter((r) => r.resultado === "VALIDADO" || r.resultado === "VPD_NULL_PERMITIDO").length > 0 && (
+                  <div className="space-y-2">
+                    <div className="flex items-center gap-2">
+                      <CheckCircle className="h-4 w-4 text-green-500" />
+                      <span className="text-sm font-semibold">
+                        Validados ({resultadosMassa.filter((r) => r.resultado === "VALIDADO" || r.resultado === "VPD_NULL_PERMITIDO").length})
+                      </span>
+                    </div>
+                    <div className="border border-green-500/30 rounded-lg divide-y divide-green-500/10 bg-green-500/5">
+                      {resultadosMassa
+                        .filter((r) => r.resultado === "VALIDADO" || r.resultado === "VPD_NULL_PERMITIDO")
+                        .map(({ registro, resultado }) => (
+                          <div key={registro.id} className="p-3 flex items-center justify-between gap-3">
+                            <div className="flex items-center gap-3">
+                              <Badge variant="secondary" className="text-xs shrink-0">
+                                {registro.tipo}
+                              </Badge>
+                              <span className="font-mono text-xs">{registro.codigo || "sem código"}</span>
+                              <span className="text-xs text-muted-foreground">{registro.tipoMovimento}</span>
+                            </div>
+                            <span className="text-xs text-green-600 dark:text-green-400">
+                              {resultado === "VPD_NULL_PERMITIDO" ? "Nulo permitido" : "Consistente"}
+                            </span>
+                          </div>
+                        ))}
+                    </div>
+                  </div>
+                )}
+
+                {/* Com erros */}
+                {resultadosMassa.filter((r) => r.resultado === "ERRO_CADASTRO_NAO_EXISTE" || r.resultado === "ERRO_CODIGO_INVALIDO").length > 0 && (
+                  <div className="space-y-2">
+                    <div className="flex items-center gap-2">
+                      <XCircle className="h-4 w-4 text-destructive" />
+                      <span className="text-sm font-semibold">
+                        Inconsistências ({resultadosMassa.filter((r) => r.resultado === "ERRO_CADASTRO_NAO_EXISTE" || r.resultado === "ERRO_CODIGO_INVALIDO").length})
+                      </span>
+                    </div>
+                    <div className="border border-destructive/30 rounded-lg divide-y divide-destructive/10 bg-destructive/5">
+                      {resultadosMassa
+                        .filter((r) => r.resultado === "ERRO_CADASTRO_NAO_EXISTE" || r.resultado === "ERRO_CODIGO_INVALIDO")
+                        .map(({ registro, resultado }) => (
+                          <div key={registro.id} className="p-3 space-y-1">
+                            <div className="flex items-center justify-between gap-3">
+                              <div className="flex items-center gap-3">
+                                <Badge
+                                  variant="secondary"
+                                  className={cn(
+                                    "text-xs shrink-0",
+                                    registro.tipo === "EP"
+                                      ? "bg-blue-100 text-blue-700 dark:bg-blue-900/50 dark:text-blue-300"
+                                      : "bg-purple-100 text-purple-700 dark:bg-purple-900/50 dark:text-purple-300"
+                                  )}
+                                >
+                                  {registro.tipo}
+                                </Badge>
+                                <span className="font-mono text-xs">{registro.codigo || "sem código"}</span>
+                                <span className="text-xs text-muted-foreground">{registro.tipoMovimento}</span>
+                              </div>
+                              <span className="text-sm font-semibold">{formatCurrency(registro.valor)}</span>
+                            </div>
+                            <p className="text-xs text-destructive">
+                              {resultado === "ERRO_CODIGO_INVALIDO"
+                                ? "Registro sem código válido."
+                                : registro.tipo === "EP"
+                                  ? `Código ${registro.codigo || "(sem código)"} não encontrado no cadastro de EP.`
+                                  : `VPD ${registro.codigo || "(nulo)"} não encontrado no sistema.`}
+                            </p>
+                          </div>
+                        ))}
+                    </div>
+                  </div>
+                )}
+              </div>
+            </ScrollArea>
+          )}
+
+          <DialogFooter className="gap-2 sm:gap-0 flex-shrink-0 pt-4 border-t">
+            {!isRevalidandoMassa && resultadosMassa.some((r) => (r.resultado === "ERRO_CADASTRO_NAO_EXISTE" || r.resultado === "ERRO_CODIGO_INVALIDO") && r.registro.tipo === "EP") && (
+              <Button variant="outline" onClick={() => navigate("/equipamentos-publicos")} className="gap-1.5">
+                <ExternalLink className="h-4 w-4" />
+                Ir para Cadastro de EP
+              </Button>
+            )}
+            <Button variant="outline" onClick={() => setIsRevalidacaoMassaModalOpen(false)}>
+              Fechar
             </Button>
           </DialogFooter>
         </DialogContent>
