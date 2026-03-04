@@ -45,17 +45,18 @@ interface ModeloData {
   gruposVPD: VPDGroup[];
 }
 
-interface VPDRecord {
+type TipoModelo = "organico" | "programatico";
+
+interface ComparacaoRecord {
   id: string;
   mes: string;
   ano: string;
-  statusOrganico: "aprovado" | "pendente";
-  statusProgramatico: "aprovado" | "pendente";
-  modeloOrganico: ModeloData;
-  modeloProgramatico: ModeloData;
+  tipo: TipoModelo;
+  status: "aprovado" | "pendente";
+  modelo: ModeloData;
+  usuarioAprovador?: string;
+  dataHoraAprovacao?: string;
 }
-
-type TipoModelo = "organico" | "programatico";
 
 // Interface para registros pendentes de cadastro
 interface RegistroPendente {
@@ -272,16 +273,94 @@ const gruposVPDProgramatico: VPDGroup[] = [
   }
 ];
 
-const mockRecords: VPDRecord[] = [
+// Grupos com divergência para meses com problemas
+const gruposVPDOrganicoDiv: VPDGroup[] = [
   {
-    id: "1",
-    mes: "05",
-    ano: "2025",
-    statusOrganico: "pendente",
-    statusProgramatico: "pendente",
-    modeloOrganico: { totalVPDs: 70475120.53, totalSIC: 70475120.53, gruposVPD: gruposVPDOrganico },
-    modeloProgramatico: { totalVPDs: 70475120.53, totalSIC: 70475120.53, gruposVPD: gruposVPDProgramatico }
+    codigoPrincipal: "3.1.0.0.00.00.00", descricao: "PESSOAL E ENCARGOS", totalCP: 42300000.00, totalSIC: 42450000.00,
+    subgrupos: [
+      { codigo: "3.1.1.0.00.00.00", descricao: "REMUNERAÇÃO A PESSOAL", totalCP: 32000000.00, totalSIC: 32150000.00, vpds: [
+        { codigo: "3.1.1.1.00.00.00", descricao: "Vencimentos e Salários", valorCP: 24000000.00, valorSIC: 24000000.00 },
+        { codigo: "3.1.1.2.00.00.00", descricao: "Gratificações", valorCP: 6000000.00, valorSIC: 6150000.00 },
+        { codigo: "3.1.1.3.00.00.00", descricao: "Adicionais", valorCP: 2000000.00, valorSIC: 2000000.00 }
+      ]},
+      { codigo: "3.1.2.0.00.00.00", descricao: "ENCARGOS PATRONAIS", totalCP: 5100000.00, totalSIC: 5100000.00, vpds: [
+        { codigo: "3.1.2.1.00.00.00", descricao: "INSS Patronal", valorCP: 3400000.00, valorSIC: 3400000.00 },
+        { codigo: "3.1.2.2.00.00.00", descricao: "FGTS", valorCP: 1700000.00, valorSIC: 1700000.00 }
+      ]},
+      { codigo: "3.1.3.0.00.00.00", descricao: "BENEFÍCIOS A PESSOAL", totalCP: 2700000.00, totalSIC: 2700000.00, vpds: [
+        { codigo: "3.1.3.1.00.00.00", descricao: "Vale Alimentação", valorCP: 1600000.00, valorSIC: 1600000.00 },
+        { codigo: "3.1.3.2.00.00.00", descricao: "Vale Transporte", valorCP: 1100000.00, valorSIC: 1100000.00 }
+      ]},
+      { codigo: "3.1.8.0.00.00.00", descricao: "CUSTO DE PESSOAL E ENCARGOS", totalCP: 2500000.00, totalSIC: 2500000.00, vpds: [
+        { codigo: "3.1.8.1.00.00.00", descricao: "Outros Custos de Pessoal", valorCP: 2500000.00, valorSIC: 2500000.00 }
+      ]}
+    ]
+  },
+  {
+    codigoPrincipal: "3.3.0.0.00.00.00", descricao: "MANUTENÇÃO E OPERAÇÃO DA MÁQUINA PÚBLICA", totalCP: 15800000.00, totalSIC: 15920000.00,
+    subgrupos: [
+      { codigo: "3.3.2.0.00.00.00", descricao: "SERVIÇOS", totalCP: 7500000.00, totalSIC: 7620000.00, vpds: [
+        { codigo: "3.3.2.1.00.00.00", descricao: "Serviços de Terceiros - PJ", valorCP: 4800000.00, valorSIC: 4800000.00 },
+        { codigo: "3.3.2.2.00.00.00", descricao: "Serviços de Terceiros - PF", valorCP: 1700000.00, valorSIC: 1820000.00 },
+        { codigo: "3.3.2.3.00.00.00", descricao: "Serviços de Utilidade Pública", valorCP: 1000000.00, valorSIC: 1000000.00 }
+      ]},
+      { codigo: "3.3.3.0.00.00.00", descricao: "DEPRECIAÇÃO, AMORTIZAÇÃO E EXAUSTÃO", totalCP: 3300000.00, totalSIC: 3300000.00, vpds: [
+        { codigo: "3.3.3.1.00.00.00", descricao: "Depreciação de Bens Móveis", valorCP: 2100000.00, valorSIC: 2100000.00 },
+        { codigo: "3.3.3.2.00.00.00", descricao: "Depreciação de Bens Imóveis", valorCP: 1200000.00, valorSIC: 1200000.00 }
+      ]},
+      { codigo: "3.3.8.0.00.00.00", descricao: "CUSTO DE MATERIAIS, SERVIÇOS E CONSUMO DE CAPITAL FIXO", totalCP: 5000000.00, totalSIC: 5000000.00, vpds: [
+        { codigo: "3.3.8.1.00.00.00", descricao: "Outros Custos Operacionais", valorCP: 5000000.00, valorSIC: 5000000.00 }
+      ]}
+    ]
   }
+];
+
+const gruposVPDProgDiv: VPDGroup[] = [
+  {
+    codigoPrincipal: "3.1.0.0.00.00.00", descricao: "PESSOAL E ENCARGOS", totalCP: 43200000.00, totalSIC: 43500000.00,
+    subgrupos: [
+      { codigo: "3.1.1.0.00.00.00", descricao: "REMUNERAÇÃO A PESSOAL", totalCP: 33000000.00, totalSIC: 33300000.00, vpds: [
+        { codigo: "3.1.1.1.00.00.00", descricao: "Vencimentos e Salários", valorCP: 24500000.00, valorSIC: 24500000.00 },
+        { codigo: "3.1.1.2.00.00.00", descricao: "Gratificações", valorCP: 6500000.00, valorSIC: 6800000.00 },
+        { codigo: "3.1.1.3.00.00.00", descricao: "Adicionais", valorCP: 2000000.00, valorSIC: 2000000.00 }
+      ]},
+      { codigo: "3.1.2.0.00.00.00", descricao: "ENCARGOS PATRONAIS", totalCP: 5200000.00, totalSIC: 5200000.00, vpds: [
+        { codigo: "3.1.2.1.00.00.00", descricao: "INSS Patronal", valorCP: 3500000.00, valorSIC: 3500000.00 },
+        { codigo: "3.1.2.2.00.00.00", descricao: "FGTS", valorCP: 1700000.00, valorSIC: 1700000.00 }
+      ]},
+      { codigo: "3.1.8.0.00.00.00", descricao: "CUSTO DE PESSOAL E ENCARGOS", totalCP: 5000000.00, totalSIC: 5000000.00, vpds: [
+        { codigo: "3.1.8.1.00.00.00", descricao: "Outros Custos de Pessoal", valorCP: 5000000.00, valorSIC: 5000000.00 }
+      ]}
+    ]
+  }
+];
+
+const mockComparacoes: ComparacaoRecord[] = [
+  // Janeiro 2025 - Aprovados
+  { id: "1", mes: "01", ano: "2025", tipo: "organico", status: "aprovado", usuarioAprovador: "Maria Silva", dataHoraAprovacao: "2025-02-10T14:32:00",
+    modelo: { totalVPDs: 68500000.00, totalSIC: 68500000.00, gruposVPD: gruposVPDOrganico } },
+  { id: "2", mes: "01", ano: "2025", tipo: "programatico", status: "aprovado", usuarioAprovador: "Maria Silva", dataHoraAprovacao: "2025-02-10T15:10:00",
+    modelo: { totalVPDs: 68500000.00, totalSIC: 68500000.00, gruposVPD: gruposVPDProgramatico } },
+  // Fevereiro 2025 - Aprovados
+  { id: "3", mes: "02", ano: "2025", tipo: "organico", status: "aprovado", usuarioAprovador: "Carlos Souza", dataHoraAprovacao: "2025-03-08T09:45:00",
+    modelo: { totalVPDs: 69200000.00, totalSIC: 69200000.00, gruposVPD: gruposVPDOrganico } },
+  { id: "4", mes: "02", ano: "2025", tipo: "programatico", status: "aprovado", usuarioAprovador: "Carlos Souza", dataHoraAprovacao: "2025-03-08T10:20:00",
+    modelo: { totalVPDs: 69200000.00, totalSIC: 69200000.00, gruposVPD: gruposVPDProgramatico } },
+  // Março 2025 - Orgânico aprovado, Programático com divergência
+  { id: "5", mes: "03", ano: "2025", tipo: "organico", status: "aprovado", usuarioAprovador: "Ana Oliveira", dataHoraAprovacao: "2025-04-12T11:00:00",
+    modelo: { totalVPDs: 69800000.00, totalSIC: 69800000.00, gruposVPD: gruposVPDOrganico } },
+  { id: "6", mes: "03", ano: "2025", tipo: "programatico", status: "pendente",
+    modelo: { totalVPDs: 43200000.00, totalSIC: 43500000.00, gruposVPD: gruposVPDProgDiv } },
+  // Abril 2025 - Ambos com divergência
+  { id: "7", mes: "04", ano: "2025", tipo: "organico", status: "pendente",
+    modelo: { totalVPDs: 58100000.00, totalSIC: 58370000.00, gruposVPD: gruposVPDOrganicoDiv } },
+  { id: "8", mes: "04", ano: "2025", tipo: "programatico", status: "pendente",
+    modelo: { totalVPDs: 43200000.00, totalSIC: 43500000.00, gruposVPD: gruposVPDProgDiv } },
+  // Maio 2025 - Orgânico com divergência interna, Programático conciliado pendente
+  { id: "9", mes: "05", ano: "2025", tipo: "organico", status: "pendente",
+    modelo: { totalVPDs: 70475120.53, totalSIC: 70475120.53, gruposVPD: gruposVPDOrganico } },
+  { id: "10", mes: "05", ano: "2025", tipo: "programatico", status: "pendente",
+    modelo: { totalVPDs: 70475120.53, totalSIC: 70475120.53, gruposVPD: gruposVPDProgramatico } },
 ];
 
 // Mock data para estrutura da TreeView no modal
@@ -326,9 +405,8 @@ const getMockTreeDataForVPD = (vpd: VPDDetail): TreeNode[] => {
 
 export default function ComparacaoVPDs() {
   const navigate = useNavigate();
-  const [selectedRecord, setSelectedRecord] = useState<VPDRecord | null>(null);
-  const [selectedModelo, setSelectedModelo] = useState<TipoModelo | null>(null);
-  const [records, setRecords] = useState<VPDRecord[]>(mockRecords);
+  const [selectedRecord, setSelectedRecord] = useState<ComparacaoRecord | null>(null);
+  const [records, setRecords] = useState<ComparacaoRecord[]>(mockComparacoes);
   const [expandedGroups, setExpandedGroups] = useState<Set<string>>(new Set());
   const [expandedSubGroups, setExpandedSubGroups] = useState<Set<string>>(new Set());
   const [selectedVPD, setSelectedVPD] = useState<VPDDetail | null>(null);
@@ -445,34 +523,34 @@ export default function ComparacaoVPDs() {
     return { gruposSemDiv, subgruposSemDiv, vpdsSemDiv };
   };
 
-  const getModeloData = (record: VPDRecord, tipo: TipoModelo): ModeloData => tipo === "organico" ? record.modeloOrganico : record.modeloProgramatico;
-  const getModeloStatus = (record: VPDRecord, tipo: TipoModelo) => tipo === "organico" ? record.statusOrganico : record.statusProgramatico;
   const getModeloLabel = (tipo: TipoModelo) => tipo === "organico" ? "Modelo Orgânico" : "Modelo Programático";
 
-  const handleSelectRecord = (record: VPDRecord, tipo: TipoModelo) => {
+  const formatDateTime = (dateStr?: string) => {
+    if (!dateStr) return "-";
+    const date = new Date(dateStr);
+    return date.toLocaleDateString('pt-BR') + ' ' + date.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
+  };
+
+  const handleSelectRecord = (record: ComparacaoRecord) => {
     setSelectedRecord(record);
-    setSelectedModelo(tipo);
     setExpandedGroups(new Set());
     setExpandedSubGroups(new Set());
   };
 
-  const handleAprovar = (recordId: string, tipo: TipoModelo) => {
+  const handleAprovar = (recordId: string) => {
     const record = records.find(r => r.id === recordId);
     if (!record) return;
-    const modelo = getModeloData(record, tipo);
-    if (temDivergencia(modelo.totalVPDs, modelo.totalSIC)) {
+    if (temDivergencia(record.modelo.totalVPDs, record.modelo.totalSIC)) {
       toast.error("Não é possível aprovar registro com divergências");
       return;
     }
+    const now = new Date().toISOString();
     setRecords(records.map(r => {
       if (r.id !== recordId) return r;
-      return tipo === "organico"
-        ? { ...r, statusOrganico: "aprovado" as const }
-        : { ...r, statusProgramatico: "aprovado" as const };
+      return { ...r, status: "aprovado" as const, usuarioAprovador: "Usuário Atual", dataHoraAprovacao: now };
     }));
-    toast.success(`${getModeloLabel(tipo)} aprovado com sucesso!`);
+    toast.success(`${getModeloLabel(record.tipo)} aprovado com sucesso!`);
     setSelectedRecord(null);
-    setSelectedModelo(null);
   };
 
   const renderModeloDetailContent = (modelo: ModeloData, prefix: string) => (
@@ -749,159 +827,101 @@ export default function ComparacaoVPDs() {
         </div>
 
         {!selectedRecord ? (
-          <div className="space-y-6">
-            {/* Modelo Orgânico */}
-            <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <Building2 className="h-5 w-5" />
-                  Modelo Orgânico
-                </CardTitle>
-                <CardDescription>Registros de comparação por estrutura organizacional</CardDescription>
-              </CardHeader>
-              <CardContent>
-                <Table>
-                  <TableHeader>
-                    <TableRow>
-                      <TableHead>Mês/Ano</TableHead>
-                      <TableHead>Status</TableHead>
-                      <TableHead>Total CP</TableHead>
-                      <TableHead>Divergência</TableHead>
-                      <TableHead>Ações</TableHead>
-                    </TableRow>
-                  </TableHeader>
-                  <TableBody>
-                    {records.map((record) => {
-                      const modelo = record.modeloOrganico;
-                      const status = record.statusOrganico;
-                      const divModelo = temDivergencia(modelo.totalVPDs, modelo.totalSIC);
-                      const pendentesDoRegistro = registrosPendentes.filter(r => r.dataIdentificacao.includes(record.ano));
-                      const temPendentes = pendentesDoRegistro.length > 0;
+          <Card>
+            <CardHeader>
+              <CardTitle>Registros de Comparação</CardTitle>
+              <CardDescription>Selecione um registro para visualizar a comparação detalhada</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead>Mês/Ano</TableHead>
+                    <TableHead>Tipo</TableHead>
+                    <TableHead>Status</TableHead>
+                    <TableHead>Total CP</TableHead>
+                    <TableHead>Divergência</TableHead>
+                    <TableHead>Usuário Aprovador</TableHead>
+                    <TableHead>Data/Hora Aprovação</TableHead>
+                    <TableHead>Ações</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {records.map((record) => {
+                    const divModelo = temDivergencia(record.modelo.totalVPDs, record.modelo.totalSIC);
+                    const diffValue = Math.abs(record.modelo.totalVPDs - record.modelo.totalSIC);
+                    const pendentesDoRegistro = registrosPendentes.filter(r => r.dataIdentificacao.includes(record.ano));
+                    const temPendentes = pendentesDoRegistro.length > 0;
 
-                      return (
-                        <TableRow key={`org-${record.id}`} className="cursor-pointer hover:bg-muted/50" onClick={() => handleSelectRecord(record, "organico")}>
-                          <TableCell className="font-medium">{record.mes}/{record.ano}</TableCell>
-                          <TableCell>
-                            <Badge variant={status === "aprovado" ? "default" : "secondary"} className={`flex items-center gap-1 w-fit ${status === "aprovado" ? "bg-green-600" : "bg-amber-500"}`}>
-                              {status === "aprovado" ? <><ShieldCheck className="h-3 w-3" /> Aprovado</> : <><FileWarning className="h-3 w-3" /> Pendente</>}
-                            </Badge>
-                          </TableCell>
-                          <TableCell>{formatCurrency(modelo.totalVPDs)}</TableCell>
-                          <TableCell>
-                            {divModelo ? (
+                    return (
+                      <TableRow key={record.id} className="cursor-pointer hover:bg-muted/50" onClick={() => handleSelectRecord(record)}>
+                        <TableCell className="font-medium">{record.mes}/{record.ano}</TableCell>
+                        <TableCell>
+                          <Badge variant="outline" className={cn(
+                            "flex items-center gap-1 w-fit",
+                            record.tipo === "organico" 
+                              ? "border-blue-500 text-blue-700 dark:text-blue-400" 
+                              : "border-purple-500 text-purple-700 dark:text-purple-400"
+                          )}>
+                            {record.tipo === "organico" ? <Building2 className="h-3 w-3" /> : <ClipboardList className="h-3 w-3" />}
+                            {record.tipo === "organico" ? "Orgânico" : "Programático"}
+                          </Badge>
+                        </TableCell>
+                        <TableCell>
+                          <Badge variant={record.status === "aprovado" ? "default" : "secondary"} className={`flex items-center gap-1 w-fit ${record.status === "aprovado" ? "bg-green-600" : "bg-amber-500"}`}>
+                            {record.status === "aprovado" ? <><ShieldCheck className="h-3 w-3" /> Aprovado</> : <><FileWarning className="h-3 w-3" /> Pendente</>}
+                          </Badge>
+                        </TableCell>
+                        <TableCell className="font-mono text-sm">{formatCurrency(record.modelo.totalVPDs)}</TableCell>
+                        <TableCell>
+                          {divModelo ? (
+                            <div className="flex flex-col gap-0.5">
                               <Badge variant="outline" className="border-amber-500 text-amber-700 dark:text-amber-400 flex items-center gap-1 w-fit">
                                 <CircleAlert className="h-3 w-3" /> Divergente
                               </Badge>
-                            ) : (
-                              <Badge variant="outline" className="border-green-500 text-green-700 dark:text-green-400 flex items-center gap-1 w-fit">
-                                <CheckCircle className="h-3 w-3" /> Conciliado
-                              </Badge>
-                            )}
-                          </TableCell>
-                          <TableCell>
-                            <div className="flex items-center gap-2">
-                              <Button variant="outline" size="sm">Ver Detalhes</Button>
-                              {temPendentes && (
-                                <Button variant="ghost" size="sm" className="text-orange-600 hover:text-orange-700 hover:bg-orange-50 dark:text-orange-400 dark:hover:bg-orange-950/30 p-1.5"
-                                  onClick={(e) => { e.stopPropagation(); navigate("/cadastros-pendentes"); }}
-                                  title={`${pendentesDoRegistro.length} cadastro(s) pendente(s)`}
-                                >
-                                  <AlertCircle className="h-4 w-4" />
-                                  <Badge variant="secondary" className="ml-1 bg-orange-100 text-orange-700 dark:bg-orange-900/50 dark:text-orange-300 text-[10px] px-1.5 h-4 min-w-4">
-                                    {pendentesDoRegistro.length}
-                                  </Badge>
-                                </Button>
-                              )}
+                              <span className="text-[10px] text-destructive font-semibold">
+                                {formatCurrency(diffValue)}
+                              </span>
                             </div>
-                          </TableCell>
-                        </TableRow>
-                      );
-                    })}
-                  </TableBody>
-                </Table>
-              </CardContent>
-            </Card>
-
-            {/* Modelo Programático */}
-            <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <ClipboardList className="h-5 w-5" />
-                  Modelo Programático
-                </CardTitle>
-                <CardDescription>Registros de comparação por programas e projetos</CardDescription>
-              </CardHeader>
-              <CardContent>
-                <Table>
-                  <TableHeader>
-                    <TableRow>
-                      <TableHead>Mês/Ano</TableHead>
-                      <TableHead>Status</TableHead>
-                      <TableHead>Total CP</TableHead>
-                      <TableHead>Divergência</TableHead>
-                      <TableHead>Ações</TableHead>
-                    </TableRow>
-                  </TableHeader>
-                  <TableBody>
-                    {records.map((record) => {
-                      const modelo = record.modeloProgramatico;
-                      const status = record.statusProgramatico;
-                      const divModelo = temDivergencia(modelo.totalVPDs, modelo.totalSIC);
-                      const pendentesDoRegistro = registrosPendentes.filter(r => r.dataIdentificacao.includes(record.ano));
-                      const temPendentes = pendentesDoRegistro.length > 0;
-
-                      return (
-                        <TableRow key={`prog-${record.id}`} className="cursor-pointer hover:bg-muted/50" onClick={() => handleSelectRecord(record, "programatico")}>
-                          <TableCell className="font-medium">{record.mes}/{record.ano}</TableCell>
-                          <TableCell>
-                            <Badge variant={status === "aprovado" ? "default" : "secondary"} className={`flex items-center gap-1 w-fit ${status === "aprovado" ? "bg-green-600" : "bg-amber-500"}`}>
-                              {status === "aprovado" ? <><ShieldCheck className="h-3 w-3" /> Aprovado</> : <><FileWarning className="h-3 w-3" /> Pendente</>}
+                          ) : (
+                            <Badge variant="outline" className="border-green-500 text-green-700 dark:text-green-400 flex items-center gap-1 w-fit">
+                              <CheckCircle className="h-3 w-3" /> Conciliado
                             </Badge>
-                          </TableCell>
-                          <TableCell>{formatCurrency(modelo.totalVPDs)}</TableCell>
-                          <TableCell>
-                            {divModelo ? (
-                              <Badge variant="outline" className="border-amber-500 text-amber-700 dark:text-amber-400 flex items-center gap-1 w-fit">
-                                <CircleAlert className="h-3 w-3" /> Divergente
-                              </Badge>
-                            ) : (
-                              <Badge variant="outline" className="border-green-500 text-green-700 dark:text-green-400 flex items-center gap-1 w-fit">
-                                <CheckCircle className="h-3 w-3" /> Conciliado
-                              </Badge>
+                          )}
+                        </TableCell>
+                        <TableCell className="text-sm text-muted-foreground">{record.usuarioAprovador || "-"}</TableCell>
+                        <TableCell className="text-sm text-muted-foreground">{formatDateTime(record.dataHoraAprovacao)}</TableCell>
+                        <TableCell>
+                          <div className="flex items-center gap-2">
+                            <Button variant="outline" size="sm">Ver Detalhes</Button>
+                            {temPendentes && (
+                              <Button variant="ghost" size="sm" className="text-orange-600 hover:text-orange-700 hover:bg-orange-50 dark:text-orange-400 dark:hover:bg-orange-950/30 p-1.5"
+                                onClick={(e) => { e.stopPropagation(); navigate("/cadastros-pendentes"); }}
+                                title={`${pendentesDoRegistro.length} cadastro(s) pendente(s)`}
+                              >
+                                <AlertCircle className="h-4 w-4" />
+                                <Badge variant="secondary" className="ml-1 bg-orange-100 text-orange-700 dark:bg-orange-900/50 dark:text-orange-300 text-[10px] px-1.5 h-4 min-w-4">
+                                  {pendentesDoRegistro.length}
+                                </Badge>
+                              </Button>
                             )}
-                          </TableCell>
-                          <TableCell>
-                            <div className="flex items-center gap-2">
-                              <Button variant="outline" size="sm">Ver Detalhes</Button>
-                              {temPendentes && (
-                                <Button variant="ghost" size="sm" className="text-orange-600 hover:text-orange-700 hover:bg-orange-50 dark:text-orange-400 dark:hover:bg-orange-950/30 p-1.5"
-                                  onClick={(e) => { e.stopPropagation(); navigate("/cadastros-pendentes"); }}
-                                  title={`${pendentesDoRegistro.length} cadastro(s) pendente(s)`}
-                                >
-                                  <AlertCircle className="h-4 w-4" />
-                                  <Badge variant="secondary" className="ml-1 bg-orange-100 text-orange-700 dark:bg-orange-900/50 dark:text-orange-300 text-[10px] px-1.5 h-4 min-w-4">
-                                    {pendentesDoRegistro.length}
-                                  </Badge>
-                                </Button>
-                              )}
-                            </div>
-                          </TableCell>
-                        </TableRow>
-                      );
-                    })}
-                  </TableBody>
-                </Table>
-              </CardContent>
-            </Card>
-          </div>
-        ) : selectedModelo && (
+                          </div>
+                        </TableCell>
+                      </TableRow>
+                    );
+                  })}
+                </TableBody>
+              </Table>
+            </CardContent>
+          </Card>
+        ) : (
           <div className="space-y-6">
             <div className="flex items-center justify-between">
-              <Button variant="outline" onClick={() => { setSelectedRecord(null); setSelectedModelo(null); }}>
+              <Button variant="outline" onClick={() => setSelectedRecord(null)}>
                 <ArrowLeft className="h-4 w-4 mr-2" />
                 Voltar para listagem
               </Button>
-              {getModeloStatus(selectedRecord, selectedModelo) === "pendente" && (
+              {selectedRecord.status === "pendente" && (
                 <div className="flex items-center gap-3">
                   {totalPendentes > 0 && (
                     <Badge variant="outline" className="text-xs border-orange-500 text-orange-700 dark:text-orange-400 cursor-pointer hover:bg-orange-100 dark:hover:bg-orange-900/30 transition-colors gap-1" onClick={() => navigate("/cadastros-pendentes")}>
@@ -909,9 +929,9 @@ export default function ComparacaoVPDs() {
                       {totalPendentes} pendente{totalPendentes > 1 ? 's' : ''}
                     </Badge>
                   )}
-                  <Button onClick={() => handleAprovar(selectedRecord.id, selectedModelo)}>
+                  <Button onClick={() => handleAprovar(selectedRecord.id)}>
                     <CheckCircle className="h-4 w-4 mr-2" />
-                    Aprovar {getModeloLabel(selectedModelo)}
+                    Aprovar {getModeloLabel(selectedRecord.tipo)}
                   </Button>
                 </div>
               )}
@@ -921,17 +941,17 @@ export default function ComparacaoVPDs() {
               <CardHeader>
                 <div className="flex items-center justify-between">
                   <div>
-                    <CardTitle>{getModeloLabel(selectedModelo)} - {selectedRecord.mes}/{selectedRecord.ano}</CardTitle>
+                    <CardTitle>{getModeloLabel(selectedRecord.tipo)} - {selectedRecord.mes}/{selectedRecord.ano}</CardTitle>
                     <CardDescription>Conciliação entre CP (VPDs) e SIC (Sistemas)</CardDescription>
                   </div>
                   <div className="flex items-center gap-2">
-                    {getModeloStatus(selectedRecord, selectedModelo) === "aprovado" && (
+                    {selectedRecord.status === "aprovado" && (
                       <Badge variant="default" className="flex items-center gap-2 bg-green-600">
                         <ShieldCheck className="h-4 w-4" />
                         Aprovado
                       </Badge>
                     )}
-                    {temDivergencia(getModeloData(selectedRecord, selectedModelo).totalVPDs, getModeloData(selectedRecord, selectedModelo).totalSIC) ? (
+                    {temDivergencia(selectedRecord.modelo.totalVPDs, selectedRecord.modelo.totalSIC) ? (
                       <Badge variant="destructive" className="flex items-center gap-2 animate-pulse">
                         <XCircle className="h-4 w-4" />
                         Divergente
@@ -946,24 +966,24 @@ export default function ComparacaoVPDs() {
                 </div>
               </CardHeader>
               <CardContent>
-                {renderModeloDetailContent(getModeloData(selectedRecord, selectedModelo), selectedModelo)}
+                {renderModeloDetailContent(selectedRecord.modelo, selectedRecord.tipo)}
 
-                {temDivergencia(getModeloData(selectedRecord, selectedModelo).totalVPDs, getModeloData(selectedRecord, selectedModelo).totalSIC) && (
+                {temDivergencia(selectedRecord.modelo.totalVPDs, selectedRecord.modelo.totalSIC) && (
                   <div className="mt-6 p-4 bg-destructive/10 border-2 border-destructive/30 rounded-lg animate-fade-in">
                     <div className="flex items-center gap-2 mb-2">
                       <div className="p-1.5 rounded-full bg-destructive/20">
                         <AlertTriangle className="h-5 w-5 text-destructive" />
                       </div>
-                      <p className="font-semibold text-destructive">Divergência Identificada - {getModeloLabel(selectedModelo)}</p>
+                      <p className="font-semibold text-destructive">Divergência Identificada - {getModeloLabel(selectedRecord.tipo)}</p>
                     </div>
                     <div className="grid grid-cols-2 gap-4 text-sm">
                       <div>
                         <p className="text-muted-foreground">Diferença Absoluta:</p>
-                        <p className="font-semibold">{formatCurrency(calcularDiferenca(getModeloData(selectedRecord, selectedModelo).totalVPDs, getModeloData(selectedRecord, selectedModelo).totalSIC).diferenca)}</p>
+                        <p className="font-semibold">{formatCurrency(calcularDiferenca(selectedRecord.modelo.totalVPDs, selectedRecord.modelo.totalSIC).diferenca)}</p>
                       </div>
                       <div>
                         <p className="text-muted-foreground">Percentual:</p>
-                        <p className="font-semibold">{calcularDiferenca(getModeloData(selectedRecord, selectedModelo).totalVPDs, getModeloData(selectedRecord, selectedModelo).totalSIC).percentual.toFixed(2)}%</p>
+                        <p className="font-semibold">{calcularDiferenca(selectedRecord.modelo.totalVPDs, selectedRecord.modelo.totalSIC).percentual.toFixed(2)}%</p>
                       </div>
                     </div>
                   </div>
