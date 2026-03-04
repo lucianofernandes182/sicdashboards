@@ -3,31 +3,44 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { ArrowLeft, CheckCircle, Building2, FileText, ClipboardList, ExternalLink, AlertCircle, Link2, X } from "lucide-react";
+import {
+  ArrowLeft, CheckCircle, Building2, FileText, ClipboardList,
+  ExternalLink, AlertCircle, Link2, X, Search, ShieldCheck, RefreshCw, XCircle, AlertTriangle, Clock
+} from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from "@/components/ui/dialog";
 import { cn } from "@/lib/utils";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { EPDynamicForm } from "@/components/dashboard/EPDynamicForm";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Checkbox } from "@/components/ui/checkbox";
+import { Separator } from "@/components/ui/separator";
 
-// Interface para registros pendentes de cadastro
+type InconsistenciaTipo =
+  | "EP_NAO_ENCONTRADO"
+  | "EP_SEM_CODIGO"
+  | "VPD_INEXISTENTE"
+  | "VPD_NULL_PERMITIDO"
+  | "AGUARDANDO_VALIDACAO";
+
+type RevalidacaoStatus =
+  | "VALIDADO"
+  | "ERRO_CADASTRO_NAO_EXISTE"
+  | "ERRO_CODIGO_INVALIDO"
+  | "VPD_NULL_PERMITIDO";
+
 interface RegistroPendente {
   id: string;
   tipo: "EP" | "VPD";
-  codigo: string;
+  codigo: string | null;
   descricao: string;
   origem: string;
   valor: number;
   dataIdentificacao: string;
-  status: "pendente" | "em_analise";
+  inconsistencia: InconsistenciaTipo;
 }
 
-// Mock de registros pendentes de cadastro
 const mockRegistrosPendentes: RegistroPendente[] = [
   {
     id: "pend-1",
@@ -35,9 +48,9 @@ const mockRegistrosPendentes: RegistroPendente[] = [
     codigo: "EP-2025-001",
     descricao: "Escola Municipal José de Alencar",
     origem: "Sistema de Educação",
-    valor: 125000.00,
+    valor: 125000.0,
     dataIdentificacao: "2025-05-15",
-    status: "pendente"
+    inconsistencia: "EP_NAO_ENCONTRADO",
   },
   {
     id: "pend-2",
@@ -45,29 +58,29 @@ const mockRegistrosPendentes: RegistroPendente[] = [
     codigo: "3.3.9.1.00.00.00",
     descricao: "Despesas com Manutenção Predial",
     origem: "CP - Contabilidade",
-    valor: 45780.50,
+    valor: 45780.5,
     dataIdentificacao: "2025-05-18",
-    status: "pendente"
+    inconsistencia: "VPD_INEXISTENTE",
   },
   {
     id: "pend-3",
     tipo: "EP",
-    codigo: "EP-2025-002",
+    codigo: null,
     descricao: "Centro de Saúde Vila Nova",
     origem: "Sistema de Saúde",
-    valor: 89500.00,
+    valor: 89500.0,
     dataIdentificacao: "2025-05-20",
-    status: "em_analise"
+    inconsistencia: "EP_SEM_CODIGO",
   },
   {
     id: "pend-4",
     tipo: "VPD",
-    codigo: "3.1.2.0.00.00.00",
+    codigo: null,
     descricao: "Encargos Patronais",
     origem: "SIC - SMARRH",
-    valor: 234100.00,
+    valor: 234100.0,
     dataIdentificacao: "2025-05-22",
-    status: "pendente"
+    inconsistencia: "VPD_NULL_PERMITIDO",
   },
   {
     id: "pend-5",
@@ -75,46 +88,97 @@ const mockRegistrosPendentes: RegistroPendente[] = [
     codigo: "EP-2025-003",
     descricao: "Ginásio Poliesportivo Central",
     origem: "Sistema de Esportes",
-    valor: 156700.00,
+    valor: 156700.0,
     dataIdentificacao: "2025-05-25",
-    status: "pendente"
-  }
+    inconsistencia: "EP_NAO_ENCONTRADO",
+  },
+  {
+    id: "pend-6",
+    tipo: "VPD",
+    codigo: "3.1.2.0.00.00.00",
+    descricao: "Benefícios Previdenciários",
+    origem: "CP - Contabilidade",
+    valor: 89200.0,
+    dataIdentificacao: "2025-05-28",
+    inconsistencia: "AGUARDANDO_VALIDACAO",
+  },
 ];
 
-const formatCurrency = (value: number) => {
-  return new Intl.NumberFormat('pt-BR', {
-    style: 'currency',
-    currency: 'BRL'
-  }).format(value);
+const formatCurrency = (value: number) =>
+  new Intl.NumberFormat("pt-BR", { style: "currency", currency: "BRL" }).format(value);
+
+const inconsistenciaConfig: Record<InconsistenciaTipo, { label: string; color: string; icon: React.ReactNode }> = {
+  EP_NAO_ENCONTRADO: {
+    label: "EP não encontrado",
+    color: "border-destructive text-destructive",
+    icon: <XCircle className="h-3 w-3" />,
+  },
+  EP_SEM_CODIGO: {
+    label: "EP sem código",
+    color: "border-yellow-500 text-yellow-700 dark:text-yellow-400",
+    icon: <AlertTriangle className="h-3 w-3" />,
+  },
+  VPD_INEXISTENTE: {
+    label: "VPD inexistente",
+    color: "border-destructive text-destructive",
+    icon: <XCircle className="h-3 w-3" />,
+  },
+  VPD_NULL_PERMITIDO: {
+    label: "VPD nulo (permitido)",
+    color: "border-yellow-500 text-yellow-700 dark:text-yellow-400",
+    icon: <AlertTriangle className="h-3 w-3" />,
+  },
+  AGUARDANDO_VALIDACAO: {
+    label: "Aguardando validação",
+    color: "border-blue-500 text-blue-700 dark:text-blue-400",
+    icon: <Clock className="h-3 w-3" />,
+  },
+};
+
+// Simula resultado da revalidação
+function simularRevalidacao(registro: RegistroPendente): RevalidacaoStatus {
+  if (registro.inconsistencia === "VPD_NULL_PERMITIDO") return "VPD_NULL_PERMITIDO";
+  if (registro.inconsistencia === "AGUARDANDO_VALIDACAO") return "VALIDADO";
+  if (registro.inconsistencia === "EP_SEM_CODIGO" && !registro.codigo) return "ERRO_CODIGO_INVALIDO";
+  // Simula: 30% de chance de ter sido corrigido
+  return Math.random() > 0.7 ? "VALIDADO" : "ERRO_CADASTRO_NAO_EXISTE";
+}
+
+type TimelineStep = {
+  title: string;
+  description: string;
+  status: "completed" | "current" | "error" | "pending";
+  icon: React.ReactNode;
 };
 
 export default function CadastrosPendentes() {
   const navigate = useNavigate();
   const [registrosPendentes, setRegistrosPendentes] = useState<RegistroPendente[]>(mockRegistrosPendentes);
-  const [registroEmEdicao, setRegistroEmEdicao] = useState<RegistroPendente | null>(null);
+  const [registroEmValidacao, setRegistroEmValidacao] = useState<RegistroPendente | null>(null);
   const [registrosSelecionados, setRegistrosSelecionados] = useState<Set<string>>(new Set());
-  const [isAjusteModalOpen, setIsAjusteModalOpen] = useState(false);
+  const [isRevalidacaoModalOpen, setIsRevalidacaoModalOpen] = useState(false);
   const [isVinculacaoModalOpen, setIsVinculacaoModalOpen] = useState(false);
   const [filtroTipo, setFiltroTipo] = useState<"todos" | "EP" | "VPD">("todos");
+  const [codigoManual, setCodigoManual] = useState("");
+  const [revalidacaoResultado, setRevalidacaoResultado] = useState<RevalidacaoStatus | null>(null);
+  const [isRevalidando, setIsRevalidando] = useState(false);
 
-  const pendentesEP = registrosPendentes.filter(r => r.tipo === "EP").length;
-  const pendentesVPD = registrosPendentes.filter(r => r.tipo === "VPD").length;
+  const pendentesEP = registrosPendentes.filter((r) => r.tipo === "EP").length;
+  const pendentesVPD = registrosPendentes.filter((r) => r.tipo === "VPD").length;
 
-  const registrosFiltrados = filtroTipo === "todos" 
-    ? registrosPendentes 
-    : registrosPendentes.filter(r => r.tipo === filtroTipo);
+  const registrosFiltrados =
+    filtroTipo === "todos" ? registrosPendentes : registrosPendentes.filter((r) => r.tipo === filtroTipo);
 
-  const registrosSelecionadosArray = registrosPendentes.filter(r => registrosSelecionados.has(r.id));
+  const registrosSelecionadosArray = registrosPendentes.filter((r) => registrosSelecionados.has(r.id));
   const tipoSelecionado = registrosSelecionadosArray.length > 0 ? registrosSelecionadosArray[0].tipo : null;
   const totalValorSelecionado = registrosSelecionadosArray.reduce((acc, r) => acc + r.valor, 0);
 
   const handleToggleSelecao = (id: string, tipo: "EP" | "VPD") => {
-    setRegistrosSelecionados(prev => {
+    setRegistrosSelecionados((prev) => {
       const next = new Set(prev);
       if (next.has(id)) {
         next.delete(id);
       } else {
-        // Só permite selecionar registros do mesmo tipo
         if (next.size === 0 || tipoSelecionado === tipo) {
           next.add(id);
         } else {
@@ -127,25 +191,50 @@ export default function CadastrosPendentes() {
   };
 
   const handleSelecionarTodos = () => {
-    const registrosDoTipo = registrosFiltrados.filter(r => 
+    const registrosDoTipo = registrosFiltrados.filter((r) =>
       filtroTipo === "todos" ? r.tipo === (registrosFiltrados[0]?.tipo || "EP") : true
     );
-    
-    if (registrosSelecionados.size === registrosDoTipo.length && 
-        registrosDoTipo.every(r => registrosSelecionados.has(r.id))) {
+    if (
+      registrosSelecionados.size === registrosDoTipo.length &&
+      registrosDoTipo.every((r) => registrosSelecionados.has(r.id))
+    ) {
       setRegistrosSelecionados(new Set());
     } else {
-      setRegistrosSelecionados(new Set(registrosDoTipo.map(r => r.id)));
+      setRegistrosSelecionados(new Set(registrosDoTipo.map((r) => r.id)));
     }
   };
 
-  const handleLimparSelecao = () => {
-    setRegistrosSelecionados(new Set());
+  const handleLimparSelecao = () => setRegistrosSelecionados(new Set());
+
+  const handleAbrirRevalidacao = (registro: RegistroPendente) => {
+    setRegistroEmValidacao(registro);
+    setRevalidacaoResultado(null);
+    setCodigoManual("");
+    setIsRevalidando(false);
+    setIsRevalidacaoModalOpen(true);
   };
 
-  const handleAbrirAjuste = (registro: RegistroPendente) => {
-    setRegistroEmEdicao(registro);
-    setIsAjusteModalOpen(true);
+  const handleExecutarRevalidacao = () => {
+    if (!registroEmValidacao) return;
+    setIsRevalidando(true);
+
+    // Simula delay de API
+    setTimeout(() => {
+      const resultado = simularRevalidacao(registroEmValidacao);
+      setRevalidacaoResultado(resultado);
+      setIsRevalidando(false);
+
+      if (resultado === "VALIDADO" || resultado === "VPD_NULL_PERMITIDO") {
+        // Sucesso: remover da lista após um breve delay visual
+        setTimeout(() => {
+          setRegistrosPendentes((prev) => prev.filter((r) => r.id !== registroEmValidacao.id));
+          toast.success("Registro validado com sucesso.");
+          setIsRevalidacaoModalOpen(false);
+          setRegistroEmValidacao(null);
+          setRevalidacaoResultado(null);
+        }, 1200);
+      }
+    }, 1000);
   };
 
   const handleAbrirVinculacao = () => {
@@ -156,31 +245,96 @@ export default function CadastrosPendentes() {
     setIsVinculacaoModalOpen(true);
   };
 
-  const handleSalvarAjuste = () => {
-    if (registroEmEdicao) {
-      setRegistrosPendentes(prev => prev.filter(r => r.id !== registroEmEdicao.id));
-      toast.success(`Cadastro de ${registroEmEdicao.tipo === "EP" ? "Equipamento Público" : "VPD"} realizado com sucesso!`);
-      setIsAjusteModalOpen(false);
-      setRegistroEmEdicao(null);
-    }
-  };
-
   const handleSalvarVinculacao = () => {
     const ids = Array.from(registrosSelecionados);
-    setRegistrosPendentes(prev => prev.filter(r => !ids.includes(r.id)));
-    toast.success(`${ids.length} registros vinculados a um único cadastro de ${tipoSelecionado === "EP" ? "Equipamento Público" : "VPD"} com sucesso!`);
+    setRegistrosPendentes((prev) => prev.filter((r) => !ids.includes(r.id)));
+    toast.success(
+      `${ids.length} registros vinculados com sucesso!`
+    );
     setIsVinculacaoModalOpen(false);
     setRegistrosSelecionados(new Set());
   };
 
-  const formatDate = (dateStr: string) => {
-    const date = new Date(dateStr);
-    return date.toLocaleDateString('pt-BR');
+  const formatDate = (dateStr: string) => new Date(dateStr).toLocaleDateString("pt-BR");
+
+  const podeSelecionar = (tipo: "EP" | "VPD") => registrosSelecionados.size === 0 || tipoSelecionado === tipo;
+
+  // Timeline steps based on resultado
+  const getTimelineSteps = (): TimelineStep[] => {
+    const registro = registroEmValidacao;
+    if (!registro) return [];
+
+    const step1: TimelineStep = {
+      title: "Registro recebido",
+      description: `${registro.tipo === "EP" ? "Equipamento Público" : "VPD"} identificado via ${registro.origem}`,
+      status: "completed",
+      icon: <FileText className="h-4 w-4" />,
+    };
+
+    if (isRevalidando) {
+      return [
+        step1,
+        { title: "Validação em andamento...", description: "Verificando existência e consistência do cadastro", status: "current", icon: <RefreshCw className="h-4 w-4 animate-spin" /> },
+        { title: "Resultado", description: "Aguardando conclusão", status: "pending", icon: <Clock className="h-4 w-4" /> },
+      ];
+    }
+
+    if (!revalidacaoResultado) {
+      return [
+        step1,
+        { title: "Validação pendente", description: "Clique em 'Revalidar Registro' para executar", status: "pending", icon: <ShieldCheck className="h-4 w-4" /> },
+        { title: "Resultado", description: "Aguardando validação", status: "pending", icon: <Clock className="h-4 w-4" /> },
+      ];
+    }
+
+    const isSuccess = revalidacaoResultado === "VALIDADO" || revalidacaoResultado === "VPD_NULL_PERMITIDO";
+
+    const step2: TimelineStep = {
+      title: "Validação executada",
+      description: isSuccess ? "Cadastro verificado com sucesso" : "Inconsistência identificada",
+      status: isSuccess ? "completed" : "error",
+      icon: isSuccess ? <CheckCircle className="h-4 w-4" /> : <XCircle className="h-4 w-4" />,
+    };
+
+    const resultDescriptions: Record<RevalidacaoStatus, string> = {
+      VALIDADO: "Registro consistente — será removido da listagem.",
+      VPD_NULL_PERMITIDO: "VPD nulo permitido pela regra contábil — registro validado.",
+      ERRO_CADASTRO_NAO_EXISTE: registro.tipo === "EP"
+        ? `A contabilização informa o código ${registro.codigo || "(sem código)"}, porém não existe cadastro correspondente no sistema.`
+        : `O código de VPD ${registro.codigo || "(nulo)"} não foi encontrado no sistema.`,
+      ERRO_CODIGO_INVALIDO: "Registro recebido sem código válido. Informe o código correto ou realize o cadastro.",
+    };
+
+    const step3: TimelineStep = {
+      title: isSuccess ? "Registro validado ✓" : "Ação necessária",
+      description: resultDescriptions[revalidacaoResultado],
+      status: isSuccess ? "completed" : "error",
+      icon: isSuccess ? <CheckCircle className="h-4 w-4" /> : <AlertTriangle className="h-4 w-4" />,
+    };
+
+    return [step1, step2, step3];
   };
 
-  const podeSelecionar = (tipo: "EP" | "VPD") => {
-    return registrosSelecionados.size === 0 || tipoSelecionado === tipo;
+  const getStatusMessage = () => {
+    if (!registroEmValidacao) return null;
+    const reg = registroEmValidacao;
+
+    switch (reg.inconsistencia) {
+      case "EP_NAO_ENCONTRADO":
+        return { icon: <XCircle className="h-5 w-5 text-destructive" />, text: "Cadastro de Equipamento Público não encontrado." };
+      case "EP_SEM_CODIGO":
+        return { icon: <AlertTriangle className="h-5 w-5 text-yellow-500" />, text: "Registro recebido sem código de Equipamento Público." };
+      case "VPD_INEXISTENTE":
+        return { icon: <XCircle className="h-5 w-5 text-destructive" />, text: "Código de VPD não cadastrado." };
+      case "VPD_NULL_PERMITIDO":
+        return { icon: <AlertTriangle className="h-5 w-5 text-yellow-500" />, text: "VPD nulo — pode ser permitido pela regra contábil." };
+      case "AGUARDANDO_VALIDACAO":
+        return { icon: <Clock className="h-5 w-5 text-blue-500" />, text: "Registro aguardando validação de consistência." };
+    }
   };
+
+  const timelineSteps = getTimelineSteps();
+  const statusMsg = getStatusMessage();
 
   return (
     <div className="min-h-screen bg-background p-4 md:p-6">
@@ -194,11 +348,11 @@ export default function CadastrosPendentes() {
             </Button>
             <div>
               <h1 className="text-2xl font-bold flex items-center gap-2">
-                <ClipboardList className="h-6 w-6 text-orange-500" />
-                Cadastros Pendentes
+                <ShieldCheck className="h-6 w-6 text-primary" />
+                Central de Revalidação
               </h1>
               <p className="text-muted-foreground text-sm">
-                Registros identificados nos sistemas que necessitam de cadastro
+                Registros identificados nos sistemas externos que necessitam de validação de consistência cadastral
               </p>
             </div>
           </div>
@@ -206,11 +360,8 @@ export default function CadastrosPendentes() {
 
         {/* Summary Cards */}
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-          <Card 
-            className={cn(
-              "cursor-pointer transition-all hover:shadow-md",
-              filtroTipo === "todos" && "ring-2 ring-primary"
-            )}
+          <Card
+            className={cn("cursor-pointer transition-all hover:shadow-md", filtroTipo === "todos" && "ring-2 ring-primary")}
             onClick={() => setFiltroTipo("todos")}
           >
             <CardHeader className="pb-2">
@@ -224,11 +375,8 @@ export default function CadastrosPendentes() {
             </CardContent>
           </Card>
 
-          <Card 
-            className={cn(
-              "cursor-pointer transition-all hover:shadow-md",
-              filtroTipo === "EP" && "ring-2 ring-blue-500"
-            )}
+          <Card
+            className={cn("cursor-pointer transition-all hover:shadow-md", filtroTipo === "EP" && "ring-2 ring-blue-500")}
             onClick={() => setFiltroTipo("EP")}
           >
             <CardHeader className="pb-2">
@@ -242,11 +390,8 @@ export default function CadastrosPendentes() {
             </CardContent>
           </Card>
 
-          <Card 
-            className={cn(
-              "cursor-pointer transition-all hover:shadow-md",
-              filtroTipo === "VPD" && "ring-2 ring-purple-500"
-            )}
+          <Card
+            className={cn("cursor-pointer transition-all hover:shadow-md", filtroTipo === "VPD" && "ring-2 ring-purple-500")}
             onClick={() => setFiltroTipo("VPD")}
           >
             <CardHeader className="pb-2">
@@ -268,14 +413,14 @@ export default function CadastrosPendentes() {
               <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
                 <div className="flex items-center gap-3">
                   <Badge variant="secondary" className="text-sm px-3 py-1">
-                    {registrosSelecionados.size} registro{registrosSelecionados.size > 1 ? 's' : ''} selecionado{registrosSelecionados.size > 1 ? 's' : ''}
+                    {registrosSelecionados.size} registro{registrosSelecionados.size > 1 ? "s" : ""} selecionado{registrosSelecionados.size > 1 ? "s" : ""}
                   </Badge>
-                  <Badge 
-                    variant="outline" 
+                  <Badge
+                    variant="outline"
                     className={cn(
                       "text-xs",
-                      tipoSelecionado === "EP" 
-                        ? "border-blue-500 text-blue-700 dark:text-blue-400" 
+                      tipoSelecionado === "EP"
+                        ? "border-blue-500 text-blue-700 dark:text-blue-400"
                         : "border-purple-500 text-purple-700 dark:text-purple-400"
                     )}
                   >
@@ -288,21 +433,11 @@ export default function CadastrosPendentes() {
                   )}
                 </div>
                 <div className="flex items-center gap-2">
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={handleLimparSelecao}
-                    className="gap-1.5"
-                  >
+                  <Button variant="outline" size="sm" onClick={handleLimparSelecao} className="gap-1.5">
                     <X className="h-3.5 w-3.5" />
                     Limpar
                   </Button>
-                  <Button
-                    size="sm"
-                    onClick={handleAbrirVinculacao}
-                    className="gap-1.5"
-                    disabled={registrosSelecionados.size < 2}
-                  >
+                  <Button size="sm" onClick={handleAbrirVinculacao} className="gap-1.5" disabled={registrosSelecionados.size < 2}>
                     <Link2 className="h-3.5 w-3.5" />
                     Vincular a um Cadastro
                   </Button>
@@ -317,9 +452,9 @@ export default function CadastrosPendentes() {
           <CardHeader>
             <div className="flex items-center justify-between">
               <div>
-                <CardTitle>Lista de Registros Pendentes</CardTitle>
+                <CardTitle>Registros Pendentes de Validação</CardTitle>
                 <CardDescription>
-                  Selecione múltiplos registros para vincular a um único cadastro ou clique em "Ajustar" individualmente
+                  Clique em "Revalidar" para verificar a consistência cadastral de cada registro
                 </CardDescription>
               </div>
               <div className="flex gap-2">
@@ -340,9 +475,9 @@ export default function CadastrosPendentes() {
                 <CheckCircle className="h-12 w-12 text-green-500 mx-auto mb-4" />
                 <h3 className="text-lg font-medium">Nenhum registro pendente</h3>
                 <p className="text-muted-foreground">
-                  {filtroTipo === "todos" 
-                    ? "Todos os registros estão cadastrados corretamente."
-                    : `Não há ${filtroTipo === "EP" ? "Equipamentos Públicos" : "VPDs"} pendentes.`}
+                  {filtroTipo === "todos"
+                    ? "Todos os registros estão consistentes."
+                    : `Não há ${filtroTipo === "EP" ? "Equipamentos Públicos" : "VPDs"} pendentes de validação.`}
                 </p>
               </div>
             ) : (
@@ -352,87 +487,83 @@ export default function CadastrosPendentes() {
                     <TableHead className="w-[50px]">
                       <Checkbox
                         checked={
-                          registrosFiltrados.length > 0 && 
-                          registrosFiltrados.every(r => registrosSelecionados.has(r.id)) &&
-                          (filtroTipo !== "todos" || registrosFiltrados.every(r => r.tipo === registrosFiltrados[0].tipo))
+                          registrosFiltrados.length > 0 &&
+                          registrosFiltrados.every((r) => registrosSelecionados.has(r.id)) &&
+                          (filtroTipo !== "todos" || registrosFiltrados.every((r) => r.tipo === registrosFiltrados[0].tipo))
                         }
                         onCheckedChange={handleSelecionarTodos}
-                        disabled={filtroTipo === "todos" && new Set(registrosFiltrados.map(r => r.tipo)).size > 1}
+                        disabled={filtroTipo === "todos" && new Set(registrosFiltrados.map((r) => r.tipo)).size > 1}
                       />
                     </TableHead>
                     <TableHead className="w-[80px]">Tipo</TableHead>
                     <TableHead>Código</TableHead>
                     <TableHead>Descrição</TableHead>
                     <TableHead>Origem</TableHead>
+                    <TableHead>Inconsistência</TableHead>
                     <TableHead className="text-right">Valor</TableHead>
                     <TableHead>Data</TableHead>
-                    <TableHead>Status</TableHead>
                     <TableHead className="text-right">Ações</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
-                  {registrosFiltrados.map((registro) => (
-                    <TableRow 
-                      key={registro.id}
-                      className={cn(
-                        registrosSelecionados.has(registro.id) && "bg-primary/5"
-                      )}
-                    >
-                      <TableCell>
-                        <Checkbox
-                          checked={registrosSelecionados.has(registro.id)}
-                          onCheckedChange={() => handleToggleSelecao(registro.id, registro.tipo)}
-                          disabled={!podeSelecionar(registro.tipo)}
-                        />
-                      </TableCell>
-                      <TableCell>
-                        <Badge 
-                          variant="secondary" 
-                          className={cn(
-                            "text-xs",
-                            registro.tipo === "EP" 
-                              ? "bg-blue-100 text-blue-700 dark:bg-blue-900/50 dark:text-blue-300" 
-                              : "bg-purple-100 text-purple-700 dark:bg-purple-900/50 dark:text-purple-300"
-                          )}
-                        >
-                          {registro.tipo}
-                        </Badge>
-                      </TableCell>
-                      <TableCell className="font-mono text-xs">{registro.codigo}</TableCell>
-                      <TableCell className="max-w-[200px] truncate" title={registro.descricao}>
-                        {registro.descricao}
-                      </TableCell>
-                      <TableCell className="text-xs text-muted-foreground">{registro.origem}</TableCell>
-                      <TableCell className="text-right font-semibold text-sm">
-                        {registro.valor > 0 ? formatCurrency(registro.valor) : "-"}
-                      </TableCell>
-                      <TableCell className="text-xs">{formatDate(registro.dataIdentificacao)}</TableCell>
-                      <TableCell>
-                        <Badge 
-                          variant="outline" 
-                          className={cn(
-                            "text-[10px]",
-                            registro.status === "em_analise" 
-                              ? "border-yellow-500 text-yellow-700 dark:text-yellow-400" 
-                              : "border-orange-500 text-orange-700 dark:text-orange-400"
-                          )}
-                        >
-                          {registro.status === "em_analise" ? "Em Análise" : "Pendente"}
-                        </Badge>
-                      </TableCell>
-                      <TableCell className="text-right">
-                        <Button
-                          variant="outline"
-                          size="sm"
-                          className="gap-1.5"
-                          onClick={() => handleAbrirAjuste(registro)}
-                        >
-                          <ExternalLink className="h-3.5 w-3.5" />
-                          Ajustar
-                        </Button>
-                      </TableCell>
-                    </TableRow>
-                  ))}
+                  {registrosFiltrados.map((registro) => {
+                    const inc = inconsistenciaConfig[registro.inconsistencia];
+                    return (
+                      <TableRow
+                        key={registro.id}
+                        className={cn(registrosSelecionados.has(registro.id) && "bg-primary/5")}
+                      >
+                        <TableCell>
+                          <Checkbox
+                            checked={registrosSelecionados.has(registro.id)}
+                            onCheckedChange={() => handleToggleSelecao(registro.id, registro.tipo)}
+                            disabled={!podeSelecionar(registro.tipo)}
+                          />
+                        </TableCell>
+                        <TableCell>
+                          <Badge
+                            variant="secondary"
+                            className={cn(
+                              "text-xs",
+                              registro.tipo === "EP"
+                                ? "bg-blue-100 text-blue-700 dark:bg-blue-900/50 dark:text-blue-300"
+                                : "bg-purple-100 text-purple-700 dark:bg-purple-900/50 dark:text-purple-300"
+                            )}
+                          >
+                            {registro.tipo}
+                          </Badge>
+                        </TableCell>
+                        <TableCell className="font-mono text-xs">
+                          {registro.codigo || <span className="text-muted-foreground italic">sem código</span>}
+                        </TableCell>
+                        <TableCell className="max-w-[200px] truncate" title={registro.descricao}>
+                          {registro.descricao}
+                        </TableCell>
+                        <TableCell className="text-xs text-muted-foreground">{registro.origem}</TableCell>
+                        <TableCell>
+                          <Badge variant="outline" className={cn("text-[10px] gap-1", inc.color)}>
+                            {inc.icon}
+                            {inc.label}
+                          </Badge>
+                        </TableCell>
+                        <TableCell className="text-right font-semibold text-sm">
+                          {registro.valor > 0 ? formatCurrency(registro.valor) : "-"}
+                        </TableCell>
+                        <TableCell className="text-xs">{formatDate(registro.dataIdentificacao)}</TableCell>
+                        <TableCell className="text-right">
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            className="gap-1.5"
+                            onClick={() => handleAbrirRevalidacao(registro)}
+                          >
+                            <Search className="h-3.5 w-3.5" />
+                            Revalidar
+                          </Button>
+                        </TableCell>
+                      </TableRow>
+                    );
+                  })}
                 </TableBody>
               </Table>
             )}
@@ -440,96 +571,167 @@ export default function CadastrosPendentes() {
         </Card>
       </div>
 
-      {/* Modal de Ajuste Individual */}
-      <Dialog open={isAjusteModalOpen} onOpenChange={setIsAjusteModalOpen}>
-        <DialogContent className="max-w-2xl max-h-[90vh] overflow-hidden flex flex-col">
+      {/* Modal de Revalidação */}
+      <Dialog open={isRevalidacaoModalOpen} onOpenChange={setIsRevalidacaoModalOpen}>
+        <DialogContent className="max-w-xl max-h-[90vh] overflow-hidden flex flex-col">
           <DialogHeader>
             <DialogTitle className="flex items-center gap-2">
-              {registroEmEdicao?.tipo === "EP" ? (
-                <Building2 className="h-5 w-5 text-blue-500" />
-              ) : (
-                <FileText className="h-5 w-5 text-purple-500" />
-              )}
-              Cadastrar {registroEmEdicao?.tipo === "EP" ? "Equipamento Público" : "VPD"}
+              <ShieldCheck className="h-5 w-5 text-primary" />
+              Revalidar Registro
             </DialogTitle>
             <DialogDescription>
-              Complete as informações abaixo para realizar o cadastro do registro pendente.
+              Verificação de consistência cadastral do registro recebido.
             </DialogDescription>
           </DialogHeader>
 
-          {registroEmEdicao && (
+          {registroEmValidacao && (
             <ScrollArea className="flex-1 max-h-[60vh]">
-              <div className="space-y-4 pr-4">
-                {/* Informações do registro pendente */}
+              <div className="space-y-5 pr-4">
+                {/* Info do registro */}
                 <div className="p-3 bg-muted/50 rounded-lg space-y-2">
                   <div className="flex items-center justify-between">
+                    <span className="text-xs text-muted-foreground">Tipo</span>
+                    <Badge
+                      variant="secondary"
+                      className={cn(
+                        "text-xs",
+                        registroEmValidacao.tipo === "EP"
+                          ? "bg-blue-100 text-blue-700 dark:bg-blue-900/50 dark:text-blue-300"
+                          : "bg-purple-100 text-purple-700 dark:bg-purple-900/50 dark:text-purple-300"
+                      )}
+                    >
+                      {registroEmValidacao.tipo === "EP" ? "Equipamento Público" : "VPD"}
+                    </Badge>
+                  </div>
+                  <div className="flex items-center justify-between">
                     <span className="text-xs text-muted-foreground">Código</span>
-                    <span className="font-mono text-sm">{registroEmEdicao.codigo}</span>
+                    <span className="font-mono text-sm">
+                      {registroEmValidacao.codigo || <span className="text-muted-foreground italic">não informado</span>}
+                    </span>
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <span className="text-xs text-muted-foreground">Descrição</span>
+                    <span className="text-sm text-right max-w-[250px] truncate">{registroEmValidacao.descricao}</span>
                   </div>
                   <div className="flex items-center justify-between">
                     <span className="text-xs text-muted-foreground">Origem</span>
-                    <span className="text-sm">{registroEmEdicao.origem}</span>
+                    <span className="text-sm">{registroEmValidacao.origem}</span>
                   </div>
-                  {registroEmEdicao.valor > 0 && (
+                  {registroEmValidacao.valor > 0 && (
                     <div className="flex items-center justify-between">
                       <span className="text-xs text-muted-foreground">Valor</span>
-                      <span className="text-sm font-semibold">{formatCurrency(registroEmEdicao.valor)}</span>
+                      <span className="text-sm font-semibold">{formatCurrency(registroEmValidacao.valor)}</span>
                     </div>
                   )}
                 </div>
 
-                {/* Formulário dinâmico baseado no tipo */}
-                {registroEmEdicao.tipo === "EP" ? (
-                  <EPDynamicForm 
-                    defaultDescricao={registroEmEdicao.descricao}
-                    compact={true}
-                  />
-                ) : (
-                  <div className="space-y-3">
-                    <div className="space-y-2">
-                      <Label htmlFor="descricao">Descrição</Label>
-                      <Input 
-                        id="descricao" 
-                        defaultValue={registroEmEdicao.descricao}
-                        placeholder="Descrição do registro"
-                      />
-                    </div>
-                    <div className="space-y-2">
-                      <Label htmlFor="categoria">Categoria</Label>
-                      <Select>
-                        <SelectTrigger id="categoria">
-                          <SelectValue placeholder="Selecione a categoria" />
-                        </SelectTrigger>
-                        <SelectContent>
-                          <SelectItem value="pessoal">Pessoal e Encargos</SelectItem>
-                          <SelectItem value="beneficios">Benefícios Previdenciários</SelectItem>
-                          <SelectItem value="manutencao">Manutenção e Operação</SelectItem>
-                          <SelectItem value="tributarias">Tributárias</SelectItem>
-                          <SelectItem value="outras">Outras VPDs</SelectItem>
-                        </SelectContent>
-                      </Select>
-                    </div>
-                    <div className="space-y-2">
-                      <Label htmlFor="natureza">Natureza da Despesa</Label>
-                      <Input id="natureza" placeholder="Ex: 3.3.90.30.00" />
-                    </div>
-                    <div className="space-y-2">
-                      <Label htmlFor="observacao">Observação</Label>
-                      <Input id="observacao" placeholder="Observações adicionais (opcional)" />
-                    </div>
+                {/* Status da inconsistência */}
+                {statusMsg && !revalidacaoResultado && (
+                  <div className="flex items-start gap-3 p-3 rounded-lg border bg-muted/30">
+                    {statusMsg.icon}
+                    <p className="text-sm">{statusMsg.text}</p>
                   </div>
                 )}
+
+                {/* Campo para informar código manual (EP sem código) */}
+                {registroEmValidacao.inconsistencia === "EP_SEM_CODIGO" && !revalidacaoResultado && (
+                  <div className="space-y-2">
+                    <Label htmlFor="codigo-manual" className="text-sm">Informar código do EP</Label>
+                    <Input
+                      id="codigo-manual"
+                      placeholder="Ex: EP-2025-001"
+                      value={codigoManual}
+                      onChange={(e) => setCodigoManual(e.target.value)}
+                    />
+                    <p className="text-xs text-muted-foreground">
+                      Informe o código correto do Equipamento Público ou acesse a tela de cadastro.
+                    </p>
+                  </div>
+                )}
+
+                <Separator />
+
+                {/* Timeline visual */}
+                <div className="space-y-1">
+                  <Label className="text-sm font-medium">Progresso da Validação</Label>
+                  <div className="relative pl-6 space-y-4 mt-3">
+                    {timelineSteps.map((step, index) => (
+                      <div key={index} className="relative">
+                        {/* Connecting line */}
+                        {index < timelineSteps.length - 1 && (
+                          <div
+                            className={cn(
+                              "absolute left-[-16px] top-6 w-0.5 h-[calc(100%+8px)]",
+                              step.status === "completed" ? "bg-green-500" :
+                              step.status === "error" ? "bg-destructive" :
+                              step.status === "current" ? "bg-primary" :
+                              "bg-muted-foreground/20"
+                            )}
+                          />
+                        )}
+                        {/* Step dot */}
+                        <div
+                          className={cn(
+                            "absolute left-[-22px] top-0.5 flex items-center justify-center w-[22px] h-[22px] rounded-full border-2",
+                            step.status === "completed" ? "border-green-500 bg-green-500/10 text-green-600" :
+                            step.status === "error" ? "border-destructive bg-destructive/10 text-destructive" :
+                            step.status === "current" ? "border-primary bg-primary/10 text-primary" :
+                            "border-muted-foreground/30 bg-muted text-muted-foreground"
+                          )}
+                        >
+                          {step.icon}
+                        </div>
+                        {/* Content */}
+                        <div className="pb-1">
+                          <p className={cn(
+                            "text-sm font-medium",
+                            step.status === "completed" ? "text-green-700 dark:text-green-400" :
+                            step.status === "error" ? "text-destructive" :
+                            step.status === "current" ? "text-primary" :
+                            "text-muted-foreground"
+                          )}>
+                            {step.title}
+                          </p>
+                          <p className="text-xs text-muted-foreground mt-0.5">{step.description}</p>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
               </div>
             </ScrollArea>
           )}
 
           <DialogFooter className="gap-2 sm:gap-0 flex-shrink-0 pt-4 border-t">
-            <Button variant="outline" onClick={() => setIsAjusteModalOpen(false)}>
+            {revalidacaoResultado && (revalidacaoResultado === "ERRO_CADASTRO_NAO_EXISTE" || revalidacaoResultado === "ERRO_CODIGO_INVALIDO") && (
+              <Button
+                variant="outline"
+                onClick={() => {
+                  const route = registroEmValidacao?.tipo === "EP" ? "/equipamentos-publicos" : "/comparacao-vpds";
+                  navigate(route);
+                }}
+                className="gap-1.5"
+              >
+                <ExternalLink className="h-4 w-4" />
+                Ir para Cadastro
+              </Button>
+            )}
+            <Button variant="outline" onClick={() => setIsRevalidacaoModalOpen(false)}>
               Cancelar
             </Button>
-            <Button onClick={handleSalvarAjuste}>
-              <CheckCircle className="h-4 w-4 mr-2" />
-              Salvar Cadastro
+            <Button
+              onClick={handleExecutarRevalidacao}
+              disabled={isRevalidando || revalidacaoResultado === "VALIDADO" || revalidacaoResultado === "VPD_NULL_PERMITIDO"}
+              className="gap-1.5"
+            >
+              {isRevalidando ? (
+                <RefreshCw className="h-4 w-4 animate-spin" />
+              ) : (
+                <ShieldCheck className="h-4 w-4" />
+              )}
+              {revalidacaoResultado && revalidacaoResultado !== "VALIDADO" && revalidacaoResultado !== "VPD_NULL_PERMITIDO"
+                ? "Revalidar Novamente"
+                : "Revalidar Registro"}
             </Button>
           </DialogFooter>
         </DialogContent>
@@ -544,40 +746,38 @@ export default function CadastrosPendentes() {
               Vincular Registros a um Único Cadastro
             </DialogTitle>
             <DialogDescription>
-              Os {registrosSelecionadosArray.length} registros selecionados serão vinculados a um único cadastro de {tipoSelecionado === "EP" ? "Equipamento Público" : "VPD"}.
+              Os {registrosSelecionadosArray.length} registros selecionados serão vinculados a um único cadastro de{" "}
+              {tipoSelecionado === "EP" ? "Equipamento Público" : "VPD"}.
             </DialogDescription>
           </DialogHeader>
 
           <ScrollArea className="flex-1 max-h-[60vh]">
             <div className="space-y-4 pr-4">
-              {/* Lista de registros selecionados */}
               <div className="space-y-2">
                 <Label className="text-sm font-medium">Registros que serão vinculados:</Label>
                 <div className="border rounded-lg divide-y">
                   {registrosSelecionadosArray.map((registro) => (
                     <div key={registro.id} className="p-3 flex items-center justify-between gap-4">
                       <div className="flex items-center gap-3 min-w-0">
-                        <Badge 
-                          variant="secondary" 
+                        <Badge
+                          variant="secondary"
                           className={cn(
                             "text-xs shrink-0",
-                            registro.tipo === "EP" 
-                              ? "bg-blue-100 text-blue-700 dark:bg-blue-900/50 dark:text-blue-300" 
+                            registro.tipo === "EP"
+                              ? "bg-blue-100 text-blue-700 dark:bg-blue-900/50 dark:text-blue-300"
                               : "bg-purple-100 text-purple-700 dark:bg-purple-900/50 dark:text-purple-300"
                           )}
                         >
                           {registro.tipo}
                         </Badge>
                         <div className="min-w-0">
-                          <p className="font-mono text-xs text-muted-foreground">{registro.codigo}</p>
+                          <p className="font-mono text-xs text-muted-foreground">{registro.codigo || "sem código"}</p>
                           <p className="text-sm truncate">{registro.descricao}</p>
                         </div>
                       </div>
                       <div className="text-right shrink-0">
                         <p className="text-xs text-muted-foreground">{registro.origem}</p>
-                        {registro.valor > 0 && (
-                          <p className="font-semibold text-sm">{formatCurrency(registro.valor)}</p>
-                        )}
+                        {registro.valor > 0 && <p className="font-semibold text-sm">{formatCurrency(registro.valor)}</p>}
                       </div>
                     </div>
                   ))}
@@ -586,54 +786,6 @@ export default function CadastrosPendentes() {
                   <span className="text-sm font-medium">Total:</span>
                   <span className="text-lg font-bold">{formatCurrency(totalValorSelecionado)}</span>
                 </div>
-              </div>
-
-              {/* Formulário do cadastro unificado */}
-              <div className="pt-4 border-t">
-                <Label className="text-sm font-medium mb-3 block">
-                  Dados do Cadastro Unificado:
-                </Label>
-                
-                {tipoSelecionado === "EP" ? (
-                  <EPDynamicForm 
-                    defaultDescricao={registrosSelecionadosArray[0]?.descricao || ""}
-                    compact={true}
-                  />
-                ) : (
-                  <div className="space-y-3">
-                    <div className="space-y-2">
-                      <Label htmlFor="descricao-vinc">Descrição</Label>
-                      <Input 
-                        id="descricao-vinc" 
-                        defaultValue={registrosSelecionadosArray[0]?.descricao || ""}
-                        placeholder="Descrição do registro unificado"
-                      />
-                    </div>
-                    <div className="space-y-2">
-                      <Label htmlFor="categoria-vinc">Categoria</Label>
-                      <Select>
-                        <SelectTrigger id="categoria-vinc">
-                          <SelectValue placeholder="Selecione a categoria" />
-                        </SelectTrigger>
-                        <SelectContent>
-                          <SelectItem value="pessoal">Pessoal e Encargos</SelectItem>
-                          <SelectItem value="beneficios">Benefícios Previdenciários</SelectItem>
-                          <SelectItem value="manutencao">Manutenção e Operação</SelectItem>
-                          <SelectItem value="tributarias">Tributárias</SelectItem>
-                          <SelectItem value="outras">Outras VPDs</SelectItem>
-                        </SelectContent>
-                      </Select>
-                    </div>
-                    <div className="space-y-2">
-                      <Label htmlFor="natureza-vinc">Natureza da Despesa</Label>
-                      <Input id="natureza-vinc" placeholder="Ex: 3.3.90.30.00" />
-                    </div>
-                    <div className="space-y-2">
-                      <Label htmlFor="observacao-vinc">Observação</Label>
-                      <Input id="observacao-vinc" placeholder="Observações adicionais (opcional)" />
-                    </div>
-                  </div>
-                )}
               </div>
             </div>
           </ScrollArea>
