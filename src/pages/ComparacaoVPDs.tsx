@@ -875,14 +875,9 @@ export default function ComparacaoVPDs() {
                         <TableCell className="font-mono text-sm">{formatCurrency(record.modelo.totalVPDs)}</TableCell>
                         <TableCell>
                           {divModelo ? (
-                            <div className="flex flex-col gap-0.5">
-                              <Badge variant="outline" className="border-amber-500 text-amber-700 dark:text-amber-400 flex items-center gap-1 w-fit">
-                                <CircleAlert className="h-3 w-3" /> Divergente
-                              </Badge>
-                              <span className="text-[10px] text-destructive font-semibold">
-                                {formatCurrency(diffValue)}
-                              </span>
-                            </div>
+                            <span className="text-sm text-destructive font-semibold font-mono">
+                              {formatCurrency(diffValue)}
+                            </span>
                           ) : (
                             <Badge variant="outline" className="border-green-500 text-green-700 dark:text-green-400 flex items-center gap-1 w-fit">
                               <CheckCircle className="h-3 w-3" /> Conciliado
