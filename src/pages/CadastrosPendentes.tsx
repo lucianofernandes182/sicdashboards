@@ -5,8 +5,8 @@ import { Badge } from "@/components/ui/badge";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import {
   ArrowLeft, CheckCircle, Building2, FileText,
-  ExternalLink, AlertCircle, Link2, X, Search, ShieldCheck, RefreshCw, XCircle, AlertTriangle, Clock
-} from "lucide-react";
+  ExternalLink, AlertCircle, Link2, X, Search, ShieldCheck, RefreshCw, XCircle, AlertTriangle, Clock } from
+"lucide-react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from "@/components/ui/dialog";
@@ -16,17 +16,17 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { Checkbox } from "@/components/ui/checkbox";
 
 type InconsistenciaTipo =
-  | "EP_NAO_ENCONTRADO"
-  | "EP_SEM_CODIGO"
-  | "VPD_INEXISTENTE"
-  | "VPD_NULL_PERMITIDO"
-  | "AGUARDANDO_VALIDACAO";
+"EP_NAO_ENCONTRADO" |
+"EP_SEM_CODIGO" |
+"VPD_INEXISTENTE" |
+"VPD_NULL_PERMITIDO" |
+"AGUARDANDO_VALIDACAO";
 
 type RevalidacaoStatus =
-  | "VALIDADO"
-  | "ERRO_CADASTRO_NAO_EXISTE"
-  | "ERRO_CODIGO_INVALIDO"
-  | "VPD_NULL_PERMITIDO";
+"VALIDADO" |
+"ERRO_CADASTRO_NAO_EXISTE" |
+"ERRO_CODIGO_INVALIDO" |
+"VPD_NULL_PERMITIDO";
 
 interface RegistroPendente {
   id: string;
@@ -41,103 +41,103 @@ interface RegistroPendente {
 }
 
 const mockRegistrosPendentes: RegistroPendente[] = [
-  {
-    id: "pend-1",
-    tipo: "EP",
-    codigo: "EP-2025-001",
-    descricao: "Escola Municipal José de Alencar",
-    tipoMovimento: "Depreciação",
-    origem: "Sistema de Educação",
-    valor: 125000.0,
-    dataIdentificacao: "2025-05-15",
-    inconsistencia: "EP_NAO_ENCONTRADO",
-  },
-  {
-    id: "pend-2",
-    tipo: "VPD",
-    codigo: "3.3.9.1.00.00.00",
-    descricao: "Despesas com Manutenção Predial",
-    tipoMovimento: "Amortização",
-    origem: "CP - Contabilidade",
-    valor: 45780.5,
-    dataIdentificacao: "2025-05-18",
-    inconsistencia: "VPD_INEXISTENTE",
-  },
-  {
-    id: "pend-3",
-    tipo: "EP",
-    codigo: null,
-    descricao: "Centro de Saúde Vila Nova",
-    tipoMovimento: "Depreciação",
-    origem: "Sistema de Saúde",
-    valor: 89500.0,
-    dataIdentificacao: "2025-05-20",
-    inconsistencia: "EP_SEM_CODIGO",
-  },
-  {
-    id: "pend-4",
-    tipo: "VPD",
-    codigo: null,
-    descricao: "Encargos Patronais",
-    tipoMovimento: "Exaustão",
-    origem: "SIC - SMARRH",
-    valor: 234100.0,
-    dataIdentificacao: "2025-05-22",
-    inconsistencia: "VPD_NULL_PERMITIDO",
-  },
-  {
-    id: "pend-5",
-    tipo: "EP",
-    codigo: "EP-2025-003",
-    descricao: "Ginásio Poliesportivo Central",
-    tipoMovimento: "Reavaliação",
-    origem: "Sistema de Esportes",
-    valor: 156700.0,
-    dataIdentificacao: "2025-05-25",
-    inconsistencia: "EP_NAO_ENCONTRADO",
-  },
-  {
-    id: "pend-6",
-    tipo: "VPD",
-    codigo: "3.1.2.0.00.00.00",
-    descricao: "Benefícios Previdenciários",
-    tipoMovimento: "Amortização",
-    origem: "CP - Contabilidade",
-    valor: 89200.0,
-    dataIdentificacao: "2025-05-28",
-    inconsistencia: "AGUARDANDO_VALIDACAO",
-  },
-];
+{
+  id: "pend-1",
+  tipo: "EP",
+  codigo: "EP-2025-001",
+  descricao: "Escola Municipal José de Alencar",
+  tipoMovimento: "Depreciação",
+  origem: "Sistema de Educação",
+  valor: 125000.0,
+  dataIdentificacao: "2025-05-15",
+  inconsistencia: "EP_NAO_ENCONTRADO"
+},
+{
+  id: "pend-2",
+  tipo: "VPD",
+  codigo: "3.3.9.1.00.00.00",
+  descricao: "Despesas com Manutenção Predial",
+  tipoMovimento: "Amortização",
+  origem: "CP - Contabilidade",
+  valor: 45780.5,
+  dataIdentificacao: "2025-05-18",
+  inconsistencia: "VPD_INEXISTENTE"
+},
+{
+  id: "pend-3",
+  tipo: "EP",
+  codigo: null,
+  descricao: "Centro de Saúde Vila Nova",
+  tipoMovimento: "Depreciação",
+  origem: "Sistema de Saúde",
+  valor: 89500.0,
+  dataIdentificacao: "2025-05-20",
+  inconsistencia: "EP_SEM_CODIGO"
+},
+{
+  id: "pend-4",
+  tipo: "VPD",
+  codigo: null,
+  descricao: "Encargos Patronais",
+  tipoMovimento: "Exaustão",
+  origem: "SIC - SMARRH",
+  valor: 234100.0,
+  dataIdentificacao: "2025-05-22",
+  inconsistencia: "VPD_NULL_PERMITIDO"
+},
+{
+  id: "pend-5",
+  tipo: "EP",
+  codigo: "EP-2025-003",
+  descricao: "Ginásio Poliesportivo Central",
+  tipoMovimento: "Reavaliação",
+  origem: "Sistema de Esportes",
+  valor: 156700.0,
+  dataIdentificacao: "2025-05-25",
+  inconsistencia: "EP_NAO_ENCONTRADO"
+},
+{
+  id: "pend-6",
+  tipo: "VPD",
+  codigo: "3.1.2.0.00.00.00",
+  descricao: "Benefícios Previdenciários",
+  tipoMovimento: "Amortização",
+  origem: "CP - Contabilidade",
+  valor: 89200.0,
+  dataIdentificacao: "2025-05-28",
+  inconsistencia: "AGUARDANDO_VALIDACAO"
+}];
+
 
 const formatCurrency = (value: number) =>
-  new Intl.NumberFormat("pt-BR", { style: "currency", currency: "BRL" }).format(value);
+new Intl.NumberFormat("pt-BR", { style: "currency", currency: "BRL" }).format(value);
 
-const inconsistenciaConfig: Record<InconsistenciaTipo, { label: string; color: string; icon: React.ReactNode }> = {
+const inconsistenciaConfig: Record<InconsistenciaTipo, {label: string;color: string;icon: React.ReactNode;}> = {
   EP_NAO_ENCONTRADO: {
     label: "EP não encontrado",
     color: "border-destructive text-destructive",
-    icon: <XCircle className="h-3 w-3" />,
+    icon: <XCircle className="h-3 w-3" />
   },
   EP_SEM_CODIGO: {
     label: "EP sem código",
     color: "border-yellow-500 text-yellow-700 dark:text-yellow-400",
-    icon: <AlertTriangle className="h-3 w-3" />,
+    icon: <AlertTriangle className="h-3 w-3" />
   },
   VPD_INEXISTENTE: {
     label: "VPD inexistente",
     color: "border-destructive text-destructive",
-    icon: <XCircle className="h-3 w-3" />,
+    icon: <XCircle className="h-3 w-3" />
   },
   VPD_NULL_PERMITIDO: {
     label: "VPD nulo (permitido)",
     color: "border-yellow-500 text-yellow-700 dark:text-yellow-400",
-    icon: <AlertTriangle className="h-3 w-3" />,
+    icon: <AlertTriangle className="h-3 w-3" />
   },
   AGUARDANDO_VALIDACAO: {
     label: "Aguardando validação",
     color: "border-blue-500 text-blue-700 dark:text-blue-400",
-    icon: <Clock className="h-3 w-3" />,
-  },
+    icon: <Clock className="h-3 w-3" />
+  }
 };
 
 // Simula resultado da revalidação
@@ -161,40 +161,45 @@ export default function CadastrosPendentes() {
   const [codigoManual, setCodigoManual] = useState("");
   const [revalidacaoResultado, setRevalidacaoResultado] = useState<RevalidacaoStatus | null>(null);
   const [isRevalidando, setIsRevalidando] = useState(false);
-  const [isRevalidacaoMassaModalOpen, setIsRevalidacaoMassaModalOpen] = useState(false);
-  const [isRevalidandoMassa, setIsRevalidandoMassa] = useState(false);
-  const [resultadosMassa, setResultadosMassa] = useState<{ registro: RegistroPendente; resultado: RevalidacaoStatus }[]>([]);
 
   const pendentesEP = registrosPendentes.filter((r) => r.tipo === "EP").length;
   const pendentesVPD = registrosPendentes.filter((r) => r.tipo === "VPD").length;
 
   const registrosFiltrados =
-    filtroTipo === "todos" ? registrosPendentes : registrosPendentes.filter((r) => r.tipo === filtroTipo);
+  filtroTipo === "todos" ? registrosPendentes : registrosPendentes.filter((r) => r.tipo === filtroTipo);
 
   const registrosSelecionadosArray = registrosPendentes.filter((r) => registrosSelecionados.has(r.id));
   const tipoSelecionado = registrosSelecionadosArray.length > 0 ? registrosSelecionadosArray[0].tipo : null;
   const totalValorSelecionado = registrosSelecionadosArray.reduce((acc, r) => acc + r.valor, 0);
 
-  const handleToggleSelecao = (id: string) => {
+  const handleToggleSelecao = (id: string, tipo: "EP" | "VPD") => {
     setRegistrosSelecionados((prev) => {
       const next = new Set(prev);
       if (next.has(id)) {
         next.delete(id);
       } else {
-        next.add(id);
+        if (next.size === 0 || tipoSelecionado === tipo) {
+          next.add(id);
+        } else {
+          toast.error("Só é possível vincular registros do mesmo tipo (EP ou VPD)");
+          return prev;
+        }
       }
       return next;
     });
   };
 
   const handleSelecionarTodos = () => {
+    const registrosDoTipo = registrosFiltrados.filter((r) =>
+    filtroTipo === "todos" ? r.tipo === (registrosFiltrados[0]?.tipo || "EP") : true
+    );
     if (
-      registrosFiltrados.length > 0 &&
-      registrosFiltrados.every((r) => registrosSelecionados.has(r.id))
-    ) {
+    registrosSelecionados.size === registrosDoTipo.length &&
+    registrosDoTipo.every((r) => registrosSelecionados.has(r.id)))
+    {
       setRegistrosSelecionados(new Set());
     } else {
-      setRegistrosSelecionados(new Set(registrosFiltrados.map((r) => r.id)));
+      setRegistrosSelecionados(new Set(registrosDoTipo.map((r) => r.id)));
     }
   };
 
@@ -225,43 +230,6 @@ export default function CadastrosPendentes() {
     }, 1200);
   };
 
-  const handleRevalidarEmMassa = () => {
-    if (registrosSelecionados.size === 0) {
-      toast.error("Selecione pelo menos 1 registro para revalidar em massa");
-      return;
-    }
-    setResultadosMassa([]);
-    setIsRevalidandoMassa(true);
-    setIsRevalidacaoMassaModalOpen(true);
-
-    const selecionados = registrosPendentes.filter((r) => registrosSelecionados.has(r.id));
-
-    setTimeout(() => {
-      const resultados = selecionados.map((reg) => ({
-        registro: reg,
-        resultado: simularRevalidacao(reg),
-      }));
-      setResultadosMassa(resultados);
-      setIsRevalidandoMassa(false);
-
-      // Remove os validados da lista
-      const idsValidados = resultados
-        .filter((r) => r.resultado === "VALIDADO" || r.resultado === "VPD_NULL_PERMITIDO")
-        .map((r) => r.registro.id);
-
-      if (idsValidados.length > 0) {
-        setTimeout(() => {
-          setRegistrosPendentes((prev) => prev.filter((r) => !idsValidados.includes(r.id)));
-          setRegistrosSelecionados((prev) => {
-            const next = new Set(prev);
-            idsValidados.forEach((id) => next.delete(id));
-            return next;
-          });
-        }, 1500);
-      }
-    }, 1500);
-  };
-
   const handleAbrirVinculacao = () => {
     if (registrosSelecionados.size < 2) {
       toast.error("Selecione pelo menos 2 registros para vincular");
@@ -282,9 +250,9 @@ export default function CadastrosPendentes() {
 
   const formatDate = (dateStr: string) => new Date(dateStr).toLocaleDateString("pt-BR");
 
-  const podeSelecionar = () => true;
+  const podeSelecionar = (tipo: "EP" | "VPD") => registrosSelecionados.size === 0 || tipoSelecionado === tipo;
 
-  const getResultMessage = (): { icon: React.ReactNode; text: string; variant: "success" | "error" | "warning" } | null => {
+  const getResultMessage = (): {icon: React.ReactNode;text: string;variant: "success" | "error" | "warning";} | null => {
     if (!registroEmValidacao || !revalidacaoResultado) return null;
     const reg = registroEmValidacao;
 
@@ -294,9 +262,9 @@ export default function CadastrosPendentes() {
       case "VPD_NULL_PERMITIDO":
         return { icon: <CheckCircle className="h-5 w-5 text-green-500" />, text: "VPD nulo permitido pela regra contábil — registro validado.", variant: "success" };
       case "ERRO_CADASTRO_NAO_EXISTE":
-        return reg.tipo === "EP"
-          ? { icon: <XCircle className="h-5 w-5 text-destructive" />, text: `A contabilização informa o código ${reg.codigo || "(sem código)"}, porém não existe cadastro correspondente no sistema.`, variant: "error" }
-          : { icon: <XCircle className="h-5 w-5 text-destructive" />, text: `O código de VPD ${reg.codigo || "(nulo)"} não foi encontrado no sistema.`, variant: "error" };
+        return reg.tipo === "EP" ?
+        { icon: <XCircle className="h-5 w-5 text-destructive" />, text: `A contabilização informa o código ${reg.codigo || "(sem código)"}, porém não existe cadastro correspondente no sistema.`, variant: "error" } :
+        { icon: <XCircle className="h-5 w-5 text-destructive" />, text: `O código de VPD ${reg.codigo || "(nulo)"} não foi encontrado no sistema.`, variant: "error" };
       case "ERRO_CODIGO_INVALIDO":
         return { icon: <AlertTriangle className="h-5 w-5 text-yellow-500" />, text: "Registro recebido sem código válido.", variant: "warning" };
       default:
@@ -332,8 +300,8 @@ export default function CadastrosPendentes() {
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
           <Card
             className={cn("cursor-pointer transition-all hover:shadow-md", filtroTipo === "todos" && "ring-2 ring-primary")}
-            onClick={() => setFiltroTipo("todos")}
-          >
+            onClick={() => setFiltroTipo("todos")}>
+            
             <CardHeader className="pb-2">
               <CardTitle className="text-sm font-medium text-muted-foreground">Total Pendentes</CardTitle>
             </CardHeader>
@@ -347,8 +315,8 @@ export default function CadastrosPendentes() {
 
           <Card
             className={cn("cursor-pointer transition-all hover:shadow-md", filtroTipo === "EP" && "ring-2 ring-blue-500")}
-            onClick={() => setFiltroTipo("EP")}
-          >
+            onClick={() => setFiltroTipo("EP")}>
+            
             <CardHeader className="pb-2">
               <CardTitle className="text-sm font-medium text-muted-foreground">Equipamentos Públicos</CardTitle>
             </CardHeader>
@@ -362,8 +330,8 @@ export default function CadastrosPendentes() {
 
           <Card
             className={cn("cursor-pointer transition-all hover:shadow-md", filtroTipo === "VPD" && "ring-2 ring-purple-500")}
-            onClick={() => setFiltroTipo("VPD")}
-          >
+            onClick={() => setFiltroTipo("VPD")}>
+            
             <CardHeader className="pb-2">
               <CardTitle className="text-sm font-medium text-muted-foreground">VPDs</CardTitle>
             </CardHeader>
@@ -377,8 +345,8 @@ export default function CadastrosPendentes() {
         </div>
 
         {/* Barra de Ações em Lote */}
-        {registrosSelecionados.size > 0 && (
-          <Card className="border-primary bg-primary/5">
+        {registrosSelecionados.size > 0 &&
+        <Card className="border-primary bg-primary/5">
             <CardContent className="py-3">
               <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
                 <div className="flex items-center gap-3">
@@ -386,30 +354,26 @@ export default function CadastrosPendentes() {
                     {registrosSelecionados.size} registro{registrosSelecionados.size > 1 ? "s" : ""} selecionado{registrosSelecionados.size > 1 ? "s" : ""}
                   </Badge>
                   <Badge
-                    variant="outline"
-                    className={cn(
-                      "text-xs",
-                      tipoSelecionado === "EP"
-                        ? "border-blue-500 text-blue-700 dark:text-blue-400"
-                        : "border-purple-500 text-purple-700 dark:text-purple-400"
-                    )}
-                  >
+                  variant="outline"
+                  className={cn(
+                    "text-xs",
+                    tipoSelecionado === "EP" ?
+                    "border-blue-500 text-blue-700 dark:text-blue-400" :
+                    "border-purple-500 text-purple-700 dark:text-purple-400"
+                  )}>
+                  
                     {tipoSelecionado}
                   </Badge>
-                  {totalValorSelecionado > 0 && (
-                    <span className="text-sm text-muted-foreground">
+                  {totalValorSelecionado > 0 &&
+                <span className="text-sm text-muted-foreground">
                       Total: <span className="font-semibold">{formatCurrency(totalValorSelecionado)}</span>
                     </span>
-                  )}
+                }
                 </div>
                 <div className="flex items-center gap-2">
                   <Button variant="outline" size="sm" onClick={handleLimparSelecao} className="gap-1.5">
                     <X className="h-3.5 w-3.5" />
                     Limpar
-                  </Button>
-                  <Button variant="secondary" size="sm" onClick={handleRevalidarEmMassa} className="gap-1.5">
-                    <RefreshCw className="h-3.5 w-3.5" />
-                    Revalidar em Massa
                   </Button>
                   <Button size="sm" onClick={handleAbrirVinculacao} className="gap-1.5" disabled={registrosSelecionados.size < 2}>
                     <Link2 className="h-3.5 w-3.5" />
@@ -419,7 +383,7 @@ export default function CadastrosPendentes() {
               </div>
             </CardContent>
           </Card>
-        )}
+        }
 
         {/* Main Table */}
         <Card>
@@ -444,28 +408,30 @@ export default function CadastrosPendentes() {
             </div>
           </CardHeader>
           <CardContent>
-            {registrosFiltrados.length === 0 ? (
-              <div className="text-center py-12">
+            {registrosFiltrados.length === 0 ?
+            <div className="text-center py-12">
                 <CheckCircle className="h-12 w-12 text-green-500 mx-auto mb-4" />
-                <h3 className="text-lg font-medium">Nenhum registro pendente</h3>
+                
                 <p className="text-muted-foreground">
-                  {filtroTipo === "todos"
-                    ? "Todos os registros estão consistentes."
-                    : `Não há ${filtroTipo === "EP" ? "Equipamentos Públicos" : "VPDs"} pendentes de validação.`}
+                  {filtroTipo === "todos" ?
+                "Todos os registros estão consistentes." :
+                `Não há ${filtroTipo === "EP" ? "Equipamentos Públicos" : "VPDs"} pendentes de validação.`}
                 </p>
-              </div>
-            ) : (
-              <Table>
+              </div> :
+
+            <Table>
                 <TableHeader>
                   <TableRow>
                     <TableHead className="w-[50px]">
                       <Checkbox
-                        checked={
-                          registrosFiltrados.length > 0 &&
-                          registrosFiltrados.every((r) => registrosSelecionados.has(r.id))
-                        }
-                        onCheckedChange={handleSelecionarTodos}
-                      />
+                      checked={
+                      registrosFiltrados.length > 0 &&
+                      registrosFiltrados.every((r) => registrosSelecionados.has(r.id)) && (
+                      filtroTipo !== "todos" || registrosFiltrados.every((r) => r.tipo === registrosFiltrados[0].tipo))
+                      }
+                      onCheckedChange={handleSelecionarTodos}
+                      disabled={filtroTipo === "todos" && new Set(registrosFiltrados.map((r) => r.tipo)).size > 1} />
+                    
                     </TableHead>
                     <TableHead className="w-[80px]">Tipo</TableHead>
                     <TableHead>Código</TableHead>
@@ -478,28 +444,29 @@ export default function CadastrosPendentes() {
                 </TableHeader>
                 <TableBody>
                   {registrosFiltrados.map((registro) => {
-                    const inc = inconsistenciaConfig[registro.inconsistencia];
-                    return (
-                      <TableRow
-                        key={registro.id}
-                        className={cn(registrosSelecionados.has(registro.id) && "bg-primary/5")}
-                      >
+                  const inc = inconsistenciaConfig[registro.inconsistencia];
+                  return (
+                    <TableRow
+                      key={registro.id}
+                      className={cn(registrosSelecionados.has(registro.id) && "bg-primary/5")}>
+                      
                         <TableCell>
                           <Checkbox
-                            checked={registrosSelecionados.has(registro.id)}
-                            onCheckedChange={() => handleToggleSelecao(registro.id)}
-                          />
+                          checked={registrosSelecionados.has(registro.id)}
+                          onCheckedChange={() => handleToggleSelecao(registro.id, registro.tipo)}
+                          disabled={!podeSelecionar(registro.tipo)} />
+                        
                         </TableCell>
                         <TableCell>
                           <Badge
-                            variant="secondary"
-                            className={cn(
-                              "text-xs",
-                              registro.tipo === "EP"
-                                ? "bg-blue-100 text-blue-700 dark:bg-blue-900/50 dark:text-blue-300"
-                                : "bg-purple-100 text-purple-700 dark:bg-purple-900/50 dark:text-purple-300"
-                            )}
-                          >
+                          variant="secondary"
+                          className={cn(
+                            "text-xs",
+                            registro.tipo === "EP" ?
+                            "bg-blue-100 text-blue-700 dark:bg-blue-900/50 dark:text-blue-300" :
+                            "bg-purple-100 text-purple-700 dark:bg-purple-900/50 dark:text-purple-300"
+                          )}>
+                          
                             {registro.tipo}
                           </Badge>
                         </TableCell>
@@ -514,21 +481,21 @@ export default function CadastrosPendentes() {
                         <TableCell className="text-xs">{formatDate(registro.dataIdentificacao)}</TableCell>
                         <TableCell className="text-right">
                           <Button
-                            variant="outline"
-                            size="sm"
-                            className="gap-1.5"
-                            onClick={() => handleAbrirRevalidacao(registro)}
-                          >
+                          variant="outline"
+                          size="sm"
+                          className="gap-1.5"
+                          onClick={() => handleAbrirRevalidacao(registro)}>
+                          
                             <Search className="h-3.5 w-3.5" />
                             Revalidar
                           </Button>
                         </TableCell>
-                      </TableRow>
-                    );
-                  })}
+                      </TableRow>);
+
+                })}
                 </TableBody>
               </Table>
-            )}
+            }
           </CardContent>
         </Card>
       </div>
@@ -546,21 +513,21 @@ export default function CadastrosPendentes() {
             </DialogDescription>
           </DialogHeader>
 
-          {registroEmValidacao && (
-            <div className="space-y-4">
+          {registroEmValidacao &&
+          <div className="space-y-4">
               {/* Info do registro */}
               <div className="p-3 bg-muted/50 rounded-lg space-y-2 text-sm">
                 <div className="flex items-center justify-between">
                   <span className="text-muted-foreground">Tipo</span>
                   <Badge
-                    variant="secondary"
-                    className={cn(
-                      "text-xs",
-                      registroEmValidacao.tipo === "EP"
-                        ? "bg-blue-100 text-blue-700 dark:bg-blue-900/50 dark:text-blue-300"
-                        : "bg-purple-100 text-purple-700 dark:bg-purple-900/50 dark:text-purple-300"
-                    )}
-                  >
+                  variant="secondary"
+                  className={cn(
+                    "text-xs",
+                    registroEmValidacao.tipo === "EP" ?
+                    "bg-blue-100 text-blue-700 dark:bg-blue-900/50 dark:text-blue-300" :
+                    "bg-purple-100 text-purple-700 dark:bg-purple-900/50 dark:text-purple-300"
+                  )}>
+                  
                     {registroEmValidacao.tipo === "EP" ? "Equipamento Público" : "VPD"}
                   </Badge>
                 </div>
@@ -574,48 +541,48 @@ export default function CadastrosPendentes() {
                   <span className="text-muted-foreground">Origem</span>
                   <span>{registroEmValidacao.origem}</span>
                 </div>
-                {registroEmValidacao.valor > 0 && (
-                  <div className="flex items-center justify-between">
+                {registroEmValidacao.valor > 0 &&
+              <div className="flex items-center justify-between">
                     <span className="text-muted-foreground">Valor</span>
                     <span className="font-semibold">{formatCurrency(registroEmValidacao.valor)}</span>
                   </div>
-                )}
+              }
               </div>
 
               {/* Loading */}
-              {isRevalidando && (
-                <div className="flex items-center gap-3 p-4 rounded-lg border border-primary/30 bg-primary/5">
+              {isRevalidando &&
+            <div className="flex items-center gap-3 p-4 rounded-lg border border-primary/30 bg-primary/5">
                   <RefreshCw className="h-5 w-5 text-primary animate-spin" />
                   <span className="text-sm text-primary font-medium">Validando registro...</span>
                 </div>
-              )}
+            }
 
               {/* Resultado */}
-              {resultMessage && !isRevalidando && (
-                <div className={cn(
-                  "flex items-start gap-3 p-4 rounded-lg border",
-                  resultMessage.variant === "success" && "border-green-500/30 bg-green-500/5",
-                  resultMessage.variant === "error" && "border-destructive/30 bg-destructive/5",
-                  resultMessage.variant === "warning" && "border-yellow-500/30 bg-yellow-500/5",
-                )}>
+              {resultMessage && !isRevalidando &&
+            <div className={cn(
+              "flex items-start gap-3 p-4 rounded-lg border",
+              resultMessage.variant === "success" && "border-green-500/30 bg-green-500/5",
+              resultMessage.variant === "error" && "border-destructive/30 bg-destructive/5",
+              resultMessage.variant === "warning" && "border-yellow-500/30 bg-yellow-500/5"
+            )}>
                   {resultMessage.icon}
                   <p className="text-sm">{resultMessage.text}</p>
                 </div>
-              )}
+            }
             </div>
-          )}
+          }
 
           <DialogFooter className="gap-2 sm:gap-0">
-            {revalidacaoResultado && (revalidacaoResultado === "ERRO_CADASTRO_NAO_EXISTE" || revalidacaoResultado === "ERRO_CODIGO_INVALIDO") && registroEmValidacao?.tipo === "EP" && (
-              <Button
-                variant="outline"
-                onClick={() => navigate("/equipamentos-publicos")}
-                className="gap-1.5"
-              >
+            {revalidacaoResultado && (revalidacaoResultado === "ERRO_CADASTRO_NAO_EXISTE" || revalidacaoResultado === "ERRO_CODIGO_INVALIDO") && registroEmValidacao?.tipo === "EP" &&
+            <Button
+              variant="outline"
+              onClick={() => navigate("/equipamentos-publicos")}
+              className="gap-1.5">
+              
                 <ExternalLink className="h-4 w-4" />
                 Ir para Cadastro de EP
               </Button>
-            )}
+            }
             <Button variant="outline" onClick={() => setIsRevalidacaoModalOpen(false)}>
               Fechar
             </Button>
@@ -642,18 +609,18 @@ export default function CadastrosPendentes() {
               <div className="space-y-2">
                 <Label className="text-sm font-medium">Registros que serão vinculados:</Label>
                 <div className="border rounded-lg divide-y">
-                  {registrosSelecionadosArray.map((registro) => (
-                    <div key={registro.id} className="p-3 flex items-center justify-between gap-4">
+                  {registrosSelecionadosArray.map((registro) =>
+                  <div key={registro.id} className="p-3 flex items-center justify-between gap-4">
                       <div className="flex items-center gap-3 min-w-0">
                         <Badge
-                          variant="secondary"
-                          className={cn(
-                            "text-xs shrink-0",
-                            registro.tipo === "EP"
-                              ? "bg-blue-100 text-blue-700 dark:bg-blue-900/50 dark:text-blue-300"
-                              : "bg-purple-100 text-purple-700 dark:bg-purple-900/50 dark:text-purple-300"
-                          )}
-                        >
+                        variant="secondary"
+                        className={cn(
+                          "text-xs shrink-0",
+                          registro.tipo === "EP" ?
+                          "bg-blue-100 text-blue-700 dark:bg-blue-900/50 dark:text-blue-300" :
+                          "bg-purple-100 text-purple-700 dark:bg-purple-900/50 dark:text-purple-300"
+                        )}>
+                        
                           {registro.tipo}
                         </Badge>
                         <div className="min-w-0">
@@ -666,7 +633,7 @@ export default function CadastrosPendentes() {
                         {registro.valor > 0 && <p className="font-semibold text-sm">{formatCurrency(registro.valor)}</p>}
                       </div>
                     </div>
-                  ))}
+                  )}
                 </div>
                 <div className="flex justify-between items-center p-3 bg-muted/50 rounded-lg">
                   <span className="text-sm font-medium">Total:</span>
@@ -687,120 +654,6 @@ export default function CadastrosPendentes() {
           </DialogFooter>
         </DialogContent>
       </Dialog>
-      {/* Modal de Revalidação em Massa */}
-      <Dialog open={isRevalidacaoMassaModalOpen} onOpenChange={setIsRevalidacaoMassaModalOpen}>
-        <DialogContent className="max-w-2xl max-h-[85vh] overflow-hidden flex flex-col">
-          <DialogHeader>
-            <DialogTitle className="flex items-center gap-2">
-              <RefreshCw className="h-5 w-5 text-primary" />
-              Revalidação em Massa
-            </DialogTitle>
-            <DialogDescription>
-              {isRevalidandoMassa
-                ? `Validando ${registrosSelecionados.size} registro(s)...`
-                : `Resultado da revalidação de ${resultadosMassa.length} registro(s).`}
-            </DialogDescription>
-          </DialogHeader>
+    </div>);
 
-          {isRevalidandoMassa ? (
-            <div className="flex items-center justify-center gap-3 py-12">
-              <RefreshCw className="h-6 w-6 text-primary animate-spin" />
-              <span className="text-sm text-muted-foreground">Processando registros...</span>
-            </div>
-          ) : (
-            <ScrollArea className="flex-1 max-h-[60vh]">
-              <div className="space-y-4 pr-4">
-                {/* Validados */}
-                {resultadosMassa.filter((r) => r.resultado === "VALIDADO" || r.resultado === "VPD_NULL_PERMITIDO").length > 0 && (
-                  <div className="space-y-2">
-                    <div className="flex items-center gap-2">
-                      <CheckCircle className="h-4 w-4 text-green-500" />
-                      <span className="text-sm font-semibold">
-                        Validados ({resultadosMassa.filter((r) => r.resultado === "VALIDADO" || r.resultado === "VPD_NULL_PERMITIDO").length})
-                      </span>
-                    </div>
-                    <div className="border border-green-500/30 rounded-lg divide-y divide-green-500/10 bg-green-500/5">
-                      {resultadosMassa
-                        .filter((r) => r.resultado === "VALIDADO" || r.resultado === "VPD_NULL_PERMITIDO")
-                        .map(({ registro, resultado }) => (
-                          <div key={registro.id} className="p-3 flex items-center justify-between gap-3">
-                            <div className="flex items-center gap-3">
-                              <Badge variant="secondary" className="text-xs shrink-0">
-                                {registro.tipo}
-                              </Badge>
-                              <span className="font-mono text-xs">{registro.codigo || "sem código"}</span>
-                              <span className="text-xs text-muted-foreground">{registro.tipoMovimento}</span>
-                            </div>
-                            <span className="text-xs text-green-600 dark:text-green-400">
-                              {resultado === "VPD_NULL_PERMITIDO" ? "Nulo permitido" : "Consistente"}
-                            </span>
-                          </div>
-                        ))}
-                    </div>
-                  </div>
-                )}
-
-                {/* Com erros */}
-                {resultadosMassa.filter((r) => r.resultado === "ERRO_CADASTRO_NAO_EXISTE" || r.resultado === "ERRO_CODIGO_INVALIDO").length > 0 && (
-                  <div className="space-y-2">
-                    <div className="flex items-center gap-2">
-                      <XCircle className="h-4 w-4 text-destructive" />
-                      <span className="text-sm font-semibold">
-                        Inconsistências ({resultadosMassa.filter((r) => r.resultado === "ERRO_CADASTRO_NAO_EXISTE" || r.resultado === "ERRO_CODIGO_INVALIDO").length})
-                      </span>
-                    </div>
-                    <div className="border border-destructive/30 rounded-lg divide-y divide-destructive/10 bg-destructive/5">
-                      {resultadosMassa
-                        .filter((r) => r.resultado === "ERRO_CADASTRO_NAO_EXISTE" || r.resultado === "ERRO_CODIGO_INVALIDO")
-                        .map(({ registro, resultado }) => (
-                          <div key={registro.id} className="p-3 space-y-1">
-                            <div className="flex items-center justify-between gap-3">
-                              <div className="flex items-center gap-3">
-                                <Badge
-                                  variant="secondary"
-                                  className={cn(
-                                    "text-xs shrink-0",
-                                    registro.tipo === "EP"
-                                      ? "bg-blue-100 text-blue-700 dark:bg-blue-900/50 dark:text-blue-300"
-                                      : "bg-purple-100 text-purple-700 dark:bg-purple-900/50 dark:text-purple-300"
-                                  )}
-                                >
-                                  {registro.tipo}
-                                </Badge>
-                                <span className="font-mono text-xs">{registro.codigo || "sem código"}</span>
-                                <span className="text-xs text-muted-foreground">{registro.tipoMovimento}</span>
-                              </div>
-                              <span className="text-sm font-semibold">{formatCurrency(registro.valor)}</span>
-                            </div>
-                            <p className="text-xs text-destructive">
-                              {resultado === "ERRO_CODIGO_INVALIDO"
-                                ? "Registro sem código válido."
-                                : registro.tipo === "EP"
-                                  ? `Código ${registro.codigo || "(sem código)"} não encontrado no cadastro de EP.`
-                                  : `VPD ${registro.codigo || "(nulo)"} não encontrado no sistema.`}
-                            </p>
-                          </div>
-                        ))}
-                    </div>
-                  </div>
-                )}
-              </div>
-            </ScrollArea>
-          )}
-
-          <DialogFooter className="gap-2 sm:gap-0 flex-shrink-0 pt-4 border-t">
-            {!isRevalidandoMassa && resultadosMassa.some((r) => (r.resultado === "ERRO_CADASTRO_NAO_EXISTE" || r.resultado === "ERRO_CODIGO_INVALIDO") && r.registro.tipo === "EP") && (
-              <Button variant="outline" onClick={() => navigate("/equipamentos-publicos")} className="gap-1.5">
-                <ExternalLink className="h-4 w-4" />
-                Ir para Cadastro de EP
-              </Button>
-            )}
-            <Button variant="outline" onClick={() => setIsRevalidacaoMassaModalOpen(false)}>
-              Fechar
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
-    </div>
-  );
 }
