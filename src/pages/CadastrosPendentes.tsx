@@ -35,6 +35,7 @@ interface RegistroPendente {
   tipo: "EP" | "VPD";
   codigo: string | null;
   descricao: string;
+  tipoMovimento: string;
   origem: string;
   valor: number;
   dataIdentificacao: string;
@@ -47,6 +48,7 @@ const mockRegistrosPendentes: RegistroPendente[] = [
     tipo: "EP",
     codigo: "EP-2025-001",
     descricao: "Escola Municipal José de Alencar",
+    tipoMovimento: "Depreciação",
     origem: "Sistema de Educação",
     valor: 125000.0,
     dataIdentificacao: "2025-05-15",
@@ -57,6 +59,7 @@ const mockRegistrosPendentes: RegistroPendente[] = [
     tipo: "VPD",
     codigo: "3.3.9.1.00.00.00",
     descricao: "Despesas com Manutenção Predial",
+    tipoMovimento: "Amortização",
     origem: "CP - Contabilidade",
     valor: 45780.5,
     dataIdentificacao: "2025-05-18",
@@ -67,6 +70,7 @@ const mockRegistrosPendentes: RegistroPendente[] = [
     tipo: "EP",
     codigo: null,
     descricao: "Centro de Saúde Vila Nova",
+    tipoMovimento: "Depreciação",
     origem: "Sistema de Saúde",
     valor: 89500.0,
     dataIdentificacao: "2025-05-20",
@@ -77,6 +81,7 @@ const mockRegistrosPendentes: RegistroPendente[] = [
     tipo: "VPD",
     codigo: null,
     descricao: "Encargos Patronais",
+    tipoMovimento: "Exaustão",
     origem: "SIC - SMARRH",
     valor: 234100.0,
     dataIdentificacao: "2025-05-22",
@@ -87,6 +92,7 @@ const mockRegistrosPendentes: RegistroPendente[] = [
     tipo: "EP",
     codigo: "EP-2025-003",
     descricao: "Ginásio Poliesportivo Central",
+    tipoMovimento: "Reavaliação",
     origem: "Sistema de Esportes",
     valor: 156700.0,
     dataIdentificacao: "2025-05-25",
@@ -97,6 +103,7 @@ const mockRegistrosPendentes: RegistroPendente[] = [
     tipo: "VPD",
     codigo: "3.1.2.0.00.00.00",
     descricao: "Benefícios Previdenciários",
+    tipoMovimento: "Amortização",
     origem: "CP - Contabilidade",
     valor: 89200.0,
     dataIdentificacao: "2025-05-28",
@@ -497,9 +504,8 @@ export default function CadastrosPendentes() {
                     </TableHead>
                     <TableHead className="w-[80px]">Tipo</TableHead>
                     <TableHead>Código</TableHead>
-                    <TableHead>Descrição</TableHead>
+                    <TableHead>Tipo Movimento</TableHead>
                     <TableHead>Origem</TableHead>
-                    <TableHead>Inconsistência</TableHead>
                     <TableHead className="text-right">Valor</TableHead>
                     <TableHead>Data</TableHead>
                     <TableHead className="text-right">Ações</TableHead>
@@ -536,16 +542,8 @@ export default function CadastrosPendentes() {
                         <TableCell className="font-mono text-xs">
                           {registro.codigo || <span className="text-muted-foreground italic">sem código</span>}
                         </TableCell>
-                        <TableCell className="max-w-[200px] truncate" title={registro.descricao}>
-                          {registro.descricao}
-                        </TableCell>
+                        <TableCell className="text-xs">{registro.tipoMovimento}</TableCell>
                         <TableCell className="text-xs text-muted-foreground">{registro.origem}</TableCell>
-                        <TableCell>
-                          <Badge variant="outline" className={cn("text-[10px] gap-1", inc.color)}>
-                            {inc.icon}
-                            {inc.label}
-                          </Badge>
-                        </TableCell>
                         <TableCell className="text-right font-semibold text-sm">
                           {registro.valor > 0 ? formatCurrency(registro.valor) : "-"}
                         </TableCell>
