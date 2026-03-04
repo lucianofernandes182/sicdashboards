@@ -4,18 +4,16 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Badge } from "@/components/ui/badge";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import {
-  ArrowLeft, CheckCircle, Building2, FileText, ClipboardList,
+  ArrowLeft, CheckCircle, Building2, FileText,
   ExternalLink, AlertCircle, Link2, X, Search, ShieldCheck, RefreshCw, XCircle, AlertTriangle, Clock
 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from "@/components/ui/dialog";
 import { cn } from "@/lib/utils";
-import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Checkbox } from "@/components/ui/checkbox";
-import { Separator } from "@/components/ui/separator";
 
 type InconsistenciaTipo =
   | "EP_NAO_ENCONTRADO"
@@ -151,12 +149,6 @@ function simularRevalidacao(registro: RegistroPendente): RevalidacaoStatus {
   return Math.random() > 0.7 ? "VALIDADO" : "ERRO_CADASTRO_NAO_EXISTE";
 }
 
-type TimelineStep = {
-  title: string;
-  description: string;
-  status: "completed" | "current" | "error" | "pending";
-  icon: React.ReactNode;
-};
 
 export default function CadastrosPendentes() {
   const navigate = useNavigate();
@@ -260,74 +252,27 @@ export default function CadastrosPendentes() {
 
   const podeSelecionar = (tipo: "EP" | "VPD") => registrosSelecionados.size === 0 || tipoSelecionado === tipo;
 
-  // Timeline steps based on resultado
-  const getTimelineSteps = (): TimelineStep[] => {
-    const registro = registroEmValidacao;
-    if (!registro) return [];
-
-    const step1: TimelineStep = {
-      title: "Registro recebido",
-      description: `${registro.tipo === "EP" ? "Equipamento Público" : "VPD"} identificado via ${registro.origem}`,
-      status: "completed",
-      icon: <FileText className="h-4 w-4" />,
-    };
-
-    if (isRevalidando) {
-      return [
-        step1,
-        { title: "Validação em andamento...", description: "Verificando existência e consistência do cadastro", status: "current", icon: <RefreshCw className="h-4 w-4 animate-spin" /> },
-        { title: "Resultado", description: "Aguardando conclusão", status: "pending", icon: <Clock className="h-4 w-4" /> },
-      ];
-    }
-
-    const isSuccess = revalidacaoResultado === "VALIDADO" || revalidacaoResultado === "VPD_NULL_PERMITIDO";
-
-    const step2: TimelineStep = {
-      title: "Validação executada",
-      description: isSuccess ? "Cadastro verificado com sucesso" : "Inconsistência identificada",
-      status: isSuccess ? "completed" : "error",
-      icon: isSuccess ? <CheckCircle className="h-4 w-4" /> : <XCircle className="h-4 w-4" />,
-    };
-
-    const resultDescriptions: Record<RevalidacaoStatus, string> = {
-      VALIDADO: "Registro consistente — será removido da listagem.",
-      VPD_NULL_PERMITIDO: "VPD nulo permitido pela regra contábil — registro validado.",
-      ERRO_CADASTRO_NAO_EXISTE: registro.tipo === "EP"
-        ? `A contabilização informa o código ${registro.codigo || "(sem código)"}, porém não existe cadastro correspondente no sistema.`
-        : `O código de VPD ${registro.codigo || "(nulo)"} não foi encontrado no sistema.`,
-      ERRO_CODIGO_INVALIDO: "Registro recebido sem código válido. Informe o código correto ou realize o cadastro.",
-    };
-
-    const step3: TimelineStep = {
-      title: isSuccess ? "Registro validado ✓" : "Ação necessária",
-      description: resultDescriptions[revalidacaoResultado],
-      status: isSuccess ? "completed" : "error",
-      icon: isSuccess ? <CheckCircle className="h-4 w-4" /> : <AlertTriangle className="h-4 w-4" />,
-    };
-
-    return [step1, step2, step3];
-  };
-
-  const getStatusMessage = () => {
-    if (!registroEmValidacao) return null;
+  const getResultMessage = (): { icon: React.ReactNode; text: string; variant: "success" | "error" | "warning" } | null => {
+    if (!registroEmValidacao || !revalidacaoResultado) return null;
     const reg = registroEmValidacao;
 
-    switch (reg.inconsistencia) {
-      case "EP_NAO_ENCONTRADO":
-        return { icon: <XCircle className="h-5 w-5 text-destructive" />, text: "Cadastro de Equipamento Público não encontrado." };
-      case "EP_SEM_CODIGO":
-        return { icon: <AlertTriangle className="h-5 w-5 text-yellow-500" />, text: "Registro recebido sem código de Equipamento Público." };
-      case "VPD_INEXISTENTE":
-        return { icon: <XCircle className="h-5 w-5 text-destructive" />, text: "Código de VPD não cadastrado." };
+    switch (revalidacaoResultado) {
+      case "VALIDADO":
+        return { icon: <CheckCircle className="h-5 w-5 text-green-500" />, text: "Registro consistente — será removido da listagem.", variant: "success" };
       case "VPD_NULL_PERMITIDO":
-        return { icon: <AlertTriangle className="h-5 w-5 text-yellow-500" />, text: "VPD nulo — pode ser permitido pela regra contábil." };
-      case "AGUARDANDO_VALIDACAO":
-        return { icon: <Clock className="h-5 w-5 text-blue-500" />, text: "Registro aguardando validação de consistência." };
+        return { icon: <CheckCircle className="h-5 w-5 text-green-500" />, text: "VPD nulo permitido pela regra contábil — registro validado.", variant: "success" };
+      case "ERRO_CADASTRO_NAO_EXISTE":
+        return reg.tipo === "EP"
+          ? { icon: <XCircle className="h-5 w-5 text-destructive" />, text: `A contabilização informa o código ${reg.codigo || "(sem código)"}, porém não existe cadastro correspondente no sistema.`, variant: "error" }
+          : { icon: <XCircle className="h-5 w-5 text-destructive" />, text: `O código de VPD ${reg.codigo || "(nulo)"} não foi encontrado no sistema.`, variant: "error" };
+      case "ERRO_CODIGO_INVALIDO":
+        return { icon: <AlertTriangle className="h-5 w-5 text-yellow-500" />, text: "Registro recebido sem código válido.", variant: "warning" };
+      default:
+        return null;
     }
   };
 
-  const timelineSteps = getTimelineSteps();
-  const statusMsg = getStatusMessage();
+  const resultMessage = getResultMessage();
 
   return (
     <div className="min-h-screen bg-background p-4 md:p-6">
@@ -555,9 +500,9 @@ export default function CadastrosPendentes() {
         </Card>
       </div>
 
-      {/* Modal de Revalidação */}
+      {/* Modal de Revalidação - Simplificado */}
       <Dialog open={isRevalidacaoModalOpen} onOpenChange={setIsRevalidacaoModalOpen}>
-        <DialogContent className="max-w-xl max-h-[90vh] overflow-hidden flex flex-col">
+        <DialogContent className="max-w-md">
           <DialogHeader>
             <DialogTitle className="flex items-center gap-2">
               <ShieldCheck className="h-5 w-5 text-primary" />
@@ -569,109 +514,65 @@ export default function CadastrosPendentes() {
           </DialogHeader>
 
           {registroEmValidacao && (
-            <ScrollArea className="flex-1 max-h-[60vh]">
-              <div className="space-y-5 pr-4">
-                {/* Info do registro */}
-                <div className="p-3 bg-muted/50 rounded-lg space-y-2">
-                  <div className="flex items-center justify-between">
-                    <span className="text-xs text-muted-foreground">Tipo</span>
-                    <Badge
-                      variant="secondary"
-                      className={cn(
-                        "text-xs",
-                        registroEmValidacao.tipo === "EP"
-                          ? "bg-blue-100 text-blue-700 dark:bg-blue-900/50 dark:text-blue-300"
-                          : "bg-purple-100 text-purple-700 dark:bg-purple-900/50 dark:text-purple-300"
-                      )}
-                    >
-                      {registroEmValidacao.tipo === "EP" ? "Equipamento Público" : "VPD"}
-                    </Badge>
-                  </div>
-                  <div className="flex items-center justify-between">
-                    <span className="text-xs text-muted-foreground">Código</span>
-                    <span className="font-mono text-sm">
-                      {registroEmValidacao.codigo || <span className="text-muted-foreground italic">não informado</span>}
-                    </span>
-                  </div>
-                  <div className="flex items-center justify-between">
-                    <span className="text-xs text-muted-foreground">Descrição</span>
-                    <span className="text-sm text-right max-w-[250px] truncate">{registroEmValidacao.descricao}</span>
-                  </div>
-                  <div className="flex items-center justify-between">
-                    <span className="text-xs text-muted-foreground">Origem</span>
-                    <span className="text-sm">{registroEmValidacao.origem}</span>
-                  </div>
-                  {registroEmValidacao.valor > 0 && (
-                    <div className="flex items-center justify-between">
-                      <span className="text-xs text-muted-foreground">Valor</span>
-                      <span className="text-sm font-semibold">{formatCurrency(registroEmValidacao.valor)}</span>
-                    </div>
-                  )}
+            <div className="space-y-4">
+              {/* Info do registro */}
+              <div className="p-3 bg-muted/50 rounded-lg space-y-2 text-sm">
+                <div className="flex items-center justify-between">
+                  <span className="text-muted-foreground">Tipo</span>
+                  <Badge
+                    variant="secondary"
+                    className={cn(
+                      "text-xs",
+                      registroEmValidacao.tipo === "EP"
+                        ? "bg-blue-100 text-blue-700 dark:bg-blue-900/50 dark:text-blue-300"
+                        : "bg-purple-100 text-purple-700 dark:bg-purple-900/50 dark:text-purple-300"
+                    )}
+                  >
+                    {registroEmValidacao.tipo === "EP" ? "Equipamento Público" : "VPD"}
+                  </Badge>
                 </div>
-
-                {/* Status da inconsistência */}
-                {statusMsg && !revalidacaoResultado && (
-                  <div className="flex items-start gap-3 p-3 rounded-lg border bg-muted/30">
-                    {statusMsg.icon}
-                    <p className="text-sm">{statusMsg.text}</p>
+                <div className="flex items-center justify-between">
+                  <span className="text-muted-foreground">Código</span>
+                  <span className="font-mono">
+                    {registroEmValidacao.codigo || <span className="text-muted-foreground italic">não informado</span>}
+                  </span>
+                </div>
+                <div className="flex items-center justify-between">
+                  <span className="text-muted-foreground">Origem</span>
+                  <span>{registroEmValidacao.origem}</span>
+                </div>
+                {registroEmValidacao.valor > 0 && (
+                  <div className="flex items-center justify-between">
+                    <span className="text-muted-foreground">Valor</span>
+                    <span className="font-semibold">{formatCurrency(registroEmValidacao.valor)}</span>
                   </div>
                 )}
-
-
-                <Separator />
-
-                {/* Timeline visual */}
-                <div className="space-y-1">
-                  <Label className="text-sm font-medium">Progresso da Validação</Label>
-                  <div className="relative pl-6 space-y-4 mt-3">
-                    {timelineSteps.map((step, index) => (
-                      <div key={index} className="relative">
-                        {/* Connecting line */}
-                        {index < timelineSteps.length - 1 && (
-                          <div
-                            className={cn(
-                              "absolute left-[-16px] top-6 w-0.5 h-[calc(100%+8px)]",
-                              step.status === "completed" ? "bg-green-500" :
-                              step.status === "error" ? "bg-destructive" :
-                              step.status === "current" ? "bg-primary" :
-                              "bg-muted-foreground/20"
-                            )}
-                          />
-                        )}
-                        {/* Step dot */}
-                        <div
-                          className={cn(
-                            "absolute left-[-22px] top-0.5 flex items-center justify-center w-[22px] h-[22px] rounded-full border-2",
-                            step.status === "completed" ? "border-green-500 bg-green-500/10 text-green-600" :
-                            step.status === "error" ? "border-destructive bg-destructive/10 text-destructive" :
-                            step.status === "current" ? "border-primary bg-primary/10 text-primary" :
-                            "border-muted-foreground/30 bg-muted text-muted-foreground"
-                          )}
-                        >
-                          {step.icon}
-                        </div>
-                        {/* Content */}
-                        <div className="pb-1">
-                          <p className={cn(
-                            "text-sm font-medium",
-                            step.status === "completed" ? "text-green-700 dark:text-green-400" :
-                            step.status === "error" ? "text-destructive" :
-                            step.status === "current" ? "text-primary" :
-                            "text-muted-foreground"
-                          )}>
-                            {step.title}
-                          </p>
-                          <p className="text-xs text-muted-foreground mt-0.5">{step.description}</p>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                </div>
               </div>
-            </ScrollArea>
+
+              {/* Loading */}
+              {isRevalidando && (
+                <div className="flex items-center gap-3 p-4 rounded-lg border border-primary/30 bg-primary/5">
+                  <RefreshCw className="h-5 w-5 text-primary animate-spin" />
+                  <span className="text-sm text-primary font-medium">Validando registro...</span>
+                </div>
+              )}
+
+              {/* Resultado */}
+              {resultMessage && !isRevalidando && (
+                <div className={cn(
+                  "flex items-start gap-3 p-4 rounded-lg border",
+                  resultMessage.variant === "success" && "border-green-500/30 bg-green-500/5",
+                  resultMessage.variant === "error" && "border-destructive/30 bg-destructive/5",
+                  resultMessage.variant === "warning" && "border-yellow-500/30 bg-yellow-500/5",
+                )}>
+                  {resultMessage.icon}
+                  <p className="text-sm">{resultMessage.text}</p>
+                </div>
+              )}
+            </div>
           )}
 
-          <DialogFooter className="gap-2 sm:gap-0 flex-shrink-0 pt-4 border-t">
+          <DialogFooter className="gap-2 sm:gap-0">
             {revalidacaoResultado && (revalidacaoResultado === "ERRO_CADASTRO_NAO_EXISTE" || revalidacaoResultado === "ERRO_CODIGO_INVALIDO") && registroEmValidacao?.tipo === "EP" && (
               <Button
                 variant="outline"
@@ -683,7 +584,7 @@ export default function CadastrosPendentes() {
               </Button>
             )}
             <Button variant="outline" onClick={() => setIsRevalidacaoModalOpen(false)}>
-              {revalidacaoResultado && revalidacaoResultado !== "VALIDADO" && revalidacaoResultado !== "VPD_NULL_PERMITIDO" ? "Fechar" : "Cancelar"}
+              Fechar
             </Button>
           </DialogFooter>
         </DialogContent>
