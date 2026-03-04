@@ -285,7 +285,7 @@ export default function CadastrosPendentes() {
               Voltar
             </Button>
             <div>
-              <h1 className="text-2xl font-bold flex items-center gap-2">
+              <h1 className="text-2xl font-bold flex items-center gap-2">Cadastro de Pendentes
                 <ShieldCheck className="h-6 w-6 text-primary" />
                 Central de Revalidação
               </h1>
