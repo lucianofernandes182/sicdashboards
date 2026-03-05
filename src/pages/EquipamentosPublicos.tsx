@@ -1111,8 +1111,8 @@ const EquipamentosPublicos = () => {
                     <Table>
                       <TableBody>
                         <TableRow>
-                          <TableCell className="font-medium text-muted-foreground w-[180px] text-xs">Número de Controle</TableCell>
-                          <TableCell className="text-xs">{form.getValues("NumeroControle") || "—"}</TableCell>
+                         <TableCell className="font-medium text-muted-foreground w-[180px] text-xs">ID Equipamento</TableCell>
+                          <TableCell className="text-xs font-mono">{`${form.getValues("Modelo") || "—"}.${form.getValues("Funcao") || "—"}.${form.getValues("ObjetoDeCustos") || "—"}.${form.getValues("UnidadeDeCustos") || "—"}.${form.getValues("CentroDeCustos") || "—"}`}</TableCell>
                         </TableRow>
                         <TableRow>
                           <TableCell className="font-medium text-muted-foreground text-xs">Descrição</TableCell>
