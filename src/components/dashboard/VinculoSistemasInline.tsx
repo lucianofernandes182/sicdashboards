@@ -54,7 +54,10 @@ const defaultRegra: RegraAvancada = {
 };
 
 export const VinculoSistemasInline = ({ vinculos, onVinculosChange, acumuladoresDisponiveis }: VinculoSistemasInlineProps) => {
-  const acumuladoresEquipamentosDisponiveis = acumuladoresDisponiveis && acumuladoresDisponiveis.length > 0 ? acumuladoresDisponiveis : defaultAcumuladores;
+  const todosAcumuladores = acumuladoresDisponiveis && acumuladoresDisponiveis.length > 0 ? acumuladoresDisponiveis : defaultAcumuladores;
+  // Acumuladores que ainda não estão vinculados a nenhum vínculo
+  const acumuladoresIdsVinculados = vinculos.filter(v => v.acumulador).map(v => v.acumulador!.id);
+  const acumuladoresLivres = todosAcumuladores.filter(a => !acumuladoresIdsVinculados.includes(a.id));
   const [subView, setSubView] = useState<"list" | "add" | "advanced">("list");
   const [selectedSistema, setSelectedSistema] = useState("");
   const [selectedCodigo, setSelectedCodigo] = useState("");
@@ -93,7 +96,7 @@ export const VinculoSistemasInline = ({ vinculos, onVinculosChange, acumuladores
       id: editingVinculoId || crypto.randomUUID(),
       sistema: selectedSistema, codigoNoSistema: selectedCodigo, descricaoNoSistema: selectedDescricao,
       tipoVinculo: "direto", status: advancedWarning.requires ? "requer_regra" : "valido",
-      acumulador: acumuladoresEquipamentosDisponiveis.find(a => a.id === selectedAcumuladorId),
+      acumulador: todosAcumuladores.find(a => a.id === selectedAcumuladorId),
     };
     if (editingVinculoId) {
       onVinculosChange(vinculos.map(v => v.id === editingVinculoId ? newVinculo : v));
@@ -110,7 +113,7 @@ export const VinculoSistemasInline = ({ vinculos, onVinculosChange, acumuladores
       id: editingVinculoId || crypto.randomUUID(),
       sistema: selectedSistema, codigoNoSistema: selectedCodigo, descricaoNoSistema: selectedDescricao,
       tipoVinculo: "avancado", status: "valido",
-      acumulador: acumuladoresEquipamentosDisponiveis.find(a => a.id === selectedAcumuladorId),
+      acumulador: todosAcumuladores.find(a => a.id === selectedAcumuladorId),
       regraAvancada,
     };
     if (editingVinculoId) {
@@ -150,9 +153,13 @@ export const VinculoSistemasInline = ({ vinculos, onVinculosChange, acumuladores
             <p className="text-xs text-muted-foreground">
               {vinculos.length === 0 ? "Nenhum sistema vinculado. Adicione um vínculo para começar." : `${vinculos.length} vínculo(s) cadastrado(s)`}
             </p>
-            <Button size="sm" className="text-xs" onClick={() => { resetForm(); setSubView("add"); }}>
-              <Plus className="h-3 w-3 mr-1" /> Adicionar vínculo
-            </Button>
+            {acumuladoresLivres.length > 0 ? (
+              <Button size="sm" className="text-xs" onClick={() => { resetForm(); setSubView("add"); }}>
+                <Plus className="h-3 w-3 mr-1" /> Adicionar vínculo
+              </Button>
+            ) : (
+              <span className="text-[11px] text-muted-foreground">Todos os acumuladores já estão vinculados</span>
+            )}
           </div>
 
           {vinculos.length > 0 && (
@@ -176,7 +183,7 @@ export const VinculoSistemasInline = ({ vinculos, onVinculosChange, acumuladores
                       <TableCell className="text-xs font-mono">{vinculo.codigoNoSistema}</TableCell>
                       <TableCell className="text-xs hidden sm:table-cell text-muted-foreground">{vinculo.descricaoNoSistema}</TableCell>
                       <TableCell className="text-xs hidden sm:table-cell">
-                        {vinculo.acumulador ? <Badge variant="outline" className="text-[10px]">1 acumulador</Badge> : <span className="text-muted-foreground">—</span>}
+                        {vinculo.acumulador ? <Badge variant="outline" className="text-[10px] font-mono">{vinculo.acumulador.modelo}.{vinculo.acumulador.funcao}.{vinculo.acumulador.objetoCustos}.{vinculo.acumulador.unidadeCustos}.{vinculo.acumulador.centroCustos}</Badge> : <span className="text-muted-foreground">—</span>}
                       </TableCell>
                       <TableCell className="text-xs">
                         <Badge variant={vinculo.tipoVinculo === "direto" ? "secondary" : "default"} className="text-[10px]">
@@ -255,7 +262,7 @@ export const VinculoSistemasInline = ({ vinculos, onVinculosChange, acumuladores
                 <p className="text-[11px] text-muted-foreground">Pesquise e selecione o acumulador que deseja associar a este vínculo.</p>
 
                 {selectedAcumuladorId && (() => {
-                  const sel = acumuladoresEquipamentosDisponiveis.find(a => a.id === selectedAcumuladorId);
+                  const sel = todosAcumuladores.find(a => a.id === selectedAcumuladorId);
                   if (!sel) return null;
                   return (
                     <div className="rounded-md border bg-muted/30 p-3">
@@ -294,7 +301,7 @@ export const VinculoSistemasInline = ({ vinculos, onVinculosChange, acumuladores
                         </TableRow>
                       </TableHeader>
                       <TableBody>
-                        {acumuladoresEquipamentosDisponiveis.filter(ac => {
+                        {acumuladoresLivres.filter(ac => {
                           if (!acumuladorSearch) return true;
                           const q = acumuladorSearch.toLowerCase();
                           return [ac.modelo, ac.funcao, ac.objetoCustos, ac.unidadeCustos, ac.centroCustos].some(v => v.toLowerCase().includes(q));
