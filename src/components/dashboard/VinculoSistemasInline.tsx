@@ -19,6 +19,7 @@ interface RegraAvancada {
 interface VinculoSistemasInlineProps {
   vinculos: VinculoSistema[];
   onVinculosChange: (vinculos: VinculoSistema[]) => void;
+  acumuladoresDisponiveis?: AcumuladorEquipamento[];
 }
 
 const detectRequiresAdvancedRule = (sistema: string, codigo: string) => {
@@ -38,7 +39,7 @@ const sistemasDisponiveis = [
   { id: "CP", name: "CP - Contabilidade Pública" },
 ];
 
-const acumuladoresEquipamentosDisponiveis: AcumuladorEquipamento[] = [
+const defaultAcumuladores: AcumuladorEquipamento[] = [
   { id: "1", modelo: "1", funcao: "02", objetoCustos: "001", unidadeCustos: "001", centroCustos: "006" },
   { id: "2", modelo: "1", funcao: "02", objetoCustos: "002", unidadeCustos: "002", centroCustos: "007" },
   { id: "3", modelo: "1", funcao: "02", objetoCustos: "004", unidadeCustos: "004", centroCustos: "009" },
@@ -52,7 +53,8 @@ const defaultRegra: RegraAvancada = {
   condicoesOpcionais: "",
 };
 
-export const VinculoSistemasInline = ({ vinculos, onVinculosChange }: VinculoSistemasInlineProps) => {
+export const VinculoSistemasInline = ({ vinculos, onVinculosChange, acumuladoresDisponiveis }: VinculoSistemasInlineProps) => {
+  const acumuladoresEquipamentosDisponiveis = acumuladoresDisponiveis && acumuladoresDisponiveis.length > 0 ? acumuladoresDisponiveis : defaultAcumuladores;
   const [subView, setSubView] = useState<"list" | "add" | "advanced">("list");
   const [selectedSistema, setSelectedSistema] = useState("");
   const [selectedCodigo, setSelectedCodigo] = useState("");

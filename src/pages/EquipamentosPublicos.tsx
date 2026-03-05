@@ -638,13 +638,14 @@ const EquipamentosPublicos = () => {
                 <div className="flex items-center justify-between mb-4">
                   {[
                     { step: 1, label: "Dados do Equipamento", icon: Building2 },
-                    { step: 2, label: "Vincular Sistemas", icon: Server },
+                    { step: 2, label: "Acumuladores", icon: Layers },
+                    { step: 3, label: "Vincular Sistemas", icon: Server },
                   ].map((item, idx) => (
                     <div key={item.step} className="flex items-center flex-1">
                       <button
                         type="button"
                         onClick={() => {
-                          if (item.step === 1 || (item.step === 2 && selectedSchema)) {
+                          if (item.step === 1 || (item.step >= 2 && selectedSchema)) {
                             setCurrentStep(item.step);
                           }
                         }}
@@ -678,15 +679,15 @@ const EquipamentosPublicos = () => {
                           </p>
                         </div>
                       </button>
-                      {idx < 1 && (
+                      {idx < 2 && (
                         <div className="flex-1 mx-3 sm:mx-6">
-                          <div className={`h-0.5 rounded ${currentStep > 1 ? "bg-primary" : "bg-muted-foreground/20"}`} />
+                          <div className={`h-0.5 rounded ${currentStep > item.step ? "bg-primary" : "bg-muted-foreground/20"}`} />
                         </div>
                       )}
                     </div>
                   ))}
                 </div>
-                <Progress value={currentStep === 1 ? 50 : 100} className="h-1" />
+                <Progress value={currentStep === 1 ? 33 : currentStep === 2 ? 66 : 100} className="h-1" />
               </CardContent>
             </Card>
 
@@ -1080,7 +1081,7 @@ const EquipamentosPublicos = () => {
                               Cancelar
                             </Button>
                             <Button type="button" onClick={() => setCurrentStep(2)} size="sm" className="text-xs sm:text-sm">
-                              Próximo: Vincular Sistemas
+                              Próximo: Acumuladores
                               <ChevronRight className="h-3 w-3 sm:h-4 sm:w-4 ml-1" />
                             </Button>
                           </div>
@@ -1092,8 +1093,141 @@ const EquipamentosPublicos = () => {
               </>
             )}
 
-            {/* STEP 2: Vincular Sistemas */}
+            {/* STEP 2: Acumuladores */}
             {currentStep === 2 && (
+              <Card>
+                <CardHeader className="p-4 sm:p-6">
+                  <CardTitle className="flex items-center gap-2 text-base sm:text-lg">
+                    <Layers className="h-4 w-4 sm:h-5 sm:w-5" />
+                    Acumuladores
+                  </CardTitle>
+                  <CardDescription className="text-xs sm:text-sm">
+                    Cadastre os acumuladores vinculados a este equipamento. Eles estarão disponíveis para seleção no próximo passo.
+                  </CardDescription>
+                </CardHeader>
+                <CardContent className="p-4 sm:p-6 pt-0 sm:pt-0">
+                  {/* Resumo do equipamento */}
+                  <div className="rounded-md border mb-6">
+                    <Table>
+                      <TableBody>
+                        <TableRow>
+                          <TableCell className="font-medium text-muted-foreground w-[180px] text-xs">Número de Controle</TableCell>
+                          <TableCell className="text-xs">{form.getValues("NumeroControle") || "—"}</TableCell>
+                        </TableRow>
+                        <TableRow>
+                          <TableCell className="font-medium text-muted-foreground text-xs">Descrição</TableCell>
+                          <TableCell className="text-xs">{form.getValues("Descricao") || "—"}</TableCell>
+                        </TableRow>
+                      </TableBody>
+                    </Table>
+                  </div>
+
+                  {/* Formulário para adicionar acumulador */}
+                  <div className="space-y-4">
+                    <div className="rounded-md border p-4 space-y-3">
+                      <h4 className="text-sm font-medium">Adicionar Acumulador</h4>
+                      <div className="grid grid-cols-2 sm:grid-cols-5 gap-3">
+                        <div className="space-y-1.5">
+                          <Label className="text-xs">Modelo</Label>
+                          <Input value={novoAcumulador.Modelo} onChange={e => setNovoAcumulador(p => ({ ...p, Modelo: e.target.value }))} className="text-xs h-9" placeholder="1" />
+                        </div>
+                        <div className="space-y-1.5">
+                          <Label className="text-xs">Função</Label>
+                          <Input value={novoAcumulador.Funcao} onChange={e => setNovoAcumulador(p => ({ ...p, Funcao: e.target.value }))} className="text-xs h-9" placeholder="02" />
+                        </div>
+                        <div className="space-y-1.5">
+                          <Label className="text-xs">Objeto de Custos</Label>
+                          <Input value={novoAcumulador.ObjetoDeCustos} onChange={e => setNovoAcumulador(p => ({ ...p, ObjetoDeCustos: e.target.value }))} className="text-xs h-9" placeholder="001" />
+                        </div>
+                        <div className="space-y-1.5">
+                          <Label className="text-xs">Unidade de Custos</Label>
+                          <Input value={novoAcumulador.UnidadeDeCustos} onChange={e => setNovoAcumulador(p => ({ ...p, UnidadeDeCustos: e.target.value }))} className="text-xs h-9" placeholder="001" />
+                        </div>
+                        <div className="space-y-1.5">
+                          <Label className="text-xs">Centro de Custos</Label>
+                          <Input value={novoAcumulador.CentroDeCustos} onChange={e => setNovoAcumulador(p => ({ ...p, CentroDeCustos: e.target.value }))} className="text-xs h-9" placeholder="006" />
+                        </div>
+                      </div>
+                      <Button size="sm" className="text-xs" onClick={() => {
+                        const key = form.getValues("NumeroControle");
+                        if (!novoAcumulador.Modelo || !novoAcumulador.Funcao || !novoAcumulador.ObjetoDeCustos || !novoAcumulador.UnidadeDeCustos || !novoAcumulador.CentroDeCustos) {
+                          toast.error("Preencha todos os campos do acumulador.");
+                          return;
+                        }
+                        const newAcumulador: Acumulador = { ...novoAcumulador, id: crypto.randomUUID() };
+                        setAcumuladores(prev => ({ ...prev, [key]: [...(prev[key] || []), newAcumulador] }));
+                        setNovoAcumulador({ Modelo: "", Funcao: "", ObjetoDeCustos: "", UnidadeDeCustos: "", CentroDeCustos: "" });
+                        toast.success("Acumulador adicionado!");
+                      }}>
+                        <Plus className="h-3 w-3 mr-1" /> Adicionar
+                      </Button>
+                    </div>
+
+                    {/* Lista de acumuladores */}
+                    {(() => {
+                      const key = form.getValues("NumeroControle");
+                      const acums = acumuladores[key] || [];
+                      return acums.length > 0 ? (
+                        <div className="rounded-md border">
+                          <Table>
+                            <TableHeader>
+                              <TableRow>
+                                <TableHead className="text-xs">Modelo</TableHead>
+                                <TableHead className="text-xs">Função</TableHead>
+                                <TableHead className="text-xs">Objeto de Custos</TableHead>
+                                <TableHead className="text-xs">Unidade de Custos</TableHead>
+                                <TableHead className="text-xs">Centro de Custos</TableHead>
+                                <TableHead className="text-xs text-right">Ações</TableHead>
+                              </TableRow>
+                            </TableHeader>
+                            <TableBody>
+                              {acums.map(ac => (
+                                <TableRow key={ac.id}>
+                                  <TableCell className="text-xs font-mono">{ac.Modelo}</TableCell>
+                                  <TableCell className="text-xs font-mono">{ac.Funcao}</TableCell>
+                                  <TableCell className="text-xs font-mono">{ac.ObjetoDeCustos}</TableCell>
+                                  <TableCell className="text-xs font-mono">{ac.UnidadeDeCustos}</TableCell>
+                                  <TableCell className="text-xs font-mono">{ac.CentroDeCustos}</TableCell>
+                                  <TableCell className="text-right">
+                                    <Button variant="ghost" size="icon" className="h-7 w-7 text-destructive hover:text-destructive" onClick={() => {
+                                      setAcumuladores(prev => ({ ...prev, [key]: (prev[key] || []).filter(a => a.id !== ac.id) }));
+                                      toast.success("Acumulador removido!");
+                                    }}>
+                                      <Trash2 className="h-3 w-3" />
+                                    </Button>
+                                  </TableCell>
+                                </TableRow>
+                              ))}
+                            </TableBody>
+                          </Table>
+                        </div>
+                      ) : (
+                        <div className="text-center py-8 text-muted-foreground border border-dashed rounded-lg">
+                          <Layers className="h-10 w-10 mx-auto mb-2 opacity-50" />
+                          <p className="text-sm font-medium">Nenhum acumulador cadastrado</p>
+                          <p className="text-xs">Adicione acumuladores para vincular aos sistemas no próximo passo</p>
+                        </div>
+                      );
+                    })()}
+                  </div>
+
+                  {/* Step Navigation */}
+                  <div className="flex flex-col-reverse sm:flex-row justify-between gap-2 sm:gap-4 pt-6">
+                    <Button type="button" variant="outline" onClick={() => setCurrentStep(1)} size="sm" className="text-xs sm:text-sm">
+                      <ArrowLeft className="h-3 w-3 sm:h-4 sm:w-4 mr-1" />
+                      Voltar: Dados do Equipamento
+                    </Button>
+                    <Button type="button" onClick={() => setCurrentStep(3)} size="sm" className="text-xs sm:text-sm">
+                      Próximo: Vincular Sistemas
+                      <ChevronRight className="h-3 w-3 sm:h-4 sm:w-4 ml-1" />
+                    </Button>
+                  </div>
+                </CardContent>
+              </Card>
+            )}
+
+            {/* STEP 3: Vincular Sistemas */}
+            {currentStep === 3 && (
               <Card>
                 <CardHeader className="p-4 sm:p-6">
                   <CardTitle className="flex items-center gap-2 text-base sm:text-lg">
@@ -1101,7 +1235,7 @@ const EquipamentosPublicos = () => {
                     Vincular Sistemas
                   </CardTitle>
                   <CardDescription className="text-xs sm:text-sm">
-                    Vincule este equipamento aos sistemas estruturantes, informando os códigos de origem e seus acumuladores
+                    Vincule este equipamento aos sistemas estruturantes, informando os códigos de origem e selecionando os acumuladores cadastrados
                   </CardDescription>
                 </CardHeader>
                 <CardContent className="p-4 sm:p-6 pt-0 sm:pt-0">
@@ -1121,11 +1255,16 @@ const EquipamentosPublicos = () => {
                           <TableCell className="font-medium text-muted-foreground text-xs">UG</TableCell>
                           <TableCell className="text-xs">{form.getValues("UG") || "—"}</TableCell>
                         </TableRow>
+                        <TableRow>
+                          <TableCell className="font-medium text-muted-foreground text-xs">Acumuladores cadastrados</TableCell>
+                          <TableCell className="text-xs">
+                            <Badge variant="secondary">{(acumuladores[form.getValues("NumeroControle")] || []).length} acumulador(es)</Badge>
+                          </TableCell>
+                        </TableRow>
                       </TableBody>
                     </Table>
                   </div>
 
-                  {/* Vinculos inline - reusing VinculoSistemasDialog logic */}
                   <VinculoSistemasInline
                     vinculos={vinculosSistemas[form.getValues("NumeroControle")] || []}
                     onVinculosChange={(newVinculos) => {
@@ -1134,13 +1273,21 @@ const EquipamentosPublicos = () => {
                         setVinculosSistemas(prev => ({ ...prev, [key]: newVinculos }));
                       }
                     }}
+                    acumuladoresDisponiveis={(acumuladores[form.getValues("NumeroControle")] || []).map(ac => ({
+                      id: ac.id,
+                      modelo: ac.Modelo,
+                      funcao: ac.Funcao,
+                      objetoCustos: ac.ObjetoDeCustos,
+                      unidadeCustos: ac.UnidadeDeCustos,
+                      centroCustos: ac.CentroDeCustos,
+                    }))}
                   />
 
                   {/* Step Navigation */}
                   <div className="flex flex-col-reverse sm:flex-row justify-between gap-2 sm:gap-4 pt-6">
-                    <Button type="button" variant="outline" onClick={() => setCurrentStep(1)} size="sm" className="text-xs sm:text-sm">
+                    <Button type="button" variant="outline" onClick={() => setCurrentStep(2)} size="sm" className="text-xs sm:text-sm">
                       <ArrowLeft className="h-3 w-3 sm:h-4 sm:w-4 mr-1" />
-                      Voltar: Dados do Equipamento
+                      Voltar: Acumuladores
                     </Button>
                     <Button type="button" onClick={() => {
                       form.handleSubmit(onSubmit)();
