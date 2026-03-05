@@ -753,79 +753,17 @@ const EquipamentosPublicos = () => {
                     <CardContent className="p-4 sm:p-6 pt-0 sm:pt-0">
                       <Form {...form}>
                         <form onSubmit={(e) => e.preventDefault()} className="space-y-4 sm:space-y-6">
-                          {/* Identificação */}
+                          {/* Identificação / Acumulador */}
                           <div className="space-y-3 sm:space-y-4">
-                            <h3 className="text-base sm:text-lg font-semibold border-b pb-2">Identificação</h3>
-                            <div className="grid grid-cols-2 md:grid-cols-3 gap-3 sm:gap-4">
-                              <FormField
-                            control={form.control}
-                            name="Modelo"
-                            render={({ field }) =>
-                            <FormItem>
-                                    <FormLabel className="text-xs sm:text-sm">Modelo</FormLabel>
-                                    <FormControl>
-                                      <Input {...field} className="text-xs sm:text-sm" />
-                                    </FormControl>
-                                    <FormMessage className="text-xs" />
-                                  </FormItem>
-                            } />
-                              <FormField
-                            control={form.control}
-                            name="NumeroControle"
-                            render={({ field }) =>
-                            <FormItem>
-                                    <FormLabel className="text-xs sm:text-sm">Número de Controle</FormLabel>
-                                    <FormControl>
-                                      <Input {...field} className="text-xs sm:text-sm" />
-                                    </FormControl>
-                                    <FormMessage className="text-xs" />
-                                  </FormItem>
-                            } />
-                              <FormField
-                            control={form.control}
-                            name="Tipo"
-                            render={({ field }) =>
-                            <FormItem className="col-span-2 md:col-span-1">
-                                    <FormLabel className="text-xs sm:text-sm">Tipo</FormLabel>
-                                    <FormControl>
-                                      <Input {...field} className="text-xs sm:text-sm" />
-                                    </FormControl>
-                                    <FormMessage className="text-xs" />
-                                  </FormItem>
-                            } />
-                            </div>
-                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
-                              <FormField
-                            control={form.control}
-                            name="Descricao"
-                            render={({ field }) =>
-                            <FormItem>
-                                    <FormLabel className="text-xs sm:text-sm">Descrição</FormLabel>
-                                    <FormControl>
-                                      <Input {...field} className="text-xs sm:text-sm" />
-                                    </FormControl>
-                                    <FormMessage className="text-xs" />
-                                  </FormItem>
-                            } />
-                              <FormField
-                            control={form.control}
-                            name="UG"
-                            render={({ field }) =>
-                            <FormItem>
-                                    <FormLabel className="text-xs sm:text-sm">UG</FormLabel>
-                                    <FormControl>
-                                      <Input {...field} className="text-xs sm:text-sm" />
-                                    </FormControl>
-                                    <FormMessage className="text-xs" />
-                                  </FormItem>
-                            } />
-                            </div>
-                          </div>
-
-                          {/* Custos e Organização */}
-                          <div className="space-y-3 sm:space-y-4">
-                            <h3 className="text-base sm:text-lg font-semibold border-b pb-2">Custos e Organização</h3>
-                            <div className="grid grid-cols-2 md:grid-cols-3 gap-3 sm:gap-4">
+                            <h3 className="text-base sm:text-lg font-semibold border-b pb-2">Identificação / Acumulador</h3>
+                            <div className="grid grid-cols-2 md:grid-cols-5 gap-3 sm:gap-4">
+                              <FormField control={form.control} name="Modelo" render={({ field }) =>
+                                <FormItem>
+                                  <FormLabel className="text-xs sm:text-sm">Modelo</FormLabel>
+                                  <FormControl><Input {...field} className="text-xs sm:text-sm" /></FormControl>
+                                  <FormMessage className="text-xs" />
+                                </FormItem>
+                              } />
                               <FormField control={form.control} name="Funcao" render={({ field }) =>
                                 <FormItem>
                                   <FormLabel className="text-xs sm:text-sm">Função</FormLabel>
@@ -841,14 +779,12 @@ const EquipamentosPublicos = () => {
                                 </FormItem>
                               } />
                               <FormField control={form.control} name="UnidadeDeCustos" render={({ field }) =>
-                                <FormItem className="col-span-2 md:col-span-1">
+                                <FormItem>
                                   <FormLabel className="text-xs sm:text-sm">Unidade de Custos</FormLabel>
                                   <FormControl><Input {...field} className="text-xs sm:text-sm" /></FormControl>
                                   <FormMessage className="text-xs" />
                                 </FormItem>
                               } />
-                            </div>
-                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
                               <FormField control={form.control} name="CentroDeCustos" render={({ field }) =>
                                 <FormItem>
                                   <FormLabel className="text-xs sm:text-sm">Centro de Custos</FormLabel>
@@ -856,22 +792,13 @@ const EquipamentosPublicos = () => {
                                   <FormMessage className="text-xs" />
                                 </FormItem>
                               } />
-                              <FormField control={form.control} name="CentroDeResponsabilidade" render={({ field }) =>
-                                <FormItem>
-                                  <FormLabel className="text-xs sm:text-sm">Centro de Responsabilidade</FormLabel>
-                                  <FormControl><Input {...field} className="text-xs sm:text-sm" /></FormControl>
-                                  <FormMessage className="text-xs" />
-                                </FormItem>
-                              } />
                             </div>
-                            <div className="grid grid-cols-2 md:grid-cols-3 gap-3 sm:gap-4">
-                              <FormField control={form.control} name="FuncaoOrcamentaria" render={({ field }) =>
-                                <FormItem>
-                                  <FormLabel className="text-xs sm:text-sm">Função Orçamentária</FormLabel>
-                                  <FormControl><Input {...field} className="text-xs sm:text-sm" /></FormControl>
-                                  <FormMessage className="text-xs" />
-                                </FormItem>
-                              } />
+                          </div>
+
+                          {/* Equipamento / Organização */}
+                          <div className="space-y-3 sm:space-y-4">
+                            <h3 className="text-base sm:text-lg font-semibold border-b pb-2">Equipamento / Organização</h3>
+                            <div className="grid grid-cols-2 md:grid-cols-4 gap-3 sm:gap-4">
                               <FormField control={form.control} name="PoderOrgao" render={({ field }) =>
                                 <FormItem>
                                   <FormLabel className="text-xs sm:text-sm">Poder/Órgão</FormLabel>
@@ -880,8 +807,61 @@ const EquipamentosPublicos = () => {
                                 </FormItem>
                               } />
                               <FormField control={form.control} name="EnteFederado" render={({ field }) =>
-                                <FormItem className="col-span-2 md:col-span-1">
+                                <FormItem>
                                   <FormLabel className="text-xs sm:text-sm">Ente Federado</FormLabel>
+                                  <FormControl><Input {...field} className="text-xs sm:text-sm" /></FormControl>
+                                  <FormMessage className="text-xs" />
+                                </FormItem>
+                              } />
+                              <FormField control={form.control} name="IBGE" render={({ field }) =>
+                                <FormItem>
+                                  <FormLabel className="text-xs sm:text-sm">Código IBGE</FormLabel>
+                                  <FormControl><Input {...field} className="text-xs sm:text-sm" /></FormControl>
+                                  <FormMessage className="text-xs" />
+                                </FormItem>
+                              } />
+                              <FormField control={form.control} name="FuncaoOrcamentaria" render={({ field }) =>
+                                <FormItem>
+                                  <FormLabel className="text-xs sm:text-sm">Função Orçamentária</FormLabel>
+                                  <FormControl><Input {...field} className="text-xs sm:text-sm" /></FormControl>
+                                  <FormMessage className="text-xs" />
+                                </FormItem>
+                              } />
+                            </div>
+                            <div className="grid grid-cols-2 md:grid-cols-3 gap-3 sm:gap-4">
+                              <FormField control={form.control} name="NumeroControle" render={({ field }) =>
+                                <FormItem>
+                                  <FormLabel className="text-xs sm:text-sm">Número de Controle</FormLabel>
+                                  <FormControl><Input {...field} className="text-xs sm:text-sm" /></FormControl>
+                                  <FormMessage className="text-xs" />
+                                </FormItem>
+                              } />
+                              <FormField control={form.control} name="Descricao" render={({ field }) =>
+                                <FormItem className="col-span-2">
+                                  <FormLabel className="text-xs sm:text-sm">Descrição</FormLabel>
+                                  <FormControl><Input {...field} className="text-xs sm:text-sm" /></FormControl>
+                                  <FormMessage className="text-xs" />
+                                </FormItem>
+                              } />
+                            </div>
+                            <div className="grid grid-cols-2 md:grid-cols-3 gap-3 sm:gap-4">
+                              <FormField control={form.control} name="Tipo" render={({ field }) =>
+                                <FormItem>
+                                  <FormLabel className="text-xs sm:text-sm">Tipo</FormLabel>
+                                  <FormControl><Input {...field} className="text-xs sm:text-sm" /></FormControl>
+                                  <FormMessage className="text-xs" />
+                                </FormItem>
+                              } />
+                              <FormField control={form.control} name="UG" render={({ field }) =>
+                                <FormItem>
+                                  <FormLabel className="text-xs sm:text-sm">UG</FormLabel>
+                                  <FormControl><Input {...field} className="text-xs sm:text-sm" /></FormControl>
+                                  <FormMessage className="text-xs" />
+                                </FormItem>
+                              } />
+                              <FormField control={form.control} name="CentroDeResponsabilidade" render={({ field }) =>
+                                <FormItem>
+                                  <FormLabel className="text-xs sm:text-sm">Centro de Responsabilidade</FormLabel>
                                   <FormControl><Input {...field} className="text-xs sm:text-sm" /></FormControl>
                                   <FormMessage className="text-xs" />
                                 </FormItem>
