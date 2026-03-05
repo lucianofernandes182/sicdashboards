@@ -1224,21 +1224,29 @@ const EquipamentosPublicos = () => {
                     <Table>
                       <TableBody>
                         <TableRow>
-                          <TableCell className="font-medium text-muted-foreground w-[180px] text-xs">Número de Controle</TableCell>
-                          <TableCell className="text-xs">{form.getValues("NumeroControle") || "—"}</TableCell>
+                          <TableCell className="font-medium text-muted-foreground w-[180px] text-xs">ID Equipamento</TableCell>
+                          <TableCell className="text-xs font-mono">{`${form.getValues("PoderOrgao") || "—"}.${form.getValues("EnteFederado") || "—"}.${form.getValues("IBGE") || "—"}.${form.getValues("FuncaoOrcamentaria") || "—"}.${form.getValues("NumeroControle") || "—"}`}</TableCell>
                         </TableRow>
                         <TableRow>
                           <TableCell className="font-medium text-muted-foreground text-xs">Descrição</TableCell>
                           <TableCell className="text-xs">{form.getValues("Descricao") || "—"}</TableCell>
                         </TableRow>
                         <TableRow>
-                          <TableCell className="font-medium text-muted-foreground text-xs">UG</TableCell>
-                          <TableCell className="text-xs">{form.getValues("UG") || "—"}</TableCell>
-                        </TableRow>
-                        <TableRow>
-                          <TableCell className="font-medium text-muted-foreground text-xs">Acumuladores cadastrados</TableCell>
+                          <TableCell className="font-medium text-muted-foreground text-xs">Acumuladores</TableCell>
                           <TableCell className="text-xs">
-                            <Badge variant="secondary">{(acumuladores[form.getValues("NumeroControle")] || []).length} acumulador(es)</Badge>
+                            {(() => {
+                              const acs = acumuladores[form.getValues("NumeroControle")] || [];
+                              if (acs.length === 0) return <span className="text-muted-foreground">Nenhum cadastrado</span>;
+                              return (
+                                <div className="flex flex-wrap gap-1">
+                                  {acs.map(ac => (
+                                    <Badge key={ac.id} variant="secondary" className="text-[10px] font-mono">
+                                      {ac.Modelo}.{ac.Funcao}.{ac.ObjetoDeCustos}.{ac.UnidadeDeCustos}.{ac.CentroDeCustos}
+                                    </Badge>
+                                  ))}
+                                </div>
+                              );
+                            })()}
                           </TableCell>
                         </TableRow>
                       </TableBody>
