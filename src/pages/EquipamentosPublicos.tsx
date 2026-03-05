@@ -8,7 +8,9 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { ArrowLeft, Building2, FileJson, Save, Plus, Edit, Trash2, Link2, Layers, Server } from "lucide-react";
+import { ArrowLeft, ArrowRight, Building2, FileJson, Save, Plus, Edit, Trash2, Link2, Layers, Server, Check, ChevronRight } from "lucide-react";
+import { VinculoSistemasInline } from "@/components/dashboard/VinculoSistemasInline";
+import { Progress } from "@/components/ui/progress";
 import { VinculoSistemasDialog, type VinculoSistema } from "@/components/dashboard/VinculoSistemasDialog";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
@@ -73,6 +75,7 @@ interface Acumulador {
 const EquipamentosPublicos = () => {
   const navigate = useNavigate();
   const [view, setView] = useState<"list" | "form">("list");
+  const [currentStep, setCurrentStep] = useState(1);
   const [editingEquipamento, setEditingEquipamento] = useState<EquipamentoFormValues | null>(null);
   const [selectedSchema, setSelectedSchema] = useState<string>("");
   const [selectedVersion, setSelectedVersion] = useState<string>("");
@@ -220,6 +223,7 @@ const EquipamentosPublicos = () => {
     setEditingEquipamento(null);
     setSelectedSchema("");
     setSelectedVersion("");
+    setCurrentStep(1);
     form.reset();
     setView("form");
   };
@@ -244,6 +248,7 @@ const EquipamentosPublicos = () => {
     setEditingEquipamento(null);
     setSelectedSchema("");
     setSelectedVersion("");
+    setCurrentStep(1);
     form.reset();
   };
 
@@ -617,7 +622,7 @@ const EquipamentosPublicos = () => {
             </Card>
           </div>) : (
 
-        /* Form View */
+        /* Form View - Stepper */
         <div className="grid gap-4 sm:gap-6">
             <div className="flex items-center gap-2 sm:gap-4 mb-2 sm:mb-4">
               <Button variant="outline" onClick={handleBackToList} size="sm" className="text-xs sm:text-sm">
@@ -627,563 +632,526 @@ const EquipamentosPublicos = () => {
               </Button>
             </div>
 
-            {/* Schema Selection */}
+            {/* Stepper Header */}
             <Card>
-              <CardHeader className="p-4 sm:p-6">
-                <CardTitle className="flex items-center gap-2 text-base sm:text-lg">
-                  <FileJson className="h-4 w-4 sm:h-5 sm:w-5" />
-                  <span className="truncate">
-                    {editingEquipamento ? "Editando Equipamento" : "Novo Equipamento"} - Selecionar Schema
-                  </span>
-                </CardTitle>
-                <CardDescription className="text-xs sm:text-sm">
-                  {editingEquipamento ?
-                "Alterando dados do equipamento existente" :
-                "Escolha o schema do MongoDB para preencher o formulário"}
-                </CardDescription>
-              </CardHeader>
-              <CardContent className="p-4 sm:p-6 pt-0 sm:pt-0">
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
-                  <div className="space-y-2">
-                    <Label className="text-xs sm:text-sm">Schema</Label>
-                    <Select value={selectedSchema} onValueChange={handleSchemaChange}>
-                      <SelectTrigger className="text-xs sm:text-sm">
-                        <SelectValue placeholder="Selecione um schema..." />
-                      </SelectTrigger>
-                      <SelectContent>
-                        {schemas.map((schema) =>
-                      <SelectItem key={schema.id} value={schema.id}>
-                            {schema.name}
-                          </SelectItem>
+              <CardContent className="p-4 sm:p-6">
+                <div className="flex items-center justify-between mb-4">
+                  {[
+                    { step: 1, label: "Dados do Equipamento", icon: Building2 },
+                    { step: 2, label: "Vincular Sistemas", icon: Server },
+                  ].map((item, idx) => (
+                    <div key={item.step} className="flex items-center flex-1">
+                      <button
+                        type="button"
+                        onClick={() => {
+                          if (item.step === 1 || (item.step === 2 && selectedSchema)) {
+                            setCurrentStep(item.step);
+                          }
+                        }}
+                        className={`flex items-center gap-2 sm:gap-3 cursor-pointer group ${
+                          item.step <= currentStep ? "" : "opacity-50"
+                        }`}
+                      >
+                        <div className={`flex items-center justify-center w-8 h-8 sm:w-10 sm:h-10 rounded-full border-2 transition-colors ${
+                          currentStep === item.step
+                            ? "border-primary bg-primary text-primary-foreground"
+                            : currentStep > item.step
+                              ? "border-primary bg-primary/10 text-primary"
+                              : "border-muted-foreground/30 text-muted-foreground"
+                        }`}>
+                          {currentStep > item.step ? (
+                            <Check className="h-4 w-4 sm:h-5 sm:w-5" />
+                          ) : (
+                            <item.icon className="h-4 w-4 sm:h-5 sm:w-5" />
+                          )}
+                        </div>
+                        <div className="hidden sm:block text-left">
+                          <p className={`text-xs font-medium ${
+                            currentStep >= item.step ? "text-foreground" : "text-muted-foreground"
+                          }`}>
+                            Passo {item.step}
+                          </p>
+                          <p className={`text-sm font-semibold ${
+                            currentStep === item.step ? "text-primary" : currentStep > item.step ? "text-foreground" : "text-muted-foreground"
+                          }`}>
+                            {item.label}
+                          </p>
+                        </div>
+                      </button>
+                      {idx < 1 && (
+                        <div className="flex-1 mx-3 sm:mx-6">
+                          <div className={`h-0.5 rounded ${currentStep > 1 ? "bg-primary" : "bg-muted-foreground/20"}`} />
+                        </div>
                       )}
-                      </SelectContent>
-                    </Select>
-                  </div>
-                  <div className="space-y-2">
-                    <Label className="text-xs sm:text-sm">Versão</Label>
-                    <Input
-                    value={selectedVersion}
-                    disabled
-                    placeholder="Versão será preenchida automaticamente"
-                    className="text-xs sm:text-sm" />
-                  
-                  </div>
+                    </div>
+                  ))}
                 </div>
+                <Progress value={currentStep === 1 ? 50 : 100} className="h-1" />
               </CardContent>
             </Card>
 
-            {/* Form */}
-            {selectedSchema &&
-          <Card>
+            {/* STEP 1: Dados do Equipamento */}
+            {currentStep === 1 && (
+              <>
+                {/* Schema Selection */}
+                <Card>
+                  <CardHeader className="p-4 sm:p-6">
+                    <CardTitle className="flex items-center gap-2 text-base sm:text-lg">
+                      <FileJson className="h-4 w-4 sm:h-5 sm:w-5" />
+                      <span className="truncate">
+                        {editingEquipamento ? "Editando Equipamento" : "Novo Equipamento"} - Selecionar Schema
+                      </span>
+                    </CardTitle>
+                    <CardDescription className="text-xs sm:text-sm">
+                      {editingEquipamento ?
+                    "Alterando dados do equipamento existente" :
+                    "Escolha o schema do MongoDB para preencher o formulário"}
+                    </CardDescription>
+                  </CardHeader>
+                  <CardContent className="p-4 sm:p-6 pt-0 sm:pt-0">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
+                      <div className="space-y-2">
+                        <Label className="text-xs sm:text-sm">Schema</Label>
+                        <Select value={selectedSchema} onValueChange={handleSchemaChange}>
+                          <SelectTrigger className="text-xs sm:text-sm">
+                            <SelectValue placeholder="Selecione um schema..." />
+                          </SelectTrigger>
+                          <SelectContent>
+                            {schemas.map((schema) =>
+                          <SelectItem key={schema.id} value={schema.id}>
+                                {schema.name}
+                              </SelectItem>
+                          )}
+                          </SelectContent>
+                        </Select>
+                      </div>
+                      <div className="space-y-2">
+                        <Label className="text-xs sm:text-sm">Versão</Label>
+                        <Input
+                        value={selectedVersion}
+                        disabled
+                        placeholder="Versão será preenchida automaticamente"
+                        className="text-xs sm:text-sm" />
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+
+                {/* Form */}
+                {selectedSchema &&
+              <Card>
+                    <CardHeader className="p-4 sm:p-6">
+                      <CardTitle className="flex items-center gap-2 text-base sm:text-lg">
+                        <Building2 className="h-4 w-4 sm:h-5 sm:w-5" />
+                        Dados do Equipamento Público
+                      </CardTitle>
+                      <CardDescription className="text-xs sm:text-sm">
+                        Preencha os campos abaixo com as informações do equipamento
+                      </CardDescription>
+                    </CardHeader>
+                    <CardContent className="p-4 sm:p-6 pt-0 sm:pt-0">
+                      <Form {...form}>
+                        <form onSubmit={(e) => e.preventDefault()} className="space-y-4 sm:space-y-6">
+                          {/* Identificação */}
+                          <div className="space-y-3 sm:space-y-4">
+                            <h3 className="text-base sm:text-lg font-semibold border-b pb-2">Identificação</h3>
+                            <div className="grid grid-cols-2 md:grid-cols-3 gap-3 sm:gap-4">
+                              <FormField
+                            control={form.control}
+                            name="Modelo"
+                            render={({ field }) =>
+                            <FormItem>
+                                    <FormLabel className="text-xs sm:text-sm">Modelo</FormLabel>
+                                    <FormControl>
+                                      <Input {...field} className="text-xs sm:text-sm" />
+                                    </FormControl>
+                                    <FormMessage className="text-xs" />
+                                  </FormItem>
+                            } />
+                              <FormField
+                            control={form.control}
+                            name="NumeroControle"
+                            render={({ field }) =>
+                            <FormItem>
+                                    <FormLabel className="text-xs sm:text-sm">Número de Controle</FormLabel>
+                                    <FormControl>
+                                      <Input {...field} className="text-xs sm:text-sm" />
+                                    </FormControl>
+                                    <FormMessage className="text-xs" />
+                                  </FormItem>
+                            } />
+                              <FormField
+                            control={form.control}
+                            name="Tipo"
+                            render={({ field }) =>
+                            <FormItem className="col-span-2 md:col-span-1">
+                                    <FormLabel className="text-xs sm:text-sm">Tipo</FormLabel>
+                                    <FormControl>
+                                      <Input {...field} className="text-xs sm:text-sm" />
+                                    </FormControl>
+                                    <FormMessage className="text-xs" />
+                                  </FormItem>
+                            } />
+                            </div>
+                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
+                              <FormField
+                            control={form.control}
+                            name="Descricao"
+                            render={({ field }) =>
+                            <FormItem>
+                                    <FormLabel className="text-xs sm:text-sm">Descrição</FormLabel>
+                                    <FormControl>
+                                      <Input {...field} className="text-xs sm:text-sm" />
+                                    </FormControl>
+                                    <FormMessage className="text-xs" />
+                                  </FormItem>
+                            } />
+                              <FormField
+                            control={form.control}
+                            name="UG"
+                            render={({ field }) =>
+                            <FormItem>
+                                    <FormLabel className="text-xs sm:text-sm">UG</FormLabel>
+                                    <FormControl>
+                                      <Input {...field} className="text-xs sm:text-sm" />
+                                    </FormControl>
+                                    <FormMessage className="text-xs" />
+                                  </FormItem>
+                            } />
+                            </div>
+                          </div>
+
+                          {/* Custos e Organização */}
+                          <div className="space-y-3 sm:space-y-4">
+                            <h3 className="text-base sm:text-lg font-semibold border-b pb-2">Custos e Organização</h3>
+                            <div className="grid grid-cols-2 md:grid-cols-3 gap-3 sm:gap-4">
+                              <FormField control={form.control} name="Funcao" render={({ field }) =>
+                                <FormItem>
+                                  <FormLabel className="text-xs sm:text-sm">Função</FormLabel>
+                                  <FormControl><Input {...field} className="text-xs sm:text-sm" /></FormControl>
+                                  <FormMessage className="text-xs" />
+                                </FormItem>
+                              } />
+                              <FormField control={form.control} name="ObjetoDeCustos" render={({ field }) =>
+                                <FormItem>
+                                  <FormLabel className="text-xs sm:text-sm">Objeto de Custos</FormLabel>
+                                  <FormControl><Input {...field} className="text-xs sm:text-sm" /></FormControl>
+                                  <FormMessage className="text-xs" />
+                                </FormItem>
+                              } />
+                              <FormField control={form.control} name="UnidadeDeCustos" render={({ field }) =>
+                                <FormItem className="col-span-2 md:col-span-1">
+                                  <FormLabel className="text-xs sm:text-sm">Unidade de Custos</FormLabel>
+                                  <FormControl><Input {...field} className="text-xs sm:text-sm" /></FormControl>
+                                  <FormMessage className="text-xs" />
+                                </FormItem>
+                              } />
+                            </div>
+                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
+                              <FormField control={form.control} name="CentroDeCustos" render={({ field }) =>
+                                <FormItem>
+                                  <FormLabel className="text-xs sm:text-sm">Centro de Custos</FormLabel>
+                                  <FormControl><Input {...field} className="text-xs sm:text-sm" /></FormControl>
+                                  <FormMessage className="text-xs" />
+                                </FormItem>
+                              } />
+                              <FormField control={form.control} name="CentroDeResponsabilidade" render={({ field }) =>
+                                <FormItem>
+                                  <FormLabel className="text-xs sm:text-sm">Centro de Responsabilidade</FormLabel>
+                                  <FormControl><Input {...field} className="text-xs sm:text-sm" /></FormControl>
+                                  <FormMessage className="text-xs" />
+                                </FormItem>
+                              } />
+                            </div>
+                            <div className="grid grid-cols-2 md:grid-cols-3 gap-3 sm:gap-4">
+                              <FormField control={form.control} name="FuncaoOrcamentaria" render={({ field }) =>
+                                <FormItem>
+                                  <FormLabel className="text-xs sm:text-sm">Função Orçamentária</FormLabel>
+                                  <FormControl><Input {...field} className="text-xs sm:text-sm" /></FormControl>
+                                  <FormMessage className="text-xs" />
+                                </FormItem>
+                              } />
+                              <FormField control={form.control} name="PoderOrgao" render={({ field }) =>
+                                <FormItem>
+                                  <FormLabel className="text-xs sm:text-sm">Poder/Órgão</FormLabel>
+                                  <FormControl><Input {...field} className="text-xs sm:text-sm" /></FormControl>
+                                  <FormMessage className="text-xs" />
+                                </FormItem>
+                              } />
+                              <FormField control={form.control} name="EnteFederado" render={({ field }) =>
+                                <FormItem className="col-span-2 md:col-span-1">
+                                  <FormLabel className="text-xs sm:text-sm">Ente Federado</FormLabel>
+                                  <FormControl><Input {...field} className="text-xs sm:text-sm" /></FormControl>
+                                  <FormMessage className="text-xs" />
+                                </FormItem>
+                              } />
+                            </div>
+                          </div>
+
+                          {/* Responsável */}
+                          <div className="space-y-3 sm:space-y-4">
+                            <h3 className="text-base sm:text-lg font-semibold border-b pb-2">Responsável</h3>
+                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
+                              <FormField control={form.control} name="ResponsavelNome" render={({ field }) =>
+                                <FormItem>
+                                  <FormLabel className="text-xs sm:text-sm">Nome do Responsável</FormLabel>
+                                  <FormControl><Input {...field} className="text-xs sm:text-sm" /></FormControl>
+                                  <FormMessage className="text-xs" />
+                                </FormItem>
+                              } />
+                              <FormField control={form.control} name="ResponsavelCPF" render={({ field }) =>
+                                <FormItem>
+                                  <FormLabel className="text-xs sm:text-sm">CPF do Responsável</FormLabel>
+                                  <FormControl><Input {...field} maxLength={11} className="text-xs sm:text-sm" /></FormControl>
+                                  <FormMessage className="text-xs" />
+                                </FormItem>
+                              } />
+                            </div>
+                          </div>
+
+                          {/* Códigos Nacionais */}
+                          <div className="space-y-3 sm:space-y-4">
+                            <h3 className="text-base sm:text-lg font-semibold border-b pb-2">Códigos Nacionais</h3>
+                            <div className="grid grid-cols-2 md:grid-cols-3 gap-3 sm:gap-4">
+                              <FormField control={form.control} name="IBGE" render={({ field }) =>
+                                <FormItem>
+                                  <FormLabel className="text-xs sm:text-sm">Código IBGE</FormLabel>
+                                  <FormControl><Input {...field} className="text-xs sm:text-sm" /></FormControl>
+                                  <FormMessage className="text-xs" />
+                                </FormItem>
+                              } />
+                              <FormField control={form.control} name="CodNacionalSigla" render={({ field }) =>
+                                <FormItem>
+                                  <FormLabel className="text-xs sm:text-sm">Código Nacional (Sigla)</FormLabel>
+                                  <FormControl><Input {...field} className="text-xs sm:text-sm" /></FormControl>
+                                  <FormMessage className="text-xs" />
+                                </FormItem>
+                              } />
+                              <FormField control={form.control} name="CodNacionalNumero" render={({ field }) =>
+                                <FormItem className="col-span-2 md:col-span-1">
+                                  <FormLabel className="text-xs sm:text-sm">Código Nacional (Número)</FormLabel>
+                                  <FormControl><Input {...field} className="text-xs sm:text-sm" /></FormControl>
+                                  <FormMessage className="text-xs" />
+                                </FormItem>
+                              } />
+                            </div>
+                          </div>
+
+                          {/* Imóvel */}
+                          <div className="space-y-3 sm:space-y-4">
+                            <h3 className="text-base sm:text-lg font-semibold border-b pb-2">Informações do Imóvel</h3>
+                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
+                              <FormField control={form.control} name="DescricaoImovel" render={({ field }) =>
+                                <FormItem>
+                                  <FormLabel className="text-xs sm:text-sm">Descrição do Imóvel</FormLabel>
+                                  <FormControl><Input {...field} className="text-xs sm:text-sm" /></FormControl>
+                                  <FormMessage className="text-xs" />
+                                </FormItem>
+                              } />
+                              <FormField control={form.control} name="PrincipalOuAnexo" render={({ field }) =>
+                                <FormItem>
+                                  <FormLabel className="text-xs sm:text-sm">Principal ou Anexo</FormLabel>
+                                  <FormControl>
+                                    <Select onValueChange={field.onChange} value={field.value}>
+                                      <SelectTrigger className="text-xs sm:text-sm"><SelectValue placeholder="Selecione..." /></SelectTrigger>
+                                      <SelectContent>
+                                        <SelectItem value="Principal">Principal</SelectItem>
+                                        <SelectItem value="Anexo">Anexo</SelectItem>
+                                      </SelectContent>
+                                    </Select>
+                                  </FormControl>
+                                  <FormMessage className="text-xs" />
+                                </FormItem>
+                              } />
+                            </div>
+                            <div className="grid grid-cols-2 md:grid-cols-3 gap-3 sm:gap-4">
+                              <FormField control={form.control} name="Anexo" render={({ field }) =>
+                                <FormItem>
+                                  <FormLabel className="text-xs sm:text-sm">Código do Anexo</FormLabel>
+                                  <FormControl><Input {...field} className="text-xs sm:text-sm" /></FormControl>
+                                  <FormMessage className="text-xs" />
+                                </FormItem>
+                              } />
+                              <FormField control={form.control} name="CondicaoImovelPropriedade" render={({ field }) =>
+                                <FormItem>
+                                  <FormLabel className="text-xs sm:text-sm">Condição de Propriedade</FormLabel>
+                                  <FormControl>
+                                    <Select onValueChange={field.onChange} value={field.value}>
+                                      <SelectTrigger className="text-xs sm:text-sm"><SelectValue placeholder="Selecione..." /></SelectTrigger>
+                                      <SelectContent>
+                                        <SelectItem value="Próprio">Próprio</SelectItem>
+                                        <SelectItem value="Alugado">Alugado</SelectItem>
+                                        <SelectItem value="Cedido">Cedido</SelectItem>
+                                      </SelectContent>
+                                    </Select>
+                                  </FormControl>
+                                  <FormMessage className="text-xs" />
+                                </FormItem>
+                              } />
+                              <FormField control={form.control} name="CondicaoImovelRestricao" render={({ field }) =>
+                                <FormItem className="col-span-2 md:col-span-1">
+                                  <FormLabel className="text-xs sm:text-sm">Restrição do Imóvel</FormLabel>
+                                  <FormControl><Input {...field} className="text-xs sm:text-sm" /></FormControl>
+                                  <FormMessage className="text-xs" />
+                                </FormItem>
+                              } />
+                            </div>
+                            <FormField control={form.control} name="CondicaoServico" render={({ field }) =>
+                              <FormItem>
+                                <FormLabel className="text-xs sm:text-sm">Condição do Serviço</FormLabel>
+                                <FormControl>
+                                  <Select onValueChange={field.onChange} value={field.value}>
+                                    <SelectTrigger className="text-xs sm:text-sm"><SelectValue placeholder="Selecione..." /></SelectTrigger>
+                                    <SelectContent>
+                                      <SelectItem value="Ativo">Ativo</SelectItem>
+                                      <SelectItem value="Inativo">Inativo</SelectItem>
+                                      <SelectItem value="Em Manutenção">Em Manutenção</SelectItem>
+                                    </SelectContent>
+                                  </Select>
+                                </FormControl>
+                                <FormMessage className="text-xs" />
+                              </FormItem>
+                            } />
+                          </div>
+
+                          {/* Endereço */}
+                          <div className="space-y-3 sm:space-y-4">
+                            <h3 className="text-base sm:text-lg font-semibold border-b pb-2">Endereço</h3>
+                            <div className="grid grid-cols-3 md:grid-cols-4 gap-3 sm:gap-4">
+                              <FormField control={form.control} name="EnderecoLogradouro" render={({ field }) =>
+                                <FormItem className="col-span-3 md:col-span-3">
+                                  <FormLabel className="text-xs sm:text-sm">Logradouro</FormLabel>
+                                  <FormControl><Input {...field} className="text-xs sm:text-sm" /></FormControl>
+                                  <FormMessage className="text-xs" />
+                                </FormItem>
+                              } />
+                              <FormField control={form.control} name="EnderecoNumero" render={({ field }) =>
+                                <FormItem className="col-span-1">
+                                  <FormLabel className="text-xs sm:text-sm">Número</FormLabel>
+                                  <FormControl><Input {...field} className="text-xs sm:text-sm" /></FormControl>
+                                  <FormMessage className="text-xs" />
+                                </FormItem>
+                              } />
+                            </div>
+                            <div className="grid grid-cols-2 md:grid-cols-3 gap-3 sm:gap-4">
+                              <FormField control={form.control} name="EnderecoComplemento" render={({ field }) =>
+                                <FormItem>
+                                  <FormLabel className="text-xs sm:text-sm">Complemento</FormLabel>
+                                  <FormControl><Input {...field} className="text-xs sm:text-sm" /></FormControl>
+                                  <FormMessage className="text-xs" />
+                                </FormItem>
+                              } />
+                              <FormField control={form.control} name="EnderecoBairroLocalidade" render={({ field }) =>
+                                <FormItem>
+                                  <FormLabel className="text-xs sm:text-sm">Bairro/Localidade</FormLabel>
+                                  <FormControl><Input {...field} className="text-xs sm:text-sm" /></FormControl>
+                                  <FormMessage className="text-xs" />
+                                </FormItem>
+                              } />
+                              <FormField control={form.control} name="EnderecoCEP" render={({ field }) =>
+                                <FormItem className="col-span-2 md:col-span-1">
+                                  <FormLabel className="text-xs sm:text-sm">CEP</FormLabel>
+                                  <FormControl><Input {...field} maxLength={8} className="text-xs sm:text-sm" /></FormControl>
+                                  <FormMessage className="text-xs" />
+                                </FormItem>
+                              } />
+                            </div>
+                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
+                              <FormField control={form.control} name="EnderecoLatitude" render={({ field }) =>
+                                <FormItem>
+                                  <FormLabel className="text-xs sm:text-sm">Latitude</FormLabel>
+                                  <FormControl><Input {...field} className="text-xs sm:text-sm" /></FormControl>
+                                  <FormMessage className="text-xs" />
+                                </FormItem>
+                              } />
+                              <FormField control={form.control} name="EnderecoLongitude" render={({ field }) =>
+                                <FormItem>
+                                  <FormLabel className="text-xs sm:text-sm">Longitude</FormLabel>
+                                  <FormControl><Input {...field} className="text-xs sm:text-sm" /></FormControl>
+                                  <FormMessage className="text-xs" />
+                                </FormItem>
+                              } />
+                            </div>
+                          </div>
+
+                          {/* Step Navigation */}
+                          <div className="flex flex-col-reverse sm:flex-row justify-between gap-2 sm:gap-4 pt-4 sm:pt-6">
+                            <Button type="button" variant="outline" onClick={handleBackToList} size="sm" className="text-xs sm:text-sm">
+                              Cancelar
+                            </Button>
+                            <Button type="button" onClick={() => setCurrentStep(2)} size="sm" className="text-xs sm:text-sm">
+                              Próximo: Vincular Sistemas
+                              <ChevronRight className="h-3 w-3 sm:h-4 sm:w-4 ml-1" />
+                            </Button>
+                          </div>
+                        </form>
+                      </Form>
+                    </CardContent>
+                  </Card>
+              }
+              </>
+            )}
+
+            {/* STEP 2: Vincular Sistemas */}
+            {currentStep === 2 && (
+              <Card>
                 <CardHeader className="p-4 sm:p-6">
                   <CardTitle className="flex items-center gap-2 text-base sm:text-lg">
-                    <Building2 className="h-4 w-4 sm:h-5 sm:w-5" />
-                    Dados do Equipamento Público
+                    <Server className="h-4 w-4 sm:h-5 sm:w-5" />
+                    Vincular Sistemas
                   </CardTitle>
                   <CardDescription className="text-xs sm:text-sm">
-                    Preencha os campos abaixo com as informações do equipamento
+                    Vincule este equipamento aos sistemas estruturantes, informando os códigos de origem e seus acumuladores
                   </CardDescription>
                 </CardHeader>
                 <CardContent className="p-4 sm:p-6 pt-0 sm:pt-0">
-                  <Form {...form}>
-                    <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4 sm:space-y-6">
-                      {/* Identificação */}
-                      <div className="space-y-3 sm:space-y-4">
-                        <h3 className="text-base sm:text-lg font-semibold border-b pb-2">Identificação</h3>
-                        <div className="grid grid-cols-2 md:grid-cols-3 gap-3 sm:gap-4">
-                          <FormField
-                        control={form.control}
-                        name="Modelo"
-                        render={({ field }) =>
-                        <FormItem>
-                                <FormLabel className="text-xs sm:text-sm">Modelo</FormLabel>
-                                <FormControl>
-                                  <Input {...field} className="text-xs sm:text-sm" />
-                                </FormControl>
-                                <FormMessage className="text-xs" />
-                              </FormItem>
-                        } />
-                      
-                          <FormField
-                        control={form.control}
-                        name="NumeroControle"
-                        render={({ field }) =>
-                        <FormItem>
-                                <FormLabel className="text-xs sm:text-sm">Número de Controle</FormLabel>
-                                <FormControl>
-                                  <Input {...field} className="text-xs sm:text-sm" />
-                                </FormControl>
-                                <FormMessage className="text-xs" />
-                              </FormItem>
-                        } />
-                      
-                          <FormField
-                        control={form.control}
-                        name="Tipo"
-                        render={({ field }) =>
-                        <FormItem className="col-span-2 md:col-span-1">
-                                <FormLabel className="text-xs sm:text-sm">Tipo</FormLabel>
-                                <FormControl>
-                                  <Input {...field} className="text-xs sm:text-sm" />
-                                </FormControl>
-                                <FormMessage className="text-xs" />
-                              </FormItem>
-                        } />
-                      
-                        </div>
-                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
-                          <FormField
-                        control={form.control}
-                        name="Descricao"
-                        render={({ field }) =>
-                        <FormItem>
-                                <FormLabel className="text-xs sm:text-sm">Descrição</FormLabel>
-                                <FormControl>
-                                  <Input {...field} className="text-xs sm:text-sm" />
-                                </FormControl>
-                                <FormMessage className="text-xs" />
-                              </FormItem>
-                        } />
-                      
-                          <FormField
-                        control={form.control}
-                        name="UG"
-                        render={({ field }) =>
-                        <FormItem>
-                                <FormLabel className="text-xs sm:text-sm">UG</FormLabel>
-                                <FormControl>
-                                  <Input {...field} className="text-xs sm:text-sm" />
-                                </FormControl>
-                                <FormMessage className="text-xs" />
-                              </FormItem>
-                        } />
-                      
-                        </div>
-                      </div>
+                  {/* Resumo do equipamento */}
+                  <div className="rounded-md border mb-6">
+                    <Table>
+                      <TableBody>
+                        <TableRow>
+                          <TableCell className="font-medium text-muted-foreground w-[180px] text-xs">Número de Controle</TableCell>
+                          <TableCell className="text-xs">{form.getValues("NumeroControle") || "—"}</TableCell>
+                        </TableRow>
+                        <TableRow>
+                          <TableCell className="font-medium text-muted-foreground text-xs">Descrição</TableCell>
+                          <TableCell className="text-xs">{form.getValues("Descricao") || "—"}</TableCell>
+                        </TableRow>
+                        <TableRow>
+                          <TableCell className="font-medium text-muted-foreground text-xs">UG</TableCell>
+                          <TableCell className="text-xs">{form.getValues("UG") || "—"}</TableCell>
+                        </TableRow>
+                      </TableBody>
+                    </Table>
+                  </div>
 
-                      {/* Custos e Organização */}
-                      <div className="space-y-3 sm:space-y-4">
-                        <h3 className="text-base sm:text-lg font-semibold border-b pb-2">Custos e Organização</h3>
-                        <div className="grid grid-cols-2 md:grid-cols-3 gap-3 sm:gap-4">
-                          <FormField
-                        control={form.control}
-                        name="Funcao"
-                        render={({ field }) =>
-                        <FormItem>
-                                <FormLabel className="text-xs sm:text-sm">Função</FormLabel>
-                                <FormControl>
-                                  <Input {...field} className="text-xs sm:text-sm" />
-                                </FormControl>
-                                <FormMessage className="text-xs" />
-                              </FormItem>
-                        } />
-                      
-                          <FormField
-                        control={form.control}
-                        name="ObjetoDeCustos"
-                        render={({ field }) =>
-                        <FormItem>
-                                <FormLabel className="text-xs sm:text-sm">Objeto de Custos</FormLabel>
-                                <FormControl>
-                                  <Input {...field} className="text-xs sm:text-sm" />
-                                </FormControl>
-                                <FormMessage className="text-xs" />
-                              </FormItem>
-                        } />
-                      
-                          <FormField
-                        control={form.control}
-                        name="UnidadeDeCustos"
-                        render={({ field }) =>
-                        <FormItem className="col-span-2 md:col-span-1">
-                                <FormLabel className="text-xs sm:text-sm">Unidade de Custos</FormLabel>
-                                <FormControl>
-                                  <Input {...field} className="text-xs sm:text-sm" />
-                                </FormControl>
-                                <FormMessage className="text-xs" />
-                              </FormItem>
-                        } />
-                      
-                        </div>
-                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
-                          <FormField
-                        control={form.control}
-                        name="CentroDeCustos"
-                        render={({ field }) =>
-                        <FormItem>
-                                <FormLabel className="text-xs sm:text-sm">Centro de Custos</FormLabel>
-                                <FormControl>
-                                  <Input {...field} className="text-xs sm:text-sm" />
-                                </FormControl>
-                                <FormMessage className="text-xs" />
-                              </FormItem>
-                        } />
-                      
-                          <FormField
-                        control={form.control}
-                        name="CentroDeResponsabilidade"
-                        render={({ field }) =>
-                        <FormItem>
-                                <FormLabel className="text-xs sm:text-sm">Centro de Responsabilidade</FormLabel>
-                                <FormControl>
-                                  <Input {...field} className="text-xs sm:text-sm" />
-                                </FormControl>
-                                <FormMessage className="text-xs" />
-                              </FormItem>
-                        } />
-                      
-                        </div>
-                        <div className="grid grid-cols-2 md:grid-cols-3 gap-3 sm:gap-4">
-                          <FormField
-                        control={form.control}
-                        name="FuncaoOrcamentaria"
-                        render={({ field }) =>
-                        <FormItem>
-                                <FormLabel className="text-xs sm:text-sm">Função Orçamentária</FormLabel>
-                                <FormControl>
-                                  <Input {...field} className="text-xs sm:text-sm" />
-                                </FormControl>
-                                <FormMessage className="text-xs" />
-                              </FormItem>
-                        } />
-                      
-                          <FormField
-                        control={form.control}
-                        name="PoderOrgao"
-                        render={({ field }) =>
-                        <FormItem>
-                                <FormLabel className="text-xs sm:text-sm">Poder/Órgão</FormLabel>
-                                <FormControl>
-                                  <Input {...field} className="text-xs sm:text-sm" />
-                                </FormControl>
-                                <FormMessage className="text-xs" />
-                              </FormItem>
-                        } />
-                      
-                          <FormField
-                        control={form.control}
-                        name="EnteFederado"
-                        render={({ field }) =>
-                        <FormItem className="col-span-2 md:col-span-1">
-                                <FormLabel className="text-xs sm:text-sm">Ente Federado</FormLabel>
-                                <FormControl>
-                                  <Input {...field} className="text-xs sm:text-sm" />
-                                </FormControl>
-                                <FormMessage className="text-xs" />
-                              </FormItem>
-                        } />
-                      
-                        </div>
-                      </div>
+                  {/* Vinculos inline - reusing VinculoSistemasDialog logic */}
+                  <VinculoSistemasInline
+                    vinculos={vinculosSistemas[form.getValues("NumeroControle")] || []}
+                    onVinculosChange={(newVinculos) => {
+                      const key = form.getValues("NumeroControle");
+                      if (key) {
+                        setVinculosSistemas(prev => ({ ...prev, [key]: newVinculos }));
+                      }
+                    }}
+                  />
 
-                      {/* Responsável */}
-                      <div className="space-y-3 sm:space-y-4">
-                        <h3 className="text-base sm:text-lg font-semibold border-b pb-2">Responsável</h3>
-                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
-                          <FormField
-                        control={form.control}
-                        name="ResponsavelNome"
-                        render={({ field }) =>
-                        <FormItem>
-                                <FormLabel className="text-xs sm:text-sm">Nome do Responsável</FormLabel>
-                                <FormControl>
-                                  <Input {...field} className="text-xs sm:text-sm" />
-                                </FormControl>
-                                <FormMessage className="text-xs" />
-                              </FormItem>
-                        } />
-                      
-                          <FormField
-                        control={form.control}
-                        name="ResponsavelCPF"
-                        render={({ field }) =>
-                        <FormItem>
-                                <FormLabel className="text-xs sm:text-sm">CPF do Responsável</FormLabel>
-                                <FormControl>
-                                  <Input {...field} maxLength={11} className="text-xs sm:text-sm" />
-                                </FormControl>
-                                <FormMessage className="text-xs" />
-                              </FormItem>
-                        } />
-                      
-                        </div>
-                      </div>
-
-                      {/* Códigos Nacionais */}
-                      <div className="space-y-3 sm:space-y-4">
-                        <h3 className="text-base sm:text-lg font-semibold border-b pb-2">Códigos Nacionais</h3>
-                        <div className="grid grid-cols-2 md:grid-cols-3 gap-3 sm:gap-4">
-                          <FormField
-                        control={form.control}
-                        name="IBGE"
-                        render={({ field }) =>
-                        <FormItem>
-                                <FormLabel className="text-xs sm:text-sm">Código IBGE</FormLabel>
-                                <FormControl>
-                                  <Input {...field} className="text-xs sm:text-sm" />
-                                </FormControl>
-                                <FormMessage className="text-xs" />
-                              </FormItem>
-                        } />
-                      
-                          <FormField
-                        control={form.control}
-                        name="CodNacionalSigla"
-                        render={({ field }) =>
-                        <FormItem>
-                                <FormLabel className="text-xs sm:text-sm">Código Nacional (Sigla)</FormLabel>
-                                <FormControl>
-                                  <Input {...field} className="text-xs sm:text-sm" />
-                                </FormControl>
-                                <FormMessage className="text-xs" />
-                              </FormItem>
-                        } />
-                      
-                          <FormField
-                        control={form.control}
-                        name="CodNacionalNumero"
-                        render={({ field }) =>
-                        <FormItem className="col-span-2 md:col-span-1">
-                                <FormLabel className="text-xs sm:text-sm">Código Nacional (Número)</FormLabel>
-                                <FormControl>
-                                  <Input {...field} className="text-xs sm:text-sm" />
-                                </FormControl>
-                                <FormMessage className="text-xs" />
-                              </FormItem>
-                        } />
-                      
-                        </div>
-                      </div>
-
-                      {/* Imóvel */}
-                      <div className="space-y-3 sm:space-y-4">
-                        <h3 className="text-base sm:text-lg font-semibold border-b pb-2">Informações do Imóvel</h3>
-                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
-                          <FormField
-                        control={form.control}
-                        name="DescricaoImovel"
-                        render={({ field }) =>
-                        <FormItem>
-                                <FormLabel className="text-xs sm:text-sm">Descrição do Imóvel</FormLabel>
-                                <FormControl>
-                                  <Input {...field} className="text-xs sm:text-sm" />
-                                </FormControl>
-                                <FormMessage className="text-xs" />
-                              </FormItem>
-                        } />
-                      
-                          <FormField
-                        control={form.control}
-                        name="PrincipalOuAnexo"
-                        render={({ field }) =>
-                        <FormItem>
-                                <FormLabel className="text-xs sm:text-sm">Principal ou Anexo</FormLabel>
-                                <FormControl>
-                                  <Select onValueChange={field.onChange} value={field.value}>
-                                    <SelectTrigger className="text-xs sm:text-sm">
-                                      <SelectValue placeholder="Selecione..." />
-                                    </SelectTrigger>
-                                    <SelectContent>
-                                      <SelectItem value="Principal">Principal</SelectItem>
-                                      <SelectItem value="Anexo">Anexo</SelectItem>
-                                    </SelectContent>
-                                  </Select>
-                                </FormControl>
-                                <FormMessage className="text-xs" />
-                              </FormItem>
-                        } />
-                      
-                        </div>
-                        <div className="grid grid-cols-2 md:grid-cols-3 gap-3 sm:gap-4">
-                          <FormField
-                        control={form.control}
-                        name="Anexo"
-                        render={({ field }) =>
-                        <FormItem>
-                                <FormLabel className="text-xs sm:text-sm">Código do Anexo</FormLabel>
-                                <FormControl>
-                                  <Input {...field} className="text-xs sm:text-sm" />
-                                </FormControl>
-                                <FormMessage className="text-xs" />
-                              </FormItem>
-                        } />
-                      
-                          <FormField
-                        control={form.control}
-                        name="CondicaoImovelPropriedade"
-                        render={({ field }) =>
-                        <FormItem>
-                                <FormLabel className="text-xs sm:text-sm">Condição de Propriedade</FormLabel>
-                                <FormControl>
-                                  <Select onValueChange={field.onChange} value={field.value}>
-                                    <SelectTrigger className="text-xs sm:text-sm">
-                                      <SelectValue placeholder="Selecione..." />
-                                    </SelectTrigger>
-                                    <SelectContent>
-                                      <SelectItem value="Próprio">Próprio</SelectItem>
-                                      <SelectItem value="Alugado">Alugado</SelectItem>
-                                      <SelectItem value="Cedido">Cedido</SelectItem>
-                                    </SelectContent>
-                                  </Select>
-                                </FormControl>
-                                <FormMessage className="text-xs" />
-                              </FormItem>
-                        } />
-                      
-                          <FormField
-                        control={form.control}
-                        name="CondicaoImovelRestricao"
-                        render={({ field }) =>
-                        <FormItem className="col-span-2 md:col-span-1">
-                                <FormLabel className="text-xs sm:text-sm">Restrição do Imóvel</FormLabel>
-                                <FormControl>
-                                  <Input {...field} className="text-xs sm:text-sm" />
-                                </FormControl>
-                                <FormMessage className="text-xs" />
-                              </FormItem>
-                        } />
-                      
-                        </div>
-                        <FormField
-                      control={form.control}
-                      name="CondicaoServico"
-                      render={({ field }) =>
-                      <FormItem>
-                              <FormLabel className="text-xs sm:text-sm">Condição do Serviço</FormLabel>
-                              <FormControl>
-                                <Select onValueChange={field.onChange} value={field.value}>
-                                  <SelectTrigger className="text-xs sm:text-sm">
-                                    <SelectValue placeholder="Selecione..." />
-                                  </SelectTrigger>
-                                  <SelectContent>
-                                    <SelectItem value="Ativo">Ativo</SelectItem>
-                                    <SelectItem value="Inativo">Inativo</SelectItem>
-                                    <SelectItem value="Em Manutenção">Em Manutenção</SelectItem>
-                                  </SelectContent>
-                                </Select>
-                              </FormControl>
-                              <FormMessage className="text-xs" />
-                            </FormItem>
-                      } />
-                    
-                      </div>
-
-                      {/* Endereço */}
-                      <div className="space-y-3 sm:space-y-4">
-                        <h3 className="text-base sm:text-lg font-semibold border-b pb-2">Endereço</h3>
-                        <div className="grid grid-cols-3 md:grid-cols-4 gap-3 sm:gap-4">
-                          <FormField
-                        control={form.control}
-                        name="EnderecoLogradouro"
-                        render={({ field }) =>
-                        <FormItem className="col-span-3 md:col-span-3">
-                                <FormLabel className="text-xs sm:text-sm">Logradouro</FormLabel>
-                                <FormControl>
-                                  <Input {...field} className="text-xs sm:text-sm" />
-                                </FormControl>
-                                <FormMessage className="text-xs" />
-                              </FormItem>
-                        } />
-                      
-                          <FormField
-                        control={form.control}
-                        name="EnderecoNumero"
-                        render={({ field }) =>
-                        <FormItem className="col-span-1">
-                                <FormLabel className="text-xs sm:text-sm">Número</FormLabel>
-                                <FormControl>
-                                  <Input {...field} className="text-xs sm:text-sm" />
-                                </FormControl>
-                                <FormMessage className="text-xs" />
-                              </FormItem>
-                        } />
-                      
-                        </div>
-                        <div className="grid grid-cols-2 md:grid-cols-3 gap-3 sm:gap-4">
-                          <FormField
-                        control={form.control}
-                        name="EnderecoComplemento"
-                        render={({ field }) =>
-                        <FormItem>
-                                <FormLabel className="text-xs sm:text-sm">Complemento</FormLabel>
-                                <FormControl>
-                                  <Input {...field} className="text-xs sm:text-sm" />
-                                </FormControl>
-                                <FormMessage className="text-xs" />
-                              </FormItem>
-                        } />
-                      
-                          <FormField
-                        control={form.control}
-                        name="EnderecoBairroLocalidade"
-                        render={({ field }) =>
-                        <FormItem>
-                                <FormLabel className="text-xs sm:text-sm">Bairro/Localidade</FormLabel>
-                                <FormControl>
-                                  <Input {...field} className="text-xs sm:text-sm" />
-                                </FormControl>
-                                <FormMessage className="text-xs" />
-                              </FormItem>
-                        } />
-                      
-                          <FormField
-                        control={form.control}
-                        name="EnderecoCEP"
-                        render={({ field }) =>
-                        <FormItem className="col-span-2 md:col-span-1">
-                                <FormLabel className="text-xs sm:text-sm">CEP</FormLabel>
-                                <FormControl>
-                                  <Input {...field} maxLength={8} className="text-xs sm:text-sm" />
-                                </FormControl>
-                                <FormMessage className="text-xs" />
-                              </FormItem>
-                        } />
-                      
-                        </div>
-                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
-                          <FormField
-                        control={form.control}
-                        name="EnderecoLatitude"
-                        render={({ field }) =>
-                        <FormItem>
-                                <FormLabel className="text-xs sm:text-sm">Latitude</FormLabel>
-                                <FormControl>
-                                  <Input {...field} className="text-xs sm:text-sm" />
-                                </FormControl>
-                                <FormMessage className="text-xs" />
-                              </FormItem>
-                        } />
-                      
-                          <FormField
-                        control={form.control}
-                        name="EnderecoLongitude"
-                        render={({ field }) =>
-                        <FormItem>
-                                <FormLabel className="text-xs sm:text-sm">Longitude</FormLabel>
-                                <FormControl>
-                                  <Input {...field} className="text-xs sm:text-sm" />
-                                </FormControl>
-                                <FormMessage className="text-xs" />
-                              </FormItem>
-                        } />
-                      
-                        </div>
-                      </div>
-
-                      <div className="flex flex-col-reverse sm:flex-row justify-end gap-2 sm:gap-4 pt-4 sm:pt-6">
-                        <Button type="button" variant="outline" onClick={handleBackToList} size="sm" className="text-xs sm:text-sm">
-                          Cancelar
-                        </Button>
-                        <Button type="submit" size="sm" className="text-xs sm:text-sm">
-                          <Save className="h-3 w-3 sm:h-4 sm:w-4 mr-1 sm:mr-2" />
-                          {editingEquipamento ? "Atualizar" : "Salvar"} Equipamento
-                        </Button>
-                      </div>
-                    </form>
-                  </Form>
+                  {/* Step Navigation */}
+                  <div className="flex flex-col-reverse sm:flex-row justify-between gap-2 sm:gap-4 pt-6">
+                    <Button type="button" variant="outline" onClick={() => setCurrentStep(1)} size="sm" className="text-xs sm:text-sm">
+                      <ArrowLeft className="h-3 w-3 sm:h-4 sm:w-4 mr-1" />
+                      Voltar: Dados do Equipamento
+                    </Button>
+                    <Button type="button" onClick={() => {
+                      form.handleSubmit(onSubmit)();
+                    }} size="sm" className="text-xs sm:text-sm">
+                      <Save className="h-3 w-3 sm:h-4 sm:w-4 mr-1 sm:mr-2" />
+                      {editingEquipamento ? "Atualizar" : "Salvar"} Equipamento
+                    </Button>
+                  </div>
                 </CardContent>
               </Card>
-          }
+            )}
           </div>)
         }
       </main>
