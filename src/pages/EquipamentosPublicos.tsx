@@ -334,6 +334,13 @@ const EquipamentosPublicos = () => {
   const handleDeleteAcumulador = (acumuladorId: string) => {
     if (!acumuladoresEquipamento) return;
     const key = acumuladoresEquipamento.NumeroControle;
+    // Check if acumulador is linked to a sistema estruturante
+    const vinculosDoEquipamento = vinculosSistemas[key] || [];
+    const isLinked = vinculosDoEquipamento.some((v) => v.acumulador?.id === acumuladorId);
+    if (isLinked) {
+      toast.error("Este acumulador está vinculado a um sistema estruturante e não pode ser removido. Remova primeiro o vínculo no cadastro de Sistemas Estruturantes.");
+      return;
+    }
     setAcumuladores((prev) => ({ ...prev, [key]: (prev[key] || []).filter((a) => a.id !== acumuladorId) }));
     toast.success("Acumulador removido!");
   };
