@@ -523,7 +523,7 @@ export default function ComparacaoVPDs() {
     return { gruposSemDiv, subgruposSemDiv, vpdsSemDiv };
   };
 
-  const getModeloLabel = (tipo: TipoModelo) => tipo === "organico" ? "Modelo Orgânico" : "Modelo Programático";
+  const getModeloLabel = (tipo: TipoModelo) => tipo === "organico" ? "Modelo Institucional" : "Modelo Orçamentário";
 
   const formatDateTime = (dateStr?: string) => {
     if (!dateStr) return "-";
@@ -864,7 +864,7 @@ export default function ComparacaoVPDs() {
                               : "border-purple-500 text-purple-700 dark:text-purple-400"
                           )}>
                             {record.tipo === "organico" ? <Building2 className="h-3 w-3" /> : <ClipboardList className="h-3 w-3" />}
-                            {record.tipo === "organico" ? "Orgânico" : "Programático"}
+                            {record.tipo === "organico" ? "Institucional" : "Orçamentário"}
                           </Badge>
                         </TableCell>
                         <TableCell>
