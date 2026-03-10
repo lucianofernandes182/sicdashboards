@@ -450,22 +450,22 @@ const EquipamentosPublicos = () => {
                             </TableCell>
                             <TableCell className="text-right">
                               <div className="flex justify-end gap-2">
-                                
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-                          
+                                <Button
+                            variant="ghost"
+                            size="icon"
+                            onClick={() => handleOpenAssociations(equipamento)}
+                            title="Associar Equipamentos">
+                            
+                                  
+                                  {getAssociationsCount(equipamento.NumeroControle) > 0 &&
+                            <Badge
+                              variant="secondary"
+                              className="ml-1 h-4 w-4 p-0 flex items-center justify-center text-[10px]">
+                              
+                                      {getAssociationsCount(equipamento.NumeroControle)}
+                                    </Badge>
+                            }
+                                </Button>
                                 <Button
                             variant="ghost"
                             size="icon"
@@ -644,63 +644,63 @@ const EquipamentosPublicos = () => {
               <CardContent className="p-4 sm:p-6">
                 <div className="flex items-center justify-between mb-4">
                   {[
-                { step: 1, label: "Dados do Equipamento", icon: Building2 },
-                { step: 2, label: "Acumuladores", icon: Layers },
-                { step: 3, label: "Vincular Sistemas", icon: Server }].
-                map((item, idx) =>
-                <div key={item.step} className="flex items-center flex-1">
+                    { step: 1, label: "Dados do Equipamento", icon: Building2 },
+                    { step: 2, label: "Acumuladores", icon: Layers },
+                    { step: 3, label: "Vincular Sistemas", icon: Server },
+                  ].map((item, idx) => (
+                    <div key={item.step} className="flex items-center flex-1">
                       <button
-                    type="button"
-                    onClick={() => {
-                      if (item.step === 1 || item.step >= 2 && selectedSchema) {
-                        setCurrentStep(item.step);
-                      }
-                    }}
-                    className={`flex items-center gap-2 sm:gap-3 cursor-pointer group ${
-                    item.step <= currentStep ? "" : "opacity-50"}`
-                    }>
-                    
+                        type="button"
+                        onClick={() => {
+                          if (item.step === 1 || (item.step >= 2 && selectedSchema)) {
+                            setCurrentStep(item.step);
+                          }
+                        }}
+                        className={`flex items-center gap-2 sm:gap-3 cursor-pointer group ${
+                          item.step <= currentStep ? "" : "opacity-50"
+                        }`}
+                      >
                         <div className={`flex items-center justify-center w-8 h-8 sm:w-10 sm:h-10 rounded-full border-2 transition-colors ${
-                    currentStep === item.step ?
-                    "border-primary bg-primary text-primary-foreground" :
-                    currentStep > item.step ?
-                    "border-primary bg-primary/10 text-primary" :
-                    "border-muted-foreground/30 text-muted-foreground"}`
-                    }>
-                          {currentStep > item.step ?
-                      <Check className="h-4 w-4 sm:h-5 sm:w-5" /> :
-
-                      <item.icon className="h-4 w-4 sm:h-5 sm:w-5" />
-                      }
+                          currentStep === item.step
+                            ? "border-primary bg-primary text-primary-foreground"
+                            : currentStep > item.step
+                              ? "border-primary bg-primary/10 text-primary"
+                              : "border-muted-foreground/30 text-muted-foreground"
+                        }`}>
+                          {currentStep > item.step ? (
+                            <Check className="h-4 w-4 sm:h-5 sm:w-5" />
+                          ) : (
+                            <item.icon className="h-4 w-4 sm:h-5 sm:w-5" />
+                          )}
                         </div>
                         <div className="hidden sm:block text-left">
                           <p className={`text-xs font-medium ${
-                      currentStep >= item.step ? "text-foreground" : "text-muted-foreground"}`
-                      }>
+                            currentStep >= item.step ? "text-foreground" : "text-muted-foreground"
+                          }`}>
                             Passo {item.step}
                           </p>
                           <p className={`text-sm font-semibold ${
-                      currentStep === item.step ? "text-primary" : currentStep > item.step ? "text-foreground" : "text-muted-foreground"}`
-                      }>
+                            currentStep === item.step ? "text-primary" : currentStep > item.step ? "text-foreground" : "text-muted-foreground"
+                          }`}>
                             {item.label}
                           </p>
                         </div>
                       </button>
-                      {idx < 2 &&
-                  <div className="flex-1 mx-3 sm:mx-6">
+                      {idx < 2 && (
+                        <div className="flex-1 mx-3 sm:mx-6">
                           <div className={`h-0.5 rounded ${currentStep > item.step ? "bg-primary" : "bg-muted-foreground/20"}`} />
                         </div>
-                  }
+                      )}
                     </div>
-                )}
+                  ))}
                 </div>
                 <Progress value={currentStep === 1 ? 33 : currentStep === 2 ? 66 : 100} className="h-1" />
               </CardContent>
             </Card>
 
             {/* STEP 1: Dados do Equipamento */}
-            {currentStep === 1 &&
-          <>
+            {currentStep === 1 && (
+              <>
                 {/* Schema Selection */}
                 <Card>
                   <CardHeader className="p-4 sm:p-6">
@@ -712,8 +712,8 @@ const EquipamentosPublicos = () => {
                     </CardTitle>
                     <CardDescription className="text-xs sm:text-sm">
                       {editingEquipamento ?
-                  "Alterando dados do equipamento existente" :
-                  "Escolha o schema do MongoDB para preencher o formulário"}
+                    "Alterando dados do equipamento existente" :
+                    "Escolha o schema do MongoDB para preencher o formulário"}
                     </CardDescription>
                   </CardHeader>
                   <CardContent className="p-4 sm:p-6 pt-0 sm:pt-0">
@@ -726,20 +726,20 @@ const EquipamentosPublicos = () => {
                           </SelectTrigger>
                           <SelectContent>
                             {schemas.map((schema) =>
-                        <SelectItem key={schema.id} value={schema.id}>
+                          <SelectItem key={schema.id} value={schema.id}>
                                 {schema.name}
                               </SelectItem>
-                        )}
+                          )}
                           </SelectContent>
                         </Select>
                       </div>
                       <div className="space-y-2">
                         <Label className="text-xs sm:text-sm">Versão</Label>
                         <Input
-                      value={selectedVersion}
-                      disabled
-                      placeholder="Versão será preenchida automaticamente"
-                      className="text-xs sm:text-sm" />
+                        value={selectedVersion}
+                        disabled
+                        placeholder="Versão será preenchida automaticamente"
+                        className="text-xs sm:text-sm" />
                       </div>
                     </div>
                   </CardContent>
@@ -747,7 +747,7 @@ const EquipamentosPublicos = () => {
 
                 {/* Form */}
                 {selectedSchema &&
-            <Card>
+              <Card>
                     <CardHeader className="p-4 sm:p-6">
                       <CardTitle className="flex items-center gap-2 text-base sm:text-lg">
                         <Building2 className="h-4 w-4 sm:h-5 sm:w-5" />
@@ -765,40 +765,40 @@ const EquipamentosPublicos = () => {
                             <h3 className="text-base sm:text-lg font-semibold border-b pb-2">Identificação / Acumulador</h3>
                             <div className="grid grid-cols-2 md:grid-cols-5 gap-3 sm:gap-4">
                               <FormField control={form.control} name="Modelo" render={({ field }) =>
-                        <FormItem>
+                                <FormItem>
                                   <FormLabel className="text-xs sm:text-sm">Modelo</FormLabel>
                                   <FormControl><Input {...field} className="text-xs sm:text-sm" /></FormControl>
                                   <FormMessage className="text-xs" />
                                 </FormItem>
-                        } />
+                              } />
                               <FormField control={form.control} name="Funcao" render={({ field }) =>
-                        <FormItem>
+                                <FormItem>
                                   <FormLabel className="text-xs sm:text-sm">Função</FormLabel>
                                   <FormControl><Input {...field} className="text-xs sm:text-sm" /></FormControl>
                                   <FormMessage className="text-xs" />
                                 </FormItem>
-                        } />
+                              } />
                               <FormField control={form.control} name="ObjetoDeCustos" render={({ field }) =>
-                        <FormItem>
+                                <FormItem>
                                   <FormLabel className="text-xs sm:text-sm">Objeto de Custos</FormLabel>
                                   <FormControl><Input {...field} className="text-xs sm:text-sm" /></FormControl>
                                   <FormMessage className="text-xs" />
                                 </FormItem>
-                        } />
+                              } />
                               <FormField control={form.control} name="UnidadeDeCustos" render={({ field }) =>
-                        <FormItem>
+                                <FormItem>
                                   <FormLabel className="text-xs sm:text-sm">Unidade de Custos</FormLabel>
                                   <FormControl><Input {...field} className="text-xs sm:text-sm" /></FormControl>
                                   <FormMessage className="text-xs" />
                                 </FormItem>
-                        } />
+                              } />
                               <FormField control={form.control} name="CentroDeCustos" render={({ field }) =>
-                        <FormItem>
+                                <FormItem>
                                   <FormLabel className="text-xs sm:text-sm">Centro de Custos</FormLabel>
                                   <FormControl><Input {...field} className="text-xs sm:text-sm" /></FormControl>
                                   <FormMessage className="text-xs" />
                                 </FormItem>
-                        } />
+                              } />
                             </div>
                           </div>
 
@@ -807,72 +807,72 @@ const EquipamentosPublicos = () => {
                             <h3 className="text-base sm:text-lg font-semibold border-b pb-2">Equipamento / Organização</h3>
                             <div className="grid grid-cols-2 md:grid-cols-4 gap-3 sm:gap-4">
                               <FormField control={form.control} name="PoderOrgao" render={({ field }) =>
-                        <FormItem>
+                                <FormItem>
                                   <FormLabel className="text-xs sm:text-sm">Poder/Órgão</FormLabel>
                                   <FormControl><Input {...field} className="text-xs sm:text-sm" /></FormControl>
                                   <FormMessage className="text-xs" />
                                 </FormItem>
-                        } />
+                              } />
                               <FormField control={form.control} name="EnteFederado" render={({ field }) =>
-                        <FormItem>
+                                <FormItem>
                                   <FormLabel className="text-xs sm:text-sm">Ente Federado</FormLabel>
                                   <FormControl><Input {...field} className="text-xs sm:text-sm" /></FormControl>
                                   <FormMessage className="text-xs" />
                                 </FormItem>
-                        } />
+                              } />
                               <FormField control={form.control} name="IBGE" render={({ field }) =>
-                        <FormItem>
+                                <FormItem>
                                   <FormLabel className="text-xs sm:text-sm">Código IBGE</FormLabel>
                                   <FormControl><Input {...field} className="text-xs sm:text-sm" /></FormControl>
                                   <FormMessage className="text-xs" />
                                 </FormItem>
-                        } />
+                              } />
                               <FormField control={form.control} name="FuncaoOrcamentaria" render={({ field }) =>
-                        <FormItem>
+                                <FormItem>
                                   <FormLabel className="text-xs sm:text-sm">Função Orçamentária</FormLabel>
                                   <FormControl><Input {...field} className="text-xs sm:text-sm" /></FormControl>
                                   <FormMessage className="text-xs" />
                                 </FormItem>
-                        } />
+                              } />
                             </div>
                             <div className="grid grid-cols-2 md:grid-cols-3 gap-3 sm:gap-4">
                               <FormField control={form.control} name="NumeroControle" render={({ field }) =>
-                        <FormItem>
+                                <FormItem>
                                   <FormLabel className="text-xs sm:text-sm">Número de Controle</FormLabel>
                                   <FormControl><Input {...field} className="text-xs sm:text-sm" /></FormControl>
                                   <FormMessage className="text-xs" />
                                 </FormItem>
-                        } />
+                              } />
                               <FormField control={form.control} name="Descricao" render={({ field }) =>
-                        <FormItem className="col-span-2">
+                                <FormItem className="col-span-2">
                                   <FormLabel className="text-xs sm:text-sm">Descrição</FormLabel>
                                   <FormControl><Input {...field} className="text-xs sm:text-sm" /></FormControl>
                                   <FormMessage className="text-xs" />
                                 </FormItem>
-                        } />
+                              } />
                             </div>
                             <div className="grid grid-cols-2 md:grid-cols-3 gap-3 sm:gap-4">
                               <FormField control={form.control} name="Tipo" render={({ field }) =>
-                        <FormItem>
+                                <FormItem>
                                   <FormLabel className="text-xs sm:text-sm">Tipo</FormLabel>
                                   <FormControl><Input {...field} className="text-xs sm:text-sm" /></FormControl>
                                   <FormMessage className="text-xs" />
                                 </FormItem>
-                        } />
+                              } />
                               <FormField control={form.control} name="UG" render={({ field }) =>
-                        <FormItem>
+                                <FormItem>
                                   <FormLabel className="text-xs sm:text-sm">UG</FormLabel>
                                   <FormControl><Input {...field} className="text-xs sm:text-sm" /></FormControl>
                                   <FormMessage className="text-xs" />
                                 </FormItem>
-                        } />
+                              } />
                               <FormField control={form.control} name="CentroDeResponsabilidade" render={({ field }) =>
-                        <FormItem>
+                                <FormItem>
                                   <FormLabel className="text-xs sm:text-sm">Centro de Responsabilidade</FormLabel>
                                   <FormControl><Input {...field} className="text-xs sm:text-sm" /></FormControl>
                                   <FormMessage className="text-xs" />
                                 </FormItem>
-                        } />
+                              } />
                             </div>
                           </div>
 
@@ -881,19 +881,19 @@ const EquipamentosPublicos = () => {
                             <h3 className="text-base sm:text-lg font-semibold border-b pb-2">Responsável</h3>
                             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
                               <FormField control={form.control} name="ResponsavelNome" render={({ field }) =>
-                        <FormItem>
+                                <FormItem>
                                   <FormLabel className="text-xs sm:text-sm">Nome do Responsável</FormLabel>
                                   <FormControl><Input {...field} className="text-xs sm:text-sm" /></FormControl>
                                   <FormMessage className="text-xs" />
                                 </FormItem>
-                        } />
+                              } />
                               <FormField control={form.control} name="ResponsavelCPF" render={({ field }) =>
-                        <FormItem>
+                                <FormItem>
                                   <FormLabel className="text-xs sm:text-sm">CPF do Responsável</FormLabel>
                                   <FormControl><Input {...field} maxLength={11} className="text-xs sm:text-sm" /></FormControl>
                                   <FormMessage className="text-xs" />
                                 </FormItem>
-                        } />
+                              } />
                             </div>
                           </div>
 
@@ -902,26 +902,26 @@ const EquipamentosPublicos = () => {
                             <h3 className="text-base sm:text-lg font-semibold border-b pb-2">Códigos Nacionais</h3>
                             <div className="grid grid-cols-2 md:grid-cols-3 gap-3 sm:gap-4">
                               <FormField control={form.control} name="IBGE" render={({ field }) =>
-                        <FormItem>
+                                <FormItem>
                                   <FormLabel className="text-xs sm:text-sm">Código IBGE</FormLabel>
                                   <FormControl><Input {...field} className="text-xs sm:text-sm" /></FormControl>
                                   <FormMessage className="text-xs" />
                                 </FormItem>
-                        } />
+                              } />
                               <FormField control={form.control} name="CodNacionalSigla" render={({ field }) =>
-                        <FormItem>
+                                <FormItem>
                                   <FormLabel className="text-xs sm:text-sm">Código Nacional (Sigla)</FormLabel>
                                   <FormControl><Input {...field} className="text-xs sm:text-sm" /></FormControl>
                                   <FormMessage className="text-xs" />
                                 </FormItem>
-                        } />
+                              } />
                               <FormField control={form.control} name="CodNacionalNumero" render={({ field }) =>
-                        <FormItem className="col-span-2 md:col-span-1">
+                                <FormItem className="col-span-2 md:col-span-1">
                                   <FormLabel className="text-xs sm:text-sm">Código Nacional (Número)</FormLabel>
                                   <FormControl><Input {...field} className="text-xs sm:text-sm" /></FormControl>
                                   <FormMessage className="text-xs" />
                                 </FormItem>
-                        } />
+                              } />
                             </div>
                           </div>
 
@@ -930,14 +930,14 @@ const EquipamentosPublicos = () => {
                             <h3 className="text-base sm:text-lg font-semibold border-b pb-2">Informações do Imóvel</h3>
                             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
                               <FormField control={form.control} name="DescricaoImovel" render={({ field }) =>
-                        <FormItem>
+                                <FormItem>
                                   <FormLabel className="text-xs sm:text-sm">Descrição do Imóvel</FormLabel>
                                   <FormControl><Input {...field} className="text-xs sm:text-sm" /></FormControl>
                                   <FormMessage className="text-xs" />
                                 </FormItem>
-                        } />
+                              } />
                               <FormField control={form.control} name="PrincipalOuAnexo" render={({ field }) =>
-                        <FormItem>
+                                <FormItem>
                                   <FormLabel className="text-xs sm:text-sm">Principal ou Anexo</FormLabel>
                                   <FormControl>
                                     <Select onValueChange={field.onChange} value={field.value}>
@@ -950,18 +950,18 @@ const EquipamentosPublicos = () => {
                                   </FormControl>
                                   <FormMessage className="text-xs" />
                                 </FormItem>
-                        } />
+                              } />
                             </div>
                             <div className="grid grid-cols-2 md:grid-cols-3 gap-3 sm:gap-4">
                               <FormField control={form.control} name="Anexo" render={({ field }) =>
-                        <FormItem>
+                                <FormItem>
                                   <FormLabel className="text-xs sm:text-sm">Código do Anexo</FormLabel>
                                   <FormControl><Input {...field} className="text-xs sm:text-sm" /></FormControl>
                                   <FormMessage className="text-xs" />
                                 </FormItem>
-                        } />
+                              } />
                               <FormField control={form.control} name="CondicaoImovelPropriedade" render={({ field }) =>
-                        <FormItem>
+                                <FormItem>
                                   <FormLabel className="text-xs sm:text-sm">Condição de Propriedade</FormLabel>
                                   <FormControl>
                                     <Select onValueChange={field.onChange} value={field.value}>
@@ -975,17 +975,17 @@ const EquipamentosPublicos = () => {
                                   </FormControl>
                                   <FormMessage className="text-xs" />
                                 </FormItem>
-                        } />
+                              } />
                               <FormField control={form.control} name="CondicaoImovelRestricao" render={({ field }) =>
-                        <FormItem className="col-span-2 md:col-span-1">
+                                <FormItem className="col-span-2 md:col-span-1">
                                   <FormLabel className="text-xs sm:text-sm">Restrição do Imóvel</FormLabel>
                                   <FormControl><Input {...field} className="text-xs sm:text-sm" /></FormControl>
                                   <FormMessage className="text-xs" />
                                 </FormItem>
-                        } />
+                              } />
                             </div>
                             <FormField control={form.control} name="CondicaoServico" render={({ field }) =>
-                      <FormItem>
+                              <FormItem>
                                 <FormLabel className="text-xs sm:text-sm">Condição do Serviço</FormLabel>
                                 <FormControl>
                                   <Select onValueChange={field.onChange} value={field.value}>
@@ -999,7 +999,7 @@ const EquipamentosPublicos = () => {
                                 </FormControl>
                                 <FormMessage className="text-xs" />
                               </FormItem>
-                      } />
+                            } />
                           </div>
 
                           {/* Endereço */}
@@ -1007,58 +1007,58 @@ const EquipamentosPublicos = () => {
                             <h3 className="text-base sm:text-lg font-semibold border-b pb-2">Endereço</h3>
                             <div className="grid grid-cols-3 md:grid-cols-4 gap-3 sm:gap-4">
                               <FormField control={form.control} name="EnderecoLogradouro" render={({ field }) =>
-                        <FormItem className="col-span-3 md:col-span-3">
+                                <FormItem className="col-span-3 md:col-span-3">
                                   <FormLabel className="text-xs sm:text-sm">Logradouro</FormLabel>
                                   <FormControl><Input {...field} className="text-xs sm:text-sm" /></FormControl>
                                   <FormMessage className="text-xs" />
                                 </FormItem>
-                        } />
+                              } />
                               <FormField control={form.control} name="EnderecoNumero" render={({ field }) =>
-                        <FormItem className="col-span-1">
+                                <FormItem className="col-span-1">
                                   <FormLabel className="text-xs sm:text-sm">Número</FormLabel>
                                   <FormControl><Input {...field} className="text-xs sm:text-sm" /></FormControl>
                                   <FormMessage className="text-xs" />
                                 </FormItem>
-                        } />
+                              } />
                             </div>
                             <div className="grid grid-cols-2 md:grid-cols-3 gap-3 sm:gap-4">
                               <FormField control={form.control} name="EnderecoComplemento" render={({ field }) =>
-                        <FormItem>
+                                <FormItem>
                                   <FormLabel className="text-xs sm:text-sm">Complemento</FormLabel>
                                   <FormControl><Input {...field} className="text-xs sm:text-sm" /></FormControl>
                                   <FormMessage className="text-xs" />
                                 </FormItem>
-                        } />
+                              } />
                               <FormField control={form.control} name="EnderecoBairroLocalidade" render={({ field }) =>
-                        <FormItem>
+                                <FormItem>
                                   <FormLabel className="text-xs sm:text-sm">Bairro/Localidade</FormLabel>
                                   <FormControl><Input {...field} className="text-xs sm:text-sm" /></FormControl>
                                   <FormMessage className="text-xs" />
                                 </FormItem>
-                        } />
+                              } />
                               <FormField control={form.control} name="EnderecoCEP" render={({ field }) =>
-                        <FormItem className="col-span-2 md:col-span-1">
+                                <FormItem className="col-span-2 md:col-span-1">
                                   <FormLabel className="text-xs sm:text-sm">CEP</FormLabel>
                                   <FormControl><Input {...field} maxLength={8} className="text-xs sm:text-sm" /></FormControl>
                                   <FormMessage className="text-xs" />
                                 </FormItem>
-                        } />
+                              } />
                             </div>
                             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
                               <FormField control={form.control} name="EnderecoLatitude" render={({ field }) =>
-                        <FormItem>
+                                <FormItem>
                                   <FormLabel className="text-xs sm:text-sm">Latitude</FormLabel>
                                   <FormControl><Input {...field} className="text-xs sm:text-sm" /></FormControl>
                                   <FormMessage className="text-xs" />
                                 </FormItem>
-                        } />
+                              } />
                               <FormField control={form.control} name="EnderecoLongitude" render={({ field }) =>
-                        <FormItem>
+                                <FormItem>
                                   <FormLabel className="text-xs sm:text-sm">Longitude</FormLabel>
                                   <FormControl><Input {...field} className="text-xs sm:text-sm" /></FormControl>
                                   <FormMessage className="text-xs" />
                                 </FormItem>
-                        } />
+                              } />
                             </div>
                           </div>
 
@@ -1076,13 +1076,13 @@ const EquipamentosPublicos = () => {
                       </Form>
                     </CardContent>
                   </Card>
-            }
+              }
               </>
-          }
+            )}
 
             {/* STEP 2: Acumuladores */}
-            {currentStep === 2 &&
-          <Card>
+            {currentStep === 2 && (
+              <Card>
                 <CardHeader className="p-4 sm:p-6">
                   <CardTitle className="flex items-center gap-2 text-base sm:text-lg">
                     <Layers className="h-4 w-4 sm:h-5 sm:w-5" />
@@ -1116,46 +1116,46 @@ const EquipamentosPublicos = () => {
                       <div className="grid grid-cols-2 sm:grid-cols-5 gap-3">
                         <div className="space-y-1.5">
                           <Label className="text-xs">Modelo</Label>
-                          <Input value={novoAcumulador.Modelo} onChange={(e) => setNovoAcumulador((p) => ({ ...p, Modelo: e.target.value }))} className="text-xs h-9" placeholder="1" />
+                          <Input value={novoAcumulador.Modelo} onChange={e => setNovoAcumulador(p => ({ ...p, Modelo: e.target.value }))} className="text-xs h-9" placeholder="1" />
                         </div>
                         <div className="space-y-1.5">
                           <Label className="text-xs">Função</Label>
-                          <Input value={novoAcumulador.Funcao} onChange={(e) => setNovoAcumulador((p) => ({ ...p, Funcao: e.target.value }))} className="text-xs h-9" placeholder="02" />
+                          <Input value={novoAcumulador.Funcao} onChange={e => setNovoAcumulador(p => ({ ...p, Funcao: e.target.value }))} className="text-xs h-9" placeholder="02" />
                         </div>
                         <div className="space-y-1.5">
                           <Label className="text-xs">Objeto de Custos</Label>
-                          <Input value={novoAcumulador.ObjetoDeCustos} onChange={(e) => setNovoAcumulador((p) => ({ ...p, ObjetoDeCustos: e.target.value }))} className="text-xs h-9" placeholder="001" />
+                          <Input value={novoAcumulador.ObjetoDeCustos} onChange={e => setNovoAcumulador(p => ({ ...p, ObjetoDeCustos: e.target.value }))} className="text-xs h-9" placeholder="001" />
                         </div>
                         <div className="space-y-1.5">
                           <Label className="text-xs">Unidade de Custos</Label>
-                          <Input value={novoAcumulador.UnidadeDeCustos} onChange={(e) => setNovoAcumulador((p) => ({ ...p, UnidadeDeCustos: e.target.value }))} className="text-xs h-9" placeholder="001" />
+                          <Input value={novoAcumulador.UnidadeDeCustos} onChange={e => setNovoAcumulador(p => ({ ...p, UnidadeDeCustos: e.target.value }))} className="text-xs h-9" placeholder="001" />
                         </div>
                         <div className="space-y-1.5">
                           <Label className="text-xs">Centro de Custos</Label>
-                          <Input value={novoAcumulador.CentroDeCustos} onChange={(e) => setNovoAcumulador((p) => ({ ...p, CentroDeCustos: e.target.value }))} className="text-xs h-9" placeholder="006" />
+                          <Input value={novoAcumulador.CentroDeCustos} onChange={e => setNovoAcumulador(p => ({ ...p, CentroDeCustos: e.target.value }))} className="text-xs h-9" placeholder="006" />
                         </div>
                       </div>
                       <Button size="sm" className="text-xs" onClick={() => {
-                    const key = form.getValues("NumeroControle");
-                    if (!novoAcumulador.Modelo || !novoAcumulador.Funcao || !novoAcumulador.ObjetoDeCustos || !novoAcumulador.UnidadeDeCustos || !novoAcumulador.CentroDeCustos) {
-                      toast.error("Preencha todos os campos do acumulador.");
-                      return;
-                    }
-                    const newAcumulador: Acumulador = { ...novoAcumulador, id: crypto.randomUUID() };
-                    setAcumuladores((prev) => ({ ...prev, [key]: [...(prev[key] || []), newAcumulador] }));
-                    setNovoAcumulador({ Modelo: "", Funcao: "", ObjetoDeCustos: "", UnidadeDeCustos: "", CentroDeCustos: "" });
-                    toast.success("Acumulador adicionado!");
-                  }}>
+                        const key = form.getValues("NumeroControle");
+                        if (!novoAcumulador.Modelo || !novoAcumulador.Funcao || !novoAcumulador.ObjetoDeCustos || !novoAcumulador.UnidadeDeCustos || !novoAcumulador.CentroDeCustos) {
+                          toast.error("Preencha todos os campos do acumulador.");
+                          return;
+                        }
+                        const newAcumulador: Acumulador = { ...novoAcumulador, id: crypto.randomUUID() };
+                        setAcumuladores(prev => ({ ...prev, [key]: [...(prev[key] || []), newAcumulador] }));
+                        setNovoAcumulador({ Modelo: "", Funcao: "", ObjetoDeCustos: "", UnidadeDeCustos: "", CentroDeCustos: "" });
+                        toast.success("Acumulador adicionado!");
+                      }}>
                         <Plus className="h-3 w-3 mr-1" /> Adicionar
                       </Button>
                     </div>
 
                     {/* Lista de acumuladores */}
                     {(() => {
-                  const key = form.getValues("NumeroControle");
-                  const acums = acumuladores[key] || [];
-                  return acums.length > 0 ?
-                  <div className="rounded-md border">
+                      const key = form.getValues("NumeroControle");
+                      const acums = acumuladores[key] || [];
+                      return acums.length > 0 ? (
+                        <div className="rounded-md border">
                           <Table>
                             <TableHeader>
                               <TableRow>
@@ -1168,8 +1168,8 @@ const EquipamentosPublicos = () => {
                               </TableRow>
                             </TableHeader>
                             <TableBody>
-                              {acums.map((ac) =>
-                        <TableRow key={ac.id}>
+                              {acums.map(ac => (
+                                <TableRow key={ac.id}>
                                   <TableCell className="text-xs font-mono">{ac.Modelo}</TableCell>
                                   <TableCell className="text-xs font-mono">{ac.Funcao}</TableCell>
                                   <TableCell className="text-xs font-mono">{ac.ObjetoDeCustos}</TableCell>
@@ -1177,25 +1177,25 @@ const EquipamentosPublicos = () => {
                                   <TableCell className="text-xs font-mono">{ac.CentroDeCustos}</TableCell>
                                   <TableCell className="text-right">
                                     <Button variant="ghost" size="icon" className="h-7 w-7 text-destructive hover:text-destructive" onClick={() => {
-                              setAcumuladores((prev) => ({ ...prev, [key]: (prev[key] || []).filter((a) => a.id !== ac.id) }));
-                              toast.success("Acumulador removido!");
-                            }}>
+                                      setAcumuladores(prev => ({ ...prev, [key]: (prev[key] || []).filter(a => a.id !== ac.id) }));
+                                      toast.success("Acumulador removido!");
+                                    }}>
                                       <Trash2 className="h-3 w-3" />
                                     </Button>
                                   </TableCell>
                                 </TableRow>
-                        )}
+                              ))}
                             </TableBody>
                           </Table>
-                        </div> :
-
-                  <div className="text-center py-8 text-muted-foreground border border-dashed rounded-lg">
+                        </div>
+                      ) : (
+                        <div className="text-center py-8 text-muted-foreground border border-dashed rounded-lg">
                           <Layers className="h-10 w-10 mx-auto mb-2 opacity-50" />
                           <p className="text-sm font-medium">Nenhum acumulador cadastrado</p>
                           <p className="text-xs">Adicione acumuladores para vincular aos sistemas no próximo passo</p>
-                        </div>;
-
-                })()}
+                        </div>
+                      );
+                    })()}
                   </div>
 
                   {/* Step Navigation */}
@@ -1211,11 +1211,11 @@ const EquipamentosPublicos = () => {
                   </div>
                 </CardContent>
               </Card>
-          }
+            )}
 
             {/* STEP 3: Vincular Sistemas */}
-            {currentStep === 3 &&
-          <Card>
+            {currentStep === 3 && (
+              <Card>
                 <CardHeader className="p-4 sm:p-6">
                   <CardTitle className="flex items-center gap-2 text-base sm:text-lg">
                     <Server className="h-4 w-4 sm:h-5 sm:w-5" />
@@ -1242,18 +1242,18 @@ const EquipamentosPublicos = () => {
                           <TableCell className="font-medium text-muted-foreground text-xs">Acumuladores</TableCell>
                           <TableCell className="text-xs">
                             {(() => {
-                          const acs = acumuladores[form.getValues("NumeroControle")] || [];
-                          if (acs.length === 0) return <span className="text-muted-foreground">Nenhum cadastrado</span>;
-                          return (
-                            <div className="flex flex-wrap gap-1">
-                                  {acs.map((ac) =>
-                              <Badge key={ac.id} variant="secondary" className="text-[10px] font-mono">
+                              const acs = acumuladores[form.getValues("NumeroControle")] || [];
+                              if (acs.length === 0) return <span className="text-muted-foreground">Nenhum cadastrado</span>;
+                              return (
+                                <div className="flex flex-wrap gap-1">
+                                  {acs.map(ac => (
+                                    <Badge key={ac.id} variant="secondary" className="text-[10px] font-mono">
                                       {ac.Modelo}.{ac.Funcao}.{ac.ObjetoDeCustos}.{ac.UnidadeDeCustos}.{ac.CentroDeCustos}
                                     </Badge>
-                              )}
-                                </div>);
-
-                        })()}
+                                  ))}
+                                </div>
+                              );
+                            })()}
                           </TableCell>
                         </TableRow>
                       </TableBody>
@@ -1261,22 +1261,22 @@ const EquipamentosPublicos = () => {
                   </div>
 
                   <VinculoSistemasInline
-                vinculos={vinculosSistemas[form.getValues("NumeroControle")] || []}
-                onVinculosChange={(newVinculos) => {
-                  const key = form.getValues("NumeroControle");
-                  if (key) {
-                    setVinculosSistemas((prev) => ({ ...prev, [key]: newVinculos }));
-                  }
-                }}
-                acumuladoresDisponiveis={(acumuladores[form.getValues("NumeroControle")] || []).map((ac) => ({
-                  id: ac.id,
-                  modelo: ac.Modelo,
-                  funcao: ac.Funcao,
-                  objetoCustos: ac.ObjetoDeCustos,
-                  unidadeCustos: ac.UnidadeDeCustos,
-                  centroCustos: ac.CentroDeCustos
-                }))} />
-              
+                    vinculos={vinculosSistemas[form.getValues("NumeroControle")] || []}
+                    onVinculosChange={(newVinculos) => {
+                      const key = form.getValues("NumeroControle");
+                      if (key) {
+                        setVinculosSistemas(prev => ({ ...prev, [key]: newVinculos }));
+                      }
+                    }}
+                    acumuladoresDisponiveis={(acumuladores[form.getValues("NumeroControle")] || []).map(ac => ({
+                      id: ac.id,
+                      modelo: ac.Modelo,
+                      funcao: ac.Funcao,
+                      objetoCustos: ac.ObjetoDeCustos,
+                      unidadeCustos: ac.UnidadeDeCustos,
+                      centroCustos: ac.CentroDeCustos,
+                    }))}
+                  />
 
                   {/* Step Navigation */}
                   <div className="flex flex-col-reverse sm:flex-row justify-between gap-2 sm:gap-4 pt-6">
@@ -1285,15 +1285,15 @@ const EquipamentosPublicos = () => {
                       Voltar: Acumuladores
                     </Button>
                     <Button type="button" onClick={() => {
-                  form.handleSubmit(onSubmit)();
-                }} size="sm" className="text-xs sm:text-sm">
+                      form.handleSubmit(onSubmit)();
+                    }} size="sm" className="text-xs sm:text-sm">
                       <Save className="h-3 w-3 sm:h-4 sm:w-4 mr-1 sm:mr-2" />
                       {editingEquipamento ? "Atualizar" : "Salvar"} Equipamento
                     </Button>
                   </div>
                 </CardContent>
               </Card>
-          }
+            )}
           </div>)
         }
       </main>
