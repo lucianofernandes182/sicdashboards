@@ -523,7 +523,7 @@ export default function ComparacaoVPDs() {
     return { gruposSemDiv, subgruposSemDiv, vpdsSemDiv };
   };
 
-  const getModeloLabel = (tipo: TipoModelo) => tipo === "organico" ? "Modelo Orgânico" : "Modelo Programático";
+  const getModeloLabel = (tipo: TipoModelo) => tipo === "organico" ? "Modelo Institucional" : "Modelo Orçamentário";
 
   const formatDateTime = (dateStr?: string) => {
     if (!dateStr) return "-";
