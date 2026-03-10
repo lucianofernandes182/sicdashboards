@@ -578,7 +578,7 @@ const EquipamentosPublicos = () => {
                       className="h-11 flex items-center justify-center gap-1.5">
                       
                             <Layers className="h-5 w-5" />
-                            <span className="text-xs">Ger. Acumul.</span>
+                            <span className="text-xs">Acumul.</span>
                             {getAcumuladoresCount(equipamento.NumeroControle) > 0 &&
                       <Badge
                         variant="secondary"
