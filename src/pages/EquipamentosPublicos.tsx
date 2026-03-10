@@ -467,18 +467,16 @@ const EquipamentosPublicos = () => {
                             }
                                 </Button>
                                 <Button
-                            variant="outline"
-                            size="sm"
+                            variant="ghost"
+                            size="icon"
                             onClick={() => handleOpenAcumuladores(equipamento)}
-                            title="Gerenciar Acumuladores"
-                            className="text-xs gap-1">
+                            title="Gerenciar Acumuladores">
                             
-                                  <Layers className="h-3.5 w-3.5" />
-                                  Gerenciar Acumuladores
+                                  <Layers className="h-4 w-4" />
                                   {getAcumuladoresCount(equipamento.NumeroControle) > 0 &&
                             <Badge
                               variant="secondary"
-                              className="ml-0.5 h-4 min-w-4 p-0 flex items-center justify-center text-[10px]">
+                              className="ml-1 h-4 w-4 p-0 flex items-center justify-center text-[10px]">
                               
                                       {getAcumuladoresCount(equipamento.NumeroControle)}
                                     </Badge>
