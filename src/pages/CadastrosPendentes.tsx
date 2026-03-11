@@ -31,6 +31,7 @@ type RevalidacaoStatus =
 interface RegistroPendente {
   id: string;
   tipo: "EP" | "VPD";
+  subTipo?: "Orgânico" | "Orçamentário";
   codigo: string | null;
   descricao: string;
   tipoMovimento: string;
@@ -43,69 +44,121 @@ interface RegistroPendente {
 const mockRegistrosPendentes: RegistroPendente[] = [
 {
   id: "pend-1",
+  tipo: "VPD",
+  subTipo: "Orgânico",
+  codigo: null,
+  descricao: "Adiantamento Utilizado",
+  tipoMovimento: "Adiantamento Utilizado",
+  origem: "cp",
+  valor: 111482.06,
+  dataIdentificacao: "2025-11-01",
+  inconsistencia: "VPD_INEXISTENTE"
+},
+{
+  id: "pend-2",
+  tipo: "VPD",
+  subTipo: "Orgânico",
+  codigo: null,
+  descricao: "Baixa por Perda",
+  tipoMovimento: "Baixa por Perda",
+  origem: "cp",
+  valor: 163398.98,
+  dataIdentificacao: "2025-11-04",
+  inconsistencia: "VPD_INEXISTENTE"
+},
+{
+  id: "pend-3",
+  tipo: "VPD",
+  subTipo: "Orgânico",
+  codigo: null,
+  descricao: "Adiantamento Utilizado",
+  tipoMovimento: "Adiantamento Utilizado",
+  origem: "cp",
+  valor: 134527.44,
+  dataIdentificacao: "2025-11-13",
+  inconsistencia: "VPD_INEXISTENTE"
+},
+{
+  id: "pend-4",
+  tipo: "VPD",
+  subTipo: "Orgânico",
+  codigo: null,
+  descricao: "Provisão Folha",
+  tipoMovimento: "Provisão Folha",
+  origem: "cp",
+  valor: 122045.94,
+  dataIdentificacao: "2025-11-07",
+  inconsistencia: "VPD_NULL_PERMITIDO"
+},
+{
+  id: "pend-5",
+  tipo: "VPD",
+  subTipo: "Orgânico",
+  codigo: null,
+  descricao: "Adiantamento Utilizado",
+  tipoMovimento: "Adiantamento Utilizado",
+  origem: "cp",
+  valor: 111482.06,
+  dataIdentificacao: "2025-11-01",
+  inconsistencia: "VPD_INEXISTENTE"
+},
+{
+  id: "pend-6",
+  tipo: "VPD",
+  subTipo: "Orgânico",
+  codigo: null,
+  descricao: "Baixa por Perda",
+  tipoMovimento: "Baixa por Perda",
+  origem: "cp",
+  valor: 163398.98,
+  dataIdentificacao: "2025-11-04",
+  inconsistencia: "AGUARDANDO_VALIDACAO"
+},
+{
+  id: "pend-7",
+  tipo: "VPD",
+  subTipo: "Orçamentário",
+  codigo: null,
+  descricao: "Despesa Corrente",
+  tipoMovimento: "Despesa Corrente",
+  origem: "cp",
+  valor: 98500.00,
+  dataIdentificacao: "2025-11-10",
+  inconsistencia: "VPD_INEXISTENTE"
+},
+{
+  id: "pend-8",
+  tipo: "VPD",
+  subTipo: "Orçamentário",
+  codigo: null,
+  descricao: "Transferência Concedida",
+  tipoMovimento: "Transferência Concedida",
+  origem: "cp",
+  valor: 75200.00,
+  dataIdentificacao: "2025-11-15",
+  inconsistencia: "VPD_NULL_PERMITIDO"
+},
+{
+  id: "pend-9",
   tipo: "EP",
   codigo: "EP-2025-001",
   descricao: "Escola Municipal José de Alencar",
   tipoMovimento: "Depreciação",
   origem: "Sistema de Educação",
   valor: 125000.0,
-  dataIdentificacao: "2025-05-15",
+  dataIdentificacao: "2025-11-15",
   inconsistencia: "EP_NAO_ENCONTRADO"
 },
 {
-  id: "pend-2",
-  tipo: "VPD",
-  codigo: "3.3.9.1.00.00.00",
-  descricao: "Despesas com Manutenção Predial",
-  tipoMovimento: "Amortização",
-  origem: "CP - Contabilidade",
-  valor: 45780.5,
-  dataIdentificacao: "2025-05-18",
-  inconsistencia: "VPD_INEXISTENTE"
-},
-{
-  id: "pend-3",
+  id: "pend-10",
   tipo: "EP",
   codigo: null,
   descricao: "Centro de Saúde Vila Nova",
   tipoMovimento: "Depreciação",
   origem: "Sistema de Saúde",
   valor: 89500.0,
-  dataIdentificacao: "2025-05-20",
+  dataIdentificacao: "2025-11-20",
   inconsistencia: "EP_SEM_CODIGO"
-},
-{
-  id: "pend-4",
-  tipo: "VPD",
-  codigo: null,
-  descricao: "Encargos Patronais",
-  tipoMovimento: "Exaustão",
-  origem: "SIC - SMARRH",
-  valor: 234100.0,
-  dataIdentificacao: "2025-05-22",
-  inconsistencia: "VPD_NULL_PERMITIDO"
-},
-{
-  id: "pend-5",
-  tipo: "EP",
-  codigo: "EP-2025-003",
-  descricao: "Ginásio Poliesportivo Central",
-  tipoMovimento: "Reavaliação",
-  origem: "Sistema de Esportes",
-  valor: 156700.0,
-  dataIdentificacao: "2025-05-25",
-  inconsistencia: "EP_NAO_ENCONTRADO"
-},
-{
-  id: "pend-6",
-  tipo: "VPD",
-  codigo: "3.1.2.0.00.00.00",
-  descricao: "Benefícios Previdenciários",
-  tipoMovimento: "Amortização",
-  origem: "CP - Contabilidade",
-  valor: 89200.0,
-  dataIdentificacao: "2025-05-28",
-  inconsistencia: "AGUARDANDO_VALIDACAO"
 }];
 
 
@@ -301,18 +354,20 @@ export default function CadastrosPendentes() {
           <div className="flex items-center gap-4">
             <Button variant="outline" onClick={() => navigate("/comparacao-vpds")}>
               <ArrowLeft className="h-4 w-4 mr-2" />
-              Voltar
+              Comparação de VPDs
             </Button>
-            <div>
-              <h1 className="text-2xl font-bold flex items-center gap-2">
-                <ShieldCheck className="h-6 w-6 text-primary" />
-                Cadastro de Pendentes
-              </h1>
-              <p className="text-muted-foreground text-sm">
-                Registros identificados nos sistemas externos que necessitam de validação de consistência cadastral
-              </p>
-            </div>
           </div>
+        </div>
+
+        {/* Title Section */}
+        <div>
+          <h1 className="text-2xl font-bold flex items-center gap-2">
+            <AlertTriangle className="h-6 w-6 text-primary" />
+            Cadastros Pendentes
+          </h1>
+          <p className="text-muted-foreground text-sm">
+            Dados candidatos pendentes para a competência 11/2025
+          </p>
         </div>
 
         {/* Summary Cards */}
@@ -320,45 +375,45 @@ export default function CadastrosPendentes() {
           <Card
             className={cn("cursor-pointer transition-all hover:shadow-md", filtroTipo === "todos" && "ring-2 ring-primary")}
             onClick={() => setFiltroTipo("todos")}>
-            
             <CardHeader className="pb-2">
               <CardTitle className="text-sm font-medium text-muted-foreground">Total Pendentes</CardTitle>
             </CardHeader>
             <CardContent>
               <div className="flex items-center gap-2">
-                <AlertCircle className="h-5 w-5 text-orange-500" />
-                <span className="text-2xl font-bold">{registrosPendentes.length}</span>
+                <Clock className="h-5 w-5 text-orange-500" />
+                <span className="text-2xl font-bold text-orange-500">{registrosPendentes.length}</span>
               </div>
+              <p className="text-xs text-muted-foreground mt-1">Soma de todas as pendências</p>
             </CardContent>
           </Card>
 
           <Card
-            className={cn("cursor-pointer transition-all hover:shadow-md", filtroTipo === "EP" && "ring-2 ring-blue-500")}
+            className={cn("cursor-pointer transition-all hover:shadow-md", filtroTipo === "EP" && "ring-2 ring-primary")}
             onClick={() => setFiltroTipo("EP")}>
-            
             <CardHeader className="pb-2">
               <CardTitle className="text-sm font-medium text-muted-foreground">Equipamentos Públicos</CardTitle>
             </CardHeader>
             <CardContent>
               <div className="flex items-center gap-2">
                 <Building2 className="h-5 w-5 text-blue-500" />
-                <span className="text-2xl font-bold">{pendentesEP}</span>
+                <span className="text-2xl font-bold text-blue-500">{pendentesEP}</span>
               </div>
+              <p className="text-xs text-muted-foreground mt-1">Pendências de EP/Programas</p>
             </CardContent>
           </Card>
 
           <Card
-            className={cn("cursor-pointer transition-all hover:shadow-md", filtroTipo === "VPD" && "ring-2 ring-purple-500")}
+            className={cn("cursor-pointer transition-all hover:shadow-md", filtroTipo === "VPD" && "ring-2 ring-primary")}
             onClick={() => setFiltroTipo("VPD")}>
-            
             <CardHeader className="pb-2">
               <CardTitle className="text-sm font-medium text-muted-foreground">VPDs</CardTitle>
             </CardHeader>
             <CardContent>
               <div className="flex items-center gap-2">
-                <FileText className="h-5 w-5 text-purple-500" />
-                <span className="text-2xl font-bold">{pendentesVPD}</span>
+                <FileText className="h-5 w-5 text-green-500" />
+                <span className="text-2xl font-bold text-green-500">{pendentesVPD}</span>
               </div>
+              <p className="text-xs text-muted-foreground mt-1">Pendências de VPD vinculadas</p>
             </CardContent>
           </Card>
         </div>
@@ -481,17 +536,19 @@ export default function CadastrosPendentes() {
                         
                         </TableCell>
                         <TableCell>
-                          <Badge
-                          variant="secondary"
-                          className={cn(
-                            "text-xs",
-                            registro.tipo === "EP" ?
-                            "bg-blue-100 text-blue-700 dark:bg-blue-900/50 dark:text-blue-300" :
-                            "bg-purple-100 text-purple-700 dark:bg-purple-900/50 dark:text-purple-300"
-                          )}>
-                          
-                            {registro.tipo}
-                          </Badge>
+                          <div className="flex items-center gap-1.5">
+                            <Badge
+                            variant="secondary"
+                            className={cn(
+                              "text-xs",
+                              registro.tipo === "EP" ?
+                              "bg-blue-100 text-blue-700 dark:bg-blue-900/50 dark:text-blue-300" :
+                              "bg-purple-100 text-purple-700 dark:bg-purple-900/50 dark:text-purple-300"
+                            )}>
+                              {registro.tipo}
+                            </Badge>
+                            {registro.subTipo && <span className="text-xs text-muted-foreground">{registro.subTipo}</span>}
+                          </div>
                         </TableCell>
                         <TableCell className="font-mono text-xs">
                           {registro.codigo || <span className="text-muted-foreground italic">sem código</span>}
@@ -551,9 +608,15 @@ export default function CadastrosPendentes() {
                     "bg-purple-100 text-purple-700 dark:bg-purple-900/50 dark:text-purple-300"
                   )}>
                   
-                    {registroEmValidacao.tipo === "EP" ? "Equipamento Público" : "VPD"}
+                    {registroEmValidacao.tipo === "EP" ? "Equipamento Público" : `VPD ${registroEmValidacao.subTipo || ""}`}
                   </Badge>
                 </div>
+                {registroEmValidacao.subTipo && (
+                  <div className="flex items-center justify-between">
+                    <span className="text-muted-foreground">Classificação</span>
+                    <span>{registroEmValidacao.subTipo}</span>
+                  </div>
+                )}
                 <div className="flex items-center justify-between">
                   <span className="text-muted-foreground">Código</span>
                   <span className="font-mono">
@@ -601,7 +664,24 @@ export default function CadastrosPendentes() {
               variant="outline"
               onClick={() => navigate("/equipamentos-publicos")}
               className="gap-1.5">
-              
+                <ExternalLink className="h-4 w-4" />
+                Ir para Cadastro de EP
+              </Button>
+            }
+            {revalidacaoResultado && revalidacaoResultado !== "DADOS_COMPLETOS" && registroEmValidacao?.tipo === "VPD" && registroEmValidacao?.subTipo === "Orçamentário" &&
+            <Button
+              variant="outline"
+              onClick={() => navigate("/equipamentos-publicos")}
+              className="gap-1.5">
+                <ExternalLink className="h-4 w-4" />
+                Ir para Cadastro de Programas
+              </Button>
+            }
+            {revalidacaoResultado && revalidacaoResultado !== "DADOS_COMPLETOS" && registroEmValidacao?.tipo === "VPD" && registroEmValidacao?.subTipo === "Orgânico" &&
+            <Button
+              variant="outline"
+              onClick={() => navigate("/equipamentos-publicos")}
+              className="gap-1.5">
                 <ExternalLink className="h-4 w-4" />
                 Ir para Cadastro de EP
               </Button>
