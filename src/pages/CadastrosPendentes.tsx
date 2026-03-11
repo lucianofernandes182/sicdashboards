@@ -536,17 +536,19 @@ export default function CadastrosPendentes() {
                         
                         </TableCell>
                         <TableCell>
-                          <Badge
-                          variant="secondary"
-                          className={cn(
-                            "text-xs",
-                            registro.tipo === "EP" ?
-                            "bg-blue-100 text-blue-700 dark:bg-blue-900/50 dark:text-blue-300" :
-                            "bg-purple-100 text-purple-700 dark:bg-purple-900/50 dark:text-purple-300"
-                          )}>
-                          
-                            {registro.tipo}
-                          </Badge>
+                          <div className="flex items-center gap-1.5">
+                            <Badge
+                            variant="secondary"
+                            className={cn(
+                              "text-xs",
+                              registro.tipo === "EP" ?
+                              "bg-blue-100 text-blue-700 dark:bg-blue-900/50 dark:text-blue-300" :
+                              "bg-purple-100 text-purple-700 dark:bg-purple-900/50 dark:text-purple-300"
+                            )}>
+                              {registro.tipo}
+                            </Badge>
+                            {registro.subTipo && <span className="text-xs text-muted-foreground">{registro.subTipo}</span>}
+                          </div>
                         </TableCell>
                         <TableCell className="font-mono text-xs">
                           {registro.codigo || <span className="text-muted-foreground italic">sem código</span>}
