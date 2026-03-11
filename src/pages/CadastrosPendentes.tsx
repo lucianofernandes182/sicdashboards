@@ -794,7 +794,7 @@ export default function CadastrosPendentes() {
                     <div key={tipo} className="space-y-3">
                       <div className="flex items-center gap-2">
                         {tipo === "EP" ? <Building2 className="h-4 w-4 text-blue-500" /> : <FileText className="h-4 w-4 text-purple-500" />}
-                        <span className="font-semibold text-sm">{tipo === "EP" ? "Equipamentos Públicos" : "VPDs"}</span>
+                        <span className="font-semibold text-sm">{tipo === "EP" ? labelEP : "VPDs"}</span>
                         <Badge variant="outline" className="text-xs">{doTipo.length} registro(s)</Badge>
                       </div>
 
