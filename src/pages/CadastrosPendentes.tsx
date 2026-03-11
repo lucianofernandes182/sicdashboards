@@ -608,9 +608,15 @@ export default function CadastrosPendentes() {
                     "bg-purple-100 text-purple-700 dark:bg-purple-900/50 dark:text-purple-300"
                   )}>
                   
-                    {registroEmValidacao.tipo === "EP" ? "Equipamento Público" : "VPD"}
+                    {registroEmValidacao.tipo === "EP" ? "Equipamento Público" : `VPD ${registroEmValidacao.subTipo || ""}`}
                   </Badge>
                 </div>
+                {registroEmValidacao.subTipo && (
+                  <div className="flex items-center justify-between">
+                    <span className="text-muted-foreground">Classificação</span>
+                    <span>{registroEmValidacao.subTipo}</span>
+                  </div>
+                )}
                 <div className="flex items-center justify-between">
                   <span className="text-muted-foreground">Código</span>
                   <span className="font-mono">
