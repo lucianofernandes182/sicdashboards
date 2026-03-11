@@ -1010,7 +1010,7 @@ export default function ComparacaoVPDs() {
                     )}
                     {totalPendentes > 0 && (
                       <Badge variant="outline" className="text-xs border-orange-500 text-orange-700 dark:text-orange-400 cursor-pointer hover:bg-orange-100 dark:hover:bg-orange-900/30 transition-colors gap-1"
-                        onClick={() => { setIsModalOpen(false); navigate("/cadastros-pendentes"); }}
+                        onClick={() => { setIsModalOpen(false); navigate(`/cadastros-pendentes?tipo=${selectedRecord?.tipo || 'organico'}`); }}
                       >
                         <AlertCircle className="h-3 w-3" />
                         {totalPendentes} pendente{totalPendentes > 1 ? 's' : ''}
