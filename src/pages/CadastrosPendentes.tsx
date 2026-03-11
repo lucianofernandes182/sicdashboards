@@ -44,69 +44,121 @@ interface RegistroPendente {
 const mockRegistrosPendentes: RegistroPendente[] = [
 {
   id: "pend-1",
+  tipo: "VPD",
+  subTipo: "Orgânico",
+  codigo: null,
+  descricao: "Adiantamento Utilizado",
+  tipoMovimento: "Adiantamento Utilizado",
+  origem: "cp",
+  valor: 111482.06,
+  dataIdentificacao: "2025-11-01",
+  inconsistencia: "VPD_INEXISTENTE"
+},
+{
+  id: "pend-2",
+  tipo: "VPD",
+  subTipo: "Orgânico",
+  codigo: null,
+  descricao: "Baixa por Perda",
+  tipoMovimento: "Baixa por Perda",
+  origem: "cp",
+  valor: 163398.98,
+  dataIdentificacao: "2025-11-04",
+  inconsistencia: "VPD_INEXISTENTE"
+},
+{
+  id: "pend-3",
+  tipo: "VPD",
+  subTipo: "Orgânico",
+  codigo: null,
+  descricao: "Adiantamento Utilizado",
+  tipoMovimento: "Adiantamento Utilizado",
+  origem: "cp",
+  valor: 134527.44,
+  dataIdentificacao: "2025-11-13",
+  inconsistencia: "VPD_INEXISTENTE"
+},
+{
+  id: "pend-4",
+  tipo: "VPD",
+  subTipo: "Orgânico",
+  codigo: null,
+  descricao: "Provisão Folha",
+  tipoMovimento: "Provisão Folha",
+  origem: "cp",
+  valor: 122045.94,
+  dataIdentificacao: "2025-11-07",
+  inconsistencia: "VPD_NULL_PERMITIDO"
+},
+{
+  id: "pend-5",
+  tipo: "VPD",
+  subTipo: "Orgânico",
+  codigo: null,
+  descricao: "Adiantamento Utilizado",
+  tipoMovimento: "Adiantamento Utilizado",
+  origem: "cp",
+  valor: 111482.06,
+  dataIdentificacao: "2025-11-01",
+  inconsistencia: "VPD_INEXISTENTE"
+},
+{
+  id: "pend-6",
+  tipo: "VPD",
+  subTipo: "Orgânico",
+  codigo: null,
+  descricao: "Baixa por Perda",
+  tipoMovimento: "Baixa por Perda",
+  origem: "cp",
+  valor: 163398.98,
+  dataIdentificacao: "2025-11-04",
+  inconsistencia: "AGUARDANDO_VALIDACAO"
+},
+{
+  id: "pend-7",
+  tipo: "VPD",
+  subTipo: "Orçamentário",
+  codigo: null,
+  descricao: "Despesa Corrente",
+  tipoMovimento: "Despesa Corrente",
+  origem: "cp",
+  valor: 98500.00,
+  dataIdentificacao: "2025-11-10",
+  inconsistencia: "VPD_INEXISTENTE"
+},
+{
+  id: "pend-8",
+  tipo: "VPD",
+  subTipo: "Orçamentário",
+  codigo: null,
+  descricao: "Transferência Concedida",
+  tipoMovimento: "Transferência Concedida",
+  origem: "cp",
+  valor: 75200.00,
+  dataIdentificacao: "2025-11-15",
+  inconsistencia: "VPD_NULL_PERMITIDO"
+},
+{
+  id: "pend-9",
   tipo: "EP",
   codigo: "EP-2025-001",
   descricao: "Escola Municipal José de Alencar",
   tipoMovimento: "Depreciação",
   origem: "Sistema de Educação",
   valor: 125000.0,
-  dataIdentificacao: "2025-05-15",
+  dataIdentificacao: "2025-11-15",
   inconsistencia: "EP_NAO_ENCONTRADO"
 },
 {
-  id: "pend-2",
-  tipo: "VPD",
-  codigo: "3.3.9.1.00.00.00",
-  descricao: "Despesas com Manutenção Predial",
-  tipoMovimento: "Amortização",
-  origem: "CP - Contabilidade",
-  valor: 45780.5,
-  dataIdentificacao: "2025-05-18",
-  inconsistencia: "VPD_INEXISTENTE"
-},
-{
-  id: "pend-3",
+  id: "pend-10",
   tipo: "EP",
   codigo: null,
   descricao: "Centro de Saúde Vila Nova",
   tipoMovimento: "Depreciação",
   origem: "Sistema de Saúde",
   valor: 89500.0,
-  dataIdentificacao: "2025-05-20",
+  dataIdentificacao: "2025-11-20",
   inconsistencia: "EP_SEM_CODIGO"
-},
-{
-  id: "pend-4",
-  tipo: "VPD",
-  codigo: null,
-  descricao: "Encargos Patronais",
-  tipoMovimento: "Exaustão",
-  origem: "SIC - SMARRH",
-  valor: 234100.0,
-  dataIdentificacao: "2025-05-22",
-  inconsistencia: "VPD_NULL_PERMITIDO"
-},
-{
-  id: "pend-5",
-  tipo: "EP",
-  codigo: "EP-2025-003",
-  descricao: "Ginásio Poliesportivo Central",
-  tipoMovimento: "Reavaliação",
-  origem: "Sistema de Esportes",
-  valor: 156700.0,
-  dataIdentificacao: "2025-05-25",
-  inconsistencia: "EP_NAO_ENCONTRADO"
-},
-{
-  id: "pend-6",
-  tipo: "VPD",
-  codigo: "3.1.2.0.00.00.00",
-  descricao: "Benefícios Previdenciários",
-  tipoMovimento: "Amortização",
-  origem: "CP - Contabilidade",
-  valor: 89200.0,
-  dataIdentificacao: "2025-05-28",
-  inconsistencia: "AGUARDANDO_VALIDACAO"
 }];
 
 
