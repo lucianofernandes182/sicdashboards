@@ -354,18 +354,20 @@ export default function CadastrosPendentes() {
           <div className="flex items-center gap-4">
             <Button variant="outline" onClick={() => navigate("/comparacao-vpds")}>
               <ArrowLeft className="h-4 w-4 mr-2" />
-              Voltar
+              Comparação de VPDs
             </Button>
-            <div>
-              <h1 className="text-2xl font-bold flex items-center gap-2">
-                <ShieldCheck className="h-6 w-6 text-primary" />
-                Cadastro de Pendentes
-              </h1>
-              <p className="text-muted-foreground text-sm">
-                Registros identificados nos sistemas externos que necessitam de validação de consistência cadastral
-              </p>
-            </div>
           </div>
+        </div>
+
+        {/* Title Section */}
+        <div>
+          <h1 className="text-2xl font-bold flex items-center gap-2">
+            <AlertTriangle className="h-6 w-6 text-primary" />
+            Cadastros Pendentes
+          </h1>
+          <p className="text-muted-foreground text-sm">
+            Dados candidatos pendentes para a competência 11/2025
+          </p>
         </div>
 
         {/* Summary Cards */}
