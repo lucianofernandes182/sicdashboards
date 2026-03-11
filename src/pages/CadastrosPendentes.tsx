@@ -7,7 +7,7 @@ import {
   ArrowLeft, CheckCircle, Building2, FileText,
   ExternalLink, AlertCircle, Link2, X, Search, ShieldCheck, RefreshCw, XCircle, AlertTriangle, Clock } from
 "lucide-react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import { toast } from "sonner";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from "@/components/ui/dialog";
 import { cn } from "@/lib/utils";
