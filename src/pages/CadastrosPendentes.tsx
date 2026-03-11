@@ -504,7 +504,7 @@ export default function CadastrosPendentes() {
                 <p className="text-muted-foreground">
                   {filtroTipo === "todos" ?
                 "Todos os registros estão consistentes." :
-                `Não há ${filtroTipo === "EP" ? "Equipamentos Públicos" : "VPDs"} pendentes de validação.`}
+                `Não há ${filtroTipo === "EP" ? labelEP : "VPDs"} pendentes de validação.`}
                 </p>
               </div> :
 
