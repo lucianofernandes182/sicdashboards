@@ -891,7 +891,7 @@ export default function ComparacaoVPDs() {
                             <Button variant="outline" size="sm">Ver Detalhes</Button>
                             {temPendentes && (
                               <Button variant="ghost" size="sm" className="text-orange-600 hover:text-orange-700 hover:bg-orange-50 dark:text-orange-400 dark:hover:bg-orange-950/30 p-1.5"
-                                onClick={(e) => { e.stopPropagation(); navigate("/cadastros-pendentes"); }}
+                                onClick={(e) => { e.stopPropagation(); navigate(`/cadastros-pendentes?tipo=${record.tipo}`); }}
                                 title={`${pendentesDoRegistro.length} cadastro(s) pendente(s)`}
                               >
                                 <AlertCircle className="h-4 w-4" />
@@ -919,7 +919,7 @@ export default function ComparacaoVPDs() {
               {selectedRecord.status === "pendente" && (
                 <div className="flex items-center gap-3">
                   {totalPendentes > 0 && (
-                    <Badge variant="outline" className="text-xs border-orange-500 text-orange-700 dark:text-orange-400 cursor-pointer hover:bg-orange-100 dark:hover:bg-orange-900/30 transition-colors gap-1" onClick={() => navigate("/cadastros-pendentes")}>
+                    <Badge variant="outline" className="text-xs border-orange-500 text-orange-700 dark:text-orange-400 cursor-pointer hover:bg-orange-100 dark:hover:bg-orange-900/30 transition-colors gap-1" onClick={() => navigate(`/cadastros-pendentes?tipo=${selectedRecord.tipo}`)}>
                       <AlertCircle className="h-3 w-3" />
                       {totalPendentes} pendente{totalPendentes > 1 ? 's' : ''}
                     </Badge>
@@ -1010,7 +1010,7 @@ export default function ComparacaoVPDs() {
                     )}
                     {totalPendentes > 0 && (
                       <Badge variant="outline" className="text-xs border-orange-500 text-orange-700 dark:text-orange-400 cursor-pointer hover:bg-orange-100 dark:hover:bg-orange-900/30 transition-colors gap-1"
-                        onClick={() => { setIsModalOpen(false); navigate("/cadastros-pendentes"); }}
+                        onClick={() => { setIsModalOpen(false); navigate(`/cadastros-pendentes?tipo=${selectedRecord?.tipo || 'organico'}`); }}
                       >
                         <AlertCircle className="h-3 w-3" />
                         {totalPendentes} pendente{totalPendentes > 1 ? 's' : ''}

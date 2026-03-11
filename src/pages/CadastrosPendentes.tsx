@@ -7,7 +7,7 @@ import {
   ArrowLeft, CheckCircle, Building2, FileText,
   ExternalLink, AlertCircle, Link2, X, Search, ShieldCheck, RefreshCw, XCircle, AlertTriangle, Clock } from
 "lucide-react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import { toast } from "sonner";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from "@/components/ui/dialog";
 import { cn } from "@/lib/utils";
@@ -209,6 +209,10 @@ function simularRevalidacao(registro: RegistroPendente): RevalidacaoStatus {
 
 export default function CadastrosPendentes() {
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+  const tipoModelo = searchParams.get("tipo"); // "organico" ou "programatico"
+  const isOrcamentario = tipoModelo === "programatico";
+  const labelEP = isOrcamentario ? "Programas" : "Equipamentos Públicos";
   const [registrosPendentes, setRegistrosPendentes] = useState<RegistroPendente[]>(mockRegistrosPendentes);
   const [registroEmValidacao, setRegistroEmValidacao] = useState<RegistroPendente | null>(null);
   const [registrosSelecionados, setRegistrosSelecionados] = useState<Set<string>>(new Set());
@@ -391,14 +395,14 @@ export default function CadastrosPendentes() {
             className={cn("cursor-pointer transition-all hover:shadow-md", filtroTipo === "EP" && "ring-2 ring-primary")}
             onClick={() => setFiltroTipo("EP")}>
             <CardHeader className="pb-2">
-              <CardTitle className="text-sm font-medium text-muted-foreground">Equipamentos Públicos</CardTitle>
+              <CardTitle className="text-sm font-medium text-muted-foreground">{labelEP}</CardTitle>
             </CardHeader>
             <CardContent>
               <div className="flex items-center gap-2">
                 <Building2 className="h-5 w-5 text-blue-500" />
                 <span className="text-2xl font-bold text-blue-500">{pendentesEP}</span>
               </div>
-              <p className="text-xs text-muted-foreground mt-1">Pendências de EP/Programas</p>
+              <p className="text-xs text-muted-foreground mt-1">Pendências de {isOrcamentario ? "Programas" : "EP/Programas"}</p>
             </CardContent>
           </Card>
 
@@ -500,7 +504,7 @@ export default function CadastrosPendentes() {
                 <p className="text-muted-foreground">
                   {filtroTipo === "todos" ?
                 "Todos os registros estão consistentes." :
-                `Não há ${filtroTipo === "EP" ? "Equipamentos Públicos" : "VPDs"} pendentes de validação.`}
+                `Não há ${filtroTipo === "EP" ? labelEP : "VPDs"} pendentes de validação.`}
                 </p>
               </div> :
 
@@ -790,7 +794,7 @@ export default function CadastrosPendentes() {
                     <div key={tipo} className="space-y-3">
                       <div className="flex items-center gap-2">
                         {tipo === "EP" ? <Building2 className="h-4 w-4 text-blue-500" /> : <FileText className="h-4 w-4 text-purple-500" />}
-                        <span className="font-semibold text-sm">{tipo === "EP" ? "Equipamentos Públicos" : "VPDs"}</span>
+                        <span className="font-semibold text-sm">{tipo === "EP" ? labelEP : "VPDs"}</span>
                         <Badge variant="outline" className="text-xs">{doTipo.length} registro(s)</Badge>
                       </div>
 
