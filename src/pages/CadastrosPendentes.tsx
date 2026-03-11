@@ -375,45 +375,45 @@ export default function CadastrosPendentes() {
           <Card
             className={cn("cursor-pointer transition-all hover:shadow-md", filtroTipo === "todos" && "ring-2 ring-primary")}
             onClick={() => setFiltroTipo("todos")}>
-            
             <CardHeader className="pb-2">
               <CardTitle className="text-sm font-medium text-muted-foreground">Total Pendentes</CardTitle>
             </CardHeader>
             <CardContent>
               <div className="flex items-center gap-2">
-                <AlertCircle className="h-5 w-5 text-orange-500" />
-                <span className="text-2xl font-bold">{registrosPendentes.length}</span>
+                <Clock className="h-5 w-5 text-orange-500" />
+                <span className="text-2xl font-bold text-orange-500">{registrosPendentes.length}</span>
               </div>
+              <p className="text-xs text-muted-foreground mt-1">Soma de todas as pendências</p>
             </CardContent>
           </Card>
 
           <Card
-            className={cn("cursor-pointer transition-all hover:shadow-md", filtroTipo === "EP" && "ring-2 ring-blue-500")}
+            className={cn("cursor-pointer transition-all hover:shadow-md", filtroTipo === "EP" && "ring-2 ring-primary")}
             onClick={() => setFiltroTipo("EP")}>
-            
             <CardHeader className="pb-2">
               <CardTitle className="text-sm font-medium text-muted-foreground">Equipamentos Públicos</CardTitle>
             </CardHeader>
             <CardContent>
               <div className="flex items-center gap-2">
                 <Building2 className="h-5 w-5 text-blue-500" />
-                <span className="text-2xl font-bold">{pendentesEP}</span>
+                <span className="text-2xl font-bold text-blue-500">{pendentesEP}</span>
               </div>
+              <p className="text-xs text-muted-foreground mt-1">Pendências de EP/Programas</p>
             </CardContent>
           </Card>
 
           <Card
-            className={cn("cursor-pointer transition-all hover:shadow-md", filtroTipo === "VPD" && "ring-2 ring-purple-500")}
+            className={cn("cursor-pointer transition-all hover:shadow-md", filtroTipo === "VPD" && "ring-2 ring-primary")}
             onClick={() => setFiltroTipo("VPD")}>
-            
             <CardHeader className="pb-2">
               <CardTitle className="text-sm font-medium text-muted-foreground">VPDs</CardTitle>
             </CardHeader>
             <CardContent>
               <div className="flex items-center gap-2">
-                <FileText className="h-5 w-5 text-purple-500" />
-                <span className="text-2xl font-bold">{pendentesVPD}</span>
+                <FileText className="h-5 w-5 text-green-500" />
+                <span className="text-2xl font-bold text-green-500">{pendentesVPD}</span>
               </div>
+              <p className="text-xs text-muted-foreground mt-1">Pendências de VPD vinculadas</p>
             </CardContent>
           </Card>
         </div>
