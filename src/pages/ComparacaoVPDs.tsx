@@ -891,7 +891,7 @@ export default function ComparacaoVPDs() {
                             <Button variant="outline" size="sm">Ver Detalhes</Button>
                             {temPendentes && (
                               <Button variant="ghost" size="sm" className="text-orange-600 hover:text-orange-700 hover:bg-orange-50 dark:text-orange-400 dark:hover:bg-orange-950/30 p-1.5"
-                                onClick={(e) => { e.stopPropagation(); navigate("/cadastros-pendentes"); }}
+                                onClick={(e) => { e.stopPropagation(); navigate(`/cadastros-pendentes?tipo=${record.tipo}`); }}
                                 title={`${pendentesDoRegistro.length} cadastro(s) pendente(s)`}
                               >
                                 <AlertCircle className="h-4 w-4" />
