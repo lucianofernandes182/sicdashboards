@@ -395,7 +395,7 @@ export default function CadastrosPendentes() {
             className={cn("cursor-pointer transition-all hover:shadow-md", filtroTipo === "EP" && "ring-2 ring-primary")}
             onClick={() => setFiltroTipo("EP")}>
             <CardHeader className="pb-2">
-              <CardTitle className="text-sm font-medium text-muted-foreground">Equipamentos Públicos</CardTitle>
+              <CardTitle className="text-sm font-medium text-muted-foreground">{labelEP}</CardTitle>
             </CardHeader>
             <CardContent>
               <div className="flex items-center gap-2">
