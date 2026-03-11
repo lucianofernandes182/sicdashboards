@@ -664,7 +664,24 @@ export default function CadastrosPendentes() {
               variant="outline"
               onClick={() => navigate("/equipamentos-publicos")}
               className="gap-1.5">
-              
+                <ExternalLink className="h-4 w-4" />
+                Ir para Cadastro de EP
+              </Button>
+            }
+            {revalidacaoResultado && revalidacaoResultado !== "DADOS_COMPLETOS" && registroEmValidacao?.tipo === "VPD" && registroEmValidacao?.subTipo === "Orçamentário" &&
+            <Button
+              variant="outline"
+              onClick={() => navigate("/equipamentos-publicos")}
+              className="gap-1.5">
+                <ExternalLink className="h-4 w-4" />
+                Ir para Cadastro de Programas
+              </Button>
+            }
+            {revalidacaoResultado && revalidacaoResultado !== "DADOS_COMPLETOS" && registroEmValidacao?.tipo === "VPD" && registroEmValidacao?.subTipo === "Orgânico" &&
+            <Button
+              variant="outline"
+              onClick={() => navigate("/equipamentos-publicos")}
+              className="gap-1.5">
                 <ExternalLink className="h-4 w-4" />
                 Ir para Cadastro de EP
               </Button>
