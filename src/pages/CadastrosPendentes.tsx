@@ -31,6 +31,7 @@ type RevalidacaoStatus =
 interface RegistroPendente {
   id: string;
   tipo: "EP" | "VPD";
+  subTipo?: "Orgânico" | "Orçamentário";
   codigo: string | null;
   descricao: string;
   tipoMovimento: string;
