@@ -875,13 +875,9 @@ export default function ComparacaoVPDs() {
                         <TableCell className="font-mono text-sm">{formatCurrency(record.modelo.totalVPDs)}</TableCell>
                         <TableCell>
                           {divModelo ? (
-                            <span className="text-sm text-destructive font-semibold font-mono">
-                              {formatCurrency(diffValue)}
-                            </span>
+                            <span className="text-sm text-destructive font-semibold">Sim</span>
                           ) : (
-                            <Badge variant="outline" className="border-green-500 text-green-700 dark:text-green-400 flex items-center gap-1 w-fit">
-                              <CheckCircle className="h-3 w-3" /> Conciliado
-                            </Badge>
+                            <span className="text-sm text-green-700 dark:text-green-400 font-semibold">Não</span>
                           )}
                         </TableCell>
                         <TableCell className="text-sm text-muted-foreground">{record.usuarioAprovador || "-"}</TableCell>
