@@ -402,7 +402,7 @@ export default function CadastrosPendentes() {
                 <Building2 className="h-5 w-5 text-blue-500" />
                 <span className="text-2xl font-bold text-blue-500">{pendentesEP}</span>
               </div>
-              <p className="text-xs text-muted-foreground mt-1">Pendências de EP/Programas</p>
+              <p className="text-xs text-muted-foreground mt-1">Pendências de {isOrcamentario ? "Programas" : "EP/Programas"}</p>
             </CardContent>
           </Card>
 
