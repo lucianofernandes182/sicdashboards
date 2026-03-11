@@ -919,7 +919,7 @@ export default function ComparacaoVPDs() {
               {selectedRecord.status === "pendente" && (
                 <div className="flex items-center gap-3">
                   {totalPendentes > 0 && (
-                    <Badge variant="outline" className="text-xs border-orange-500 text-orange-700 dark:text-orange-400 cursor-pointer hover:bg-orange-100 dark:hover:bg-orange-900/30 transition-colors gap-1" onClick={() => navigate("/cadastros-pendentes")}>
+                    <Badge variant="outline" className="text-xs border-orange-500 text-orange-700 dark:text-orange-400 cursor-pointer hover:bg-orange-100 dark:hover:bg-orange-900/30 transition-colors gap-1" onClick={() => navigate(`/cadastros-pendentes?tipo=${selectedRecord.tipo}`)}>
                       <AlertCircle className="h-3 w-3" />
                       {totalPendentes} pendente{totalPendentes > 1 ? 's' : ''}
                     </Badge>
