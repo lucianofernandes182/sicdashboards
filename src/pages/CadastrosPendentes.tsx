@@ -209,6 +209,10 @@ function simularRevalidacao(registro: RegistroPendente): RevalidacaoStatus {
 
 export default function CadastrosPendentes() {
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+  const tipoModelo = searchParams.get("tipo"); // "organico" ou "programatico"
+  const isOrcamentario = tipoModelo === "programatico";
+  const labelEP = isOrcamentario ? "Programas" : "Equipamentos Públicos";
   const [registrosPendentes, setRegistrosPendentes] = useState<RegistroPendente[]>(mockRegistrosPendentes);
   const [registroEmValidacao, setRegistroEmValidacao] = useState<RegistroPendente | null>(null);
   const [registrosSelecionados, setRegistrosSelecionados] = useState<Set<string>>(new Set());
